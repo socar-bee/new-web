@@ -10,7 +10,7 @@ export default function ShareCluster({ count }: ShareClusterProps) {
       {/* Ping animation */}
       <div className="absolute top-0 left-1/2 z-[5] -translate-x-1/2">
         <div
-          className="h-[36px] w-[36px] translate-x-[6px] translate-y-[6px] animate-ping rounded-full bg-[#0099FF] opacity-[0.12]"
+          className="bg-primary h-[36px] w-[36px] translate-x-[6px] translate-y-[6px] animate-ping rounded-full opacity-[0.12]"
           style={{ animationDuration: '2.5s' }}
         />
       </div>

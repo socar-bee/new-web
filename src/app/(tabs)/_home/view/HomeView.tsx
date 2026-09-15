@@ -1,5 +1,14 @@
 'use client'
 
+import {
+  IconBellLine,
+  IconChevronDownLine,
+  IconMarkerFill,
+  IconSearchLine,
+  IconStarFill,
+  IconUsageHistoryLine,
+  IconXLine
+} from '@socar-inc/modu-ui/icons'
 import { AnimatePresence, animate, motion, useMotionValue } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -89,10 +98,7 @@ function TopBar() {
             href="/search"
             className="bg-bg-soft flex h-10 min-w-0 flex-1 items-center gap-2 overflow-hidden rounded-full px-4"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">
-              <circle cx="11" cy="11" r="7" stroke="#A3A3A3" strokeWidth="1.8" />
-              <path d="M16 16L20 20" stroke="#A3A3A3" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
+            <IconSearchLine className="text-icon-soft size-[18px] shrink-0" />
             <span className="text-text-soft truncate text-[13px]">목적지 또는 주차장을 검색하세요</span>
           </Link>
           <button
@@ -100,10 +106,7 @@ function TopBar() {
             aria-label="최근 검색"
             className="text-text-sub flex size-9 shrink-0 items-center justify-center"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
-              <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-            </svg>
+            <IconUsageHistoryLine className="size-[22px]" />
           </button>
           <Link
             href="https://page.modu.kr/userguide"
@@ -112,16 +115,7 @@ function TopBar() {
             aria-label="알림"
             className="text-text-sub relative flex size-9 shrink-0 items-center justify-center"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9Z"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path d="M10 21a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-            </svg>
+            <IconBellLine className="size-[22px]" />
             <span className="bg-primary absolute top-1.5 right-1.5 size-1.5 rounded-full" />
           </Link>
         </div>
@@ -197,16 +191,11 @@ function RecentSearchSheet({
             {searches.map((keyword) => (
               <li key={keyword} className="border-stroke-soft flex items-center border-b py-3.5 last:border-0">
                 <button onClick={() => onSelect(keyword)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-text-disabled shrink-0">
-                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
-                    <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  </svg>
+                  <IconUsageHistoryLine className="text-text-disabled size-4 shrink-0" />
                   <span className="text-text-strong truncate text-[14px]">{keyword}</span>
                 </button>
                 <button onClick={() => onRemove(keyword)} className="text-text-disabled ml-3 shrink-0 p-1">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
+                  <IconXLine className="size-3.5" />
                 </button>
               </li>
             ))}
@@ -221,17 +210,13 @@ function RecentSearchSheet({
 function LocationChip({ label, isLocating, onClick }: { label: string; isLocating: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick} className="text-text-strong flex items-center gap-1 px-5 pt-1 pb-3 text-left">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="#FF5252">
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" />
-      </svg>
+      <IconMarkerFill className="size-[18px] text-red-500" />
       {isLocating ? (
         <span className="text-text-soft text-[16px] font-bold tracking-[-0.2px]">위치 확인 중…</span>
       ) : (
         <span className="text-[16px] font-bold tracking-[-0.2px]">{label}</span>
       )}
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        <path d="M6 9l6 6 6-6" stroke="#171717" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      <IconChevronDownLine className="text-icon-strong size-3.5" />
     </button>
   )
 }
@@ -324,7 +309,7 @@ function HeroCarousel({
           {banners.map((b) => (
             <div key={b.id} className="w-full shrink-0" style={{ width: containerWidth || '100%' }}>
               {b.image ? (
-                <div className="relative h-[180px] overflow-hidden" style={{ background: '#EBF4FF' }}>
+                <div className="relative h-[180px] overflow-hidden" style={{ background: 'var(--color-brand-50)' }}>
                   <img
                     src={b.image}
                     alt={b.title}
@@ -383,7 +368,7 @@ function QuickMenuGrid({ items, onAction }: { items: QuickMenuItem[]; onAction?:
           </span>
         )}
         {it.badge && (
-          <span className="absolute -top-1 -right-0.5 flex h-[18px] min-w-[20px] items-center justify-center rounded-full bg-[#FF5252] px-1 text-[10px] leading-none font-extrabold text-white">
+          <span className="absolute -top-1 -right-0.5 flex h-[18px] min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] leading-none font-extrabold text-white">
             {it.badge}
           </span>
         )}
@@ -453,10 +438,7 @@ function RegionsSection({
           onClick={onNearby}
           className="bg-primary text-static-white flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5 text-[12px] font-semibold"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" />
-          </svg>
-          내 주변
+          <IconMarkerFill className="size-3.5" />내 주변
         </button>
       </div>
 
@@ -637,13 +619,7 @@ function ReviewSheet({ onClose }: { onClose: () => void }) {
                       onClick={() => setRating(star)}
                       className="transition-transform active:scale-110"
                     >
-                      <svg width="40" height="40" viewBox="0 0 24 24">
-                        <path
-                          d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                          fill={rating >= star ? '#FFB800' : '#E5E7EB'}
-                          stroke="none"
-                        />
-                      </svg>
+                      <IconStarFill className={`size-10 ${rating >= star ? 'text-yellow-500' : 'text-neutral-200'}`} />
                     </button>
                   ))}
                 </div>

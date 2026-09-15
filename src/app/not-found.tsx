@@ -1,6 +1,5 @@
+import { IconChevronRightLine } from '@socar-inc/modu-ui/icons'
 import Link from 'next/link'
-
-import { IcoChevronRight } from '@/shared/components/icons'
 
 export default function NotFound() {
   return (
@@ -14,7 +13,7 @@ export default function NotFound() {
         className="rounded-10 bg-primary text-static-white inline-flex items-center gap-2 px-8 py-3.5 text-[14px] font-bold transition-opacity hover:opacity-90 active:opacity-80"
       >
         홈으로 돌아가기
-        <IcoChevronRight />
+        <IconChevronRightLine className="size-4" />
       </Link>
     </section>
   )

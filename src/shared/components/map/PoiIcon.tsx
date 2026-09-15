@@ -25,23 +25,23 @@ function PoiWrapper({ children }: { children: React.ReactNode }) {
 function getMarkerPalette(isOn: boolean, isFavorite: boolean) {
   if (isOn) {
     return {
-      solidBg: '#224D6A',
-      solidBorder: '#163D56',
-      lightBg: '#224D6A',
-      lightBorder: '#163D56',
+      solidBg: '#005c99', // brand-900
+      solidBorder: '#003d66', // brand-950
+      lightBg: '#005c99',
+      lightBorder: '#003d66',
       lightText: '#FFFFFF',
-      labelBg: '#163D56',
+      labelBg: '#003d66',
       labelText: '#FFFFFF'
     }
   }
   if (isFavorite) {
     return {
-      solidBg: '#FF6B7A', // light coral red — 핑크보다 빨강 쪽
-      solidBorder: '#E54A5C',
-      lightBg: '#FFD9DD',
-      lightBorder: '#FF6B7A',
-      lightText: '#B82838',
-      labelBg: '#FF6B7A',
+      solidBg: '#ff7575', // red-400 — light coral red, 핑크보다 빨강 쪽
+      solidBorder: '#ff4c4c', // red-500
+      lightBg: '#ffe2e2', // red-100
+      lightBorder: '#ff7575',
+      lightText: '#b33535', // red-800
+      labelBg: '#ff7575',
       labelText: '#FFFFFF'
     }
   }
@@ -61,7 +61,7 @@ function ParkingCircle({ isOn, isFavorite }: { isOn: boolean; isFavorite: boolea
   return (
     <div
       className={`flex h-[28px] w-[28px] items-center justify-center rounded-full border-[2px] ${
-        palette ? '' : 'border-[#0088E6] bg-[#0099FF]'
+        palette ? '' : 'border-brand-600 bg-primary'
       }`}
       style={{
         boxShadow: favoriteShadow(SHADOW_CIRCLE, isFavorite),
@@ -98,7 +98,7 @@ function NormalPublicPOI({ label, isOn, isFavorite }: { label: string; isOn: boo
         {label && (
           <div
             className={`mt-[2px] rounded-[10px] px-[5px] py-[1px] text-center text-[11px] leading-[15px] font-bold whitespace-nowrap ${
-              isOn ? 'bg-[#224D6A] text-white' : 'bg-white text-[#263238]'
+              isOn ? 'bg-brand-900 text-white' : 'bg-white text-slate-700'
             }`}
             style={{ textShadow: isOn ? 'none' : '0 0 3px rgba(255,255,255,0.8)' }}
           >
@@ -142,7 +142,7 @@ function NormalSharePOI({ label, isOn, isFavorite }: { label: string; isOn: bool
       <div className="flex flex-col items-center">
         <div
           className={`flex h-[28px] w-[28px] items-center justify-center rounded-full border-[2px] ${
-            isFilled ? 'border-[#163D56] bg-[#224D6A]' : palette ? 'bg-white' : 'border-primary bg-white'
+            isFilled ? 'border-brand-950 bg-brand-900' : palette ? 'bg-white' : 'border-primary bg-white'
           }`}
           style={{
             boxShadow: favoriteShadow(SHADOW_CIRCLE, isFavorite),
@@ -159,7 +159,7 @@ function NormalSharePOI({ label, isOn, isFavorite }: { label: string; isOn: bool
         {label && (
           <div
             className={`mt-[2px] rounded-[10px] px-[5px] py-[1px] text-center text-[11px] leading-[15px] font-bold whitespace-nowrap ${
-              isOn ? 'bg-[#224D6A] text-white' : 'bg-white text-[#263238]'
+              isOn ? 'bg-brand-900 text-white' : 'bg-white text-slate-700'
             }`}
             style={{ textShadow: isOn ? 'none' : '0 0 3px rgba(255,255,255,0.8)' }}
           >
@@ -188,7 +188,7 @@ function PrimaryTicketPOI({
     <PoiWrapper>
       <div className="relative z-[13] flex flex-col items-center">
         <div
-          className={`rounded-[8px] border-[1.5px] ${palette ? '' : 'border-[#0088E6] bg-[#0099FF]'}`}
+          className={`rounded-[8px] border-[1.5px] ${palette ? '' : 'border-brand-600 bg-primary'}`}
           style={{
             boxShadow: favoriteShadow(SHADOW_CARD, isFavorite),
             ...(palette ? { borderColor: palette.solidBorder, backgroundColor: palette.solidBg } : {})
@@ -201,7 +201,7 @@ function PrimaryTicketPOI({
         </div>
         <div
           className={`h-0 w-0 border-t-[5px] border-r-[5px] border-l-[5px] border-r-transparent border-l-transparent ${
-            palette ? '' : 'border-t-[#0099FF]'
+            palette ? '' : 'border-t-primary'
           }`}
           style={palette ? { borderTopColor: palette.solidBg } : undefined}
         />
@@ -230,7 +230,7 @@ function PrimaryTicketDisabledPOI({
     <PoiWrapper>
       <div className="relative z-[11] flex flex-col items-center">
         <div
-          className={`rounded-[8px] border-[1.5px] ${palette ? '' : 'border-[#8D9DAD] bg-[#B8C3D0]'}`}
+          className={`rounded-[8px] border-[1.5px] ${palette ? '' : 'border-slate-500 bg-slate-400'}`}
           style={{
             boxShadow: favoriteShadow(SHADOW_CARD_DISABLED, isFavorite),
             ...(palette ? { borderColor: palette.solidBorder, backgroundColor: palette.solidBg } : {})
@@ -243,7 +243,7 @@ function PrimaryTicketDisabledPOI({
         </div>
         <div
           className={`h-0 w-0 border-t-[5px] border-r-[5px] border-l-[5px] border-r-transparent border-l-transparent ${
-            palette ? '' : 'border-t-[#B8C3D0]'
+            palette ? '' : 'border-t-slate-400'
           }`}
           style={palette ? { borderTopColor: palette.solidBg } : undefined}
         />

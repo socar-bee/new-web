@@ -1,5 +1,7 @@
 'use client'
 
+import { IconChevronLeftLine, IconXLine } from '@socar-inc/modu-ui/icons'
+
 import { useSearchViewModel } from '../viewmodel'
 
 export default function SearchView({ initialKeyword }: { initialKeyword?: string }) {
@@ -11,15 +13,7 @@ export default function SearchView({ initialKeyword }: { initialKeyword?: string
       {/* Header */}
       <div className="flex h-14 items-center gap-2 px-4">
         <button onClick={goBack} className="flex size-8 items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M15 18L9 12L15 6"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <IconChevronLeftLine className="size-5" />
         </button>
         <input
           type="text"
@@ -35,9 +29,7 @@ export default function SearchView({ initialKeyword }: { initialKeyword?: string
             onClick={() => onChangeSearchText({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>)}
             className="bg-bg-soft flex size-6 items-center justify-center rounded-full"
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-            </svg>
+            <IconXLine className="size-3" />
           </button>
         )}
       </div>

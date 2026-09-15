@@ -114,7 +114,7 @@ export default function TimeFilterSheet({
           >
             {/* Header */}
             <div className="px-4 pt-4 pb-0">
-              <h2 className="text-center text-[20px] leading-[30px] font-bold tracking-[-0.5px] text-[#171717]">
+              <h2 className="text-text-strong text-center text-[20px] leading-[30px] font-bold tracking-[-0.5px]">
                 날짜 및 이용시간
               </h2>
             </div>
@@ -130,7 +130,7 @@ export default function TimeFilterSheet({
 
             {/* Duration chips — 4열 grid */}
             <div className="px-6 pt-2 pb-2">
-              <p className="mb-3 text-[16px] leading-[22px] font-semibold tracking-[-1px] text-[#171717]">
+              <p className="text-text-strong mb-3 text-[16px] leading-[22px] font-semibold tracking-[-1px]">
                 주차 예정 시간
               </p>
               <div className="grid grid-cols-4 gap-2">

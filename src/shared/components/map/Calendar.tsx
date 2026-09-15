@@ -1,5 +1,6 @@
 'use client'
 
+import { IconChevronLeftLine, IconChevronRightLine } from '@socar-inc/modu-ui/icons'
 import { ko } from 'date-fns/locale'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -40,43 +41,19 @@ export default function Calendar({ selectedDate, onChange, filterDate, minMonth,
 
           return (
             <div className="flex items-center justify-between px-6 py-2">
-              <span className="text-[16px] leading-[22px] font-semibold tracking-[-1px] text-[#171717]">
+              <span className="text-text-strong text-[16px] leading-[22px] font-semibold tracking-[-1px]">
                 {`${y}년 ${m + 1}월`}
               </span>
               <div className="flex items-center gap-7 opacity-80">
                 <button onClick={decreaseMonth} disabled={isPrevDisabled} className="p-0">
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    className={`size-6 ${isPrevDisabled ? 'text-[#D1D1D1]' : 'text-[#171717]'}`}
-                  >
-                    <path
-                      d="M15 18L9 12L15 6"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <IconChevronLeftLine
+                    className={`size-6 ${isPrevDisabled ? 'text-icon-disabled' : 'text-icon-strong'}`}
+                  />
                 </button>
                 <button onClick={increaseMonth} disabled={isNextDisabled} className="p-0">
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    className={`size-6 ${isNextDisabled ? 'text-[#D1D1D1]' : 'text-[#171717]'}`}
-                  >
-                    <path
-                      d="M9 18L15 12L9 6"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <IconChevronRightLine
+                    className={`size-6 ${isNextDisabled ? 'text-icon-disabled' : 'text-icon-strong'}`}
+                  />
                 </button>
               </div>
             </div>

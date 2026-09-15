@@ -1,5 +1,19 @@
 'use client'
 
+import {
+  IconCardLine,
+  IconCautionFill,
+  IconCarFill,
+  IconChevronDownLine,
+  IconChevronLeftLine,
+  IconChevronRightLine,
+  IconCopyLine,
+  IconMarkerLine,
+  IconNaviFill,
+  IconPhoneLine,
+  IconThumbsDownLine,
+  IconThumbsUpLine
+} from '@socar-inc/modu-ui/icons'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -353,7 +367,7 @@ export default function ParkingDetailSheet({
                   {capacity !== null && (
                     <>
                       <svg width="3" height="3" viewBox="0 0 3 3" fill="none">
-                        <circle cx="1.5" cy="1.5" r="1.5" fill="#A3A3A3" />
+                        <circle cx="1.5" cy="1.5" r="1.5" fill="var(--color-icon-soft)" />
                       </svg>
                       <span>{capacity.toLocaleString()}면</span>
                     </>
@@ -385,12 +399,7 @@ export default function ParkingDetailSheet({
                 onClick={openNavigation}
                 className="bg-primary text-static-white flex size-[53px] shrink-0 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-[8px]"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M11.8333 4.50079C11.8333 4.07135 12.339 3.84137 12.6624 4.12384L19.4036 10.0223C19.6311 10.2215 19.6311 10.576 19.4036 10.7752L12.6624 16.6727C12.3391 16.9555 11.8333 16.7263 11.8333 16.2967V12.3983H10.3333C8.95268 12.3983 7.83349 13.5177 7.83325 14.8983V19.3983H3.83325V14.3983C3.83349 11.0847 6.51969 8.39826 9.83325 8.39826H11.8333V4.50079Z"
-                    fill="white"
-                  />
-                </svg>
+                <IconNaviFill className="size-5" />
                 <span className="text-[10px] font-medium tracking-[0.3px]">길찾기</span>
               </button>
             </div>
@@ -472,9 +481,7 @@ function NavigationBar({ title, showTitle, onBack }: { title: string; showTitle:
   return (
     <div className="flex h-12 items-center justify-between px-2">
       <button onClick={onBack} className="flex size-10 cursor-pointer items-center justify-center">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M15 18L9 12L15 6" stroke="#171717" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <IconChevronLeftLine className="text-icon-strong size-[22px]" />
       </button>
       <h2
         className={`text-text-strong truncate px-2 text-[16px] font-bold transition-opacity duration-200 ${
@@ -513,7 +520,7 @@ function PeekBar({
           {typeLabel && <span>{typeLabel}</span>}
           {typeLabel && capacity !== null && (
             <svg width="4" height="4" viewBox="0 0 4 4" fill="none">
-              <circle cx="2" cy="2" r="2" fill="#A3A3A3" />
+              <circle cx="2" cy="2" r="2" fill="var(--color-icon-soft)" />
             </svg>
           )}
           {capacity !== null && <span>{capacity.toLocaleString()}면</span>}
@@ -545,12 +552,7 @@ function PeekBar({
         }}
         className="bg-primary text-static-white flex size-[53px] shrink-0 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-[8px]"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M11.8333 4.50079C11.8333 4.07135 12.339 3.84137 12.6624 4.12384L19.4036 10.0223C19.6311 10.2215 19.6311 10.576 19.4036 10.7752L12.6624 16.6727C12.3391 16.9555 11.8333 16.7263 11.8333 16.2967V12.3983H10.3333C8.95268 12.3983 7.83349 13.5177 7.83325 14.8983V19.3983H3.83325V14.3983C3.83349 11.0847 6.51969 8.39826 9.83325 8.39826H11.8333V4.50079Z"
-            fill="white"
-          />
-        </svg>
+        <IconNaviFill className="size-5" />
         <span className="text-[10px] font-medium tracking-[0.3px]">길찾기</span>
       </button>
     </div>
@@ -576,7 +578,7 @@ function TicketList({
   return (
     <div className="bg-bg-white px-4 pb-4">
       {moduComment && (
-        <div className="mb-3 rounded-md bg-sky-50 px-5 py-2 text-center">
+        <div className="bg-brand-50 mb-3 rounded-md px-5 py-2 text-center">
           <p className="text-text-strong text-[13px]">{moduComment}</p>
         </div>
       )}
@@ -592,15 +594,7 @@ function TicketList({
         >
           전체보기
           <span className="text-primary/60 text-[13px] font-medium">({tickets.length}개)</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="ml-0.5">
-            <path
-              d="M6 9l6 6 6-6"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <IconChevronDownLine className="ml-0.5 size-4" />
         </button>
       )}
     </div>
@@ -622,7 +616,7 @@ const TicketStubCard = memo(function TicketStubCard({
   const isLarge = ticket.price >= 100000
 
   const statusLabel = isSoldOut ? '매진' : isComingSoon ? '판매예정' : '구매가능'
-  const statusColor = isSoldOut ? 'bg-[#d1d5db]' : isComingSoon ? 'bg-amber-400' : 'bg-emerald-400'
+  const statusColor = isSoldOut ? 'bg-neutral-300' : isComingSoon ? 'bg-yellow-500' : 'bg-mint-700'
 
   const descLine =
     ticket.isOpen || Number(ticket.couponTypeGroup) === CouponTypeGroup.MONTHLY
@@ -632,7 +626,7 @@ const TicketStubCard = memo(function TicketStubCard({
   // 카드/연결부 bg는 활성/비활성 모두 흰색으로 통일 — disabled는 border + 텍스트로만 구분
   // (disabled에 gray bg를 주면 가운데 연결부가 회색 스트립처럼 보여 어색함)
   const cardBg = 'bg-white'
-  const cardBorder = isDisabled ? 'border-[#e9ebef]' : 'border-primary/20'
+  const cardBorder = isDisabled ? 'border-slate-200' : 'border-primary/20'
   const cardShadow = isDisabled ? '' : 'shadow-[0_2px_10px_rgba(59,130,246,0.09)]'
   const dashBorder = 'border-primary/45'
 
@@ -651,17 +645,17 @@ const TicketStubCard = memo(function TicketStubCard({
         >
           <div className="flex items-center gap-1.5">
             <span className={`h-[6px] w-[6px] shrink-0 rounded-full ${statusColor}`} />
-            <span className={`text-[11px] font-medium ${isDisabled ? 'text-[#b0b8c1]' : 'text-[#64748b]'}`}>
+            <span className={`text-[11px] font-medium ${isDisabled ? 'text-slate-400' : 'text-slate-600'}`}>
               {statusLabel}
             </span>
           </div>
           <p
-            className={`truncate text-[15px] leading-tight font-bold ${isDisabled ? 'text-[#b0b8c1]' : 'text-[#1e293b]'}`}
+            className={`truncate text-[15px] leading-tight font-bold ${isDisabled ? 'text-slate-400' : 'text-slate-800'}`}
           >
             {ticket.couponName}
           </p>
           {descLine && (
-            <p className={`truncate text-[11px] ${isDisabled ? 'text-[#c8d0da]' : 'text-[#94a3b8]'}`}>{descLine}</p>
+            <p className={`truncate text-[11px] ${isDisabled ? 'text-slate-300' : 'text-slate-400'}`}>{descLine}</p>
           )}
         </div>
 
@@ -686,10 +680,10 @@ const TicketStubCard = memo(function TicketStubCard({
           <p
             className={`leading-none font-bold tracking-tight whitespace-nowrap ${
               isLarge ? 'text-[15px]' : 'text-[18px]'
-            } ${isDisabled ? 'text-[#c8d0da]' : 'text-primary'}`}
+            } ${isDisabled ? 'text-slate-300' : 'text-primary'}`}
           >
             {ticket.price.toLocaleString()}
-            <span className={`ml-0.5 text-[11px] font-medium ${isDisabled ? 'text-[#c8d0da]' : 'text-primary/80'}`}>
+            <span className={`ml-0.5 text-[11px] font-medium ${isDisabled ? 'text-slate-300' : 'text-primary/80'}`}>
               원
             </span>
           </p>
@@ -705,7 +699,7 @@ function HeroPlaceholder() {
   return (
     <div
       className="flex h-full w-full items-center justify-center"
-      style={{ background: 'linear-gradient(135deg, #EBF4FF 0%, #DBEAFE 100%)' }}
+      style={{ background: 'linear-gradient(135deg, var(--color-brand-50) 0%, var(--color-brand-100) 100%)' }}
     >
       <div className="flex flex-col items-center gap-2">
         <span className="bg-bg-white/70 flex size-16 items-center justify-center rounded-2xl shadow-sm">
@@ -759,9 +753,9 @@ function InfoTab({
     <div className="flex flex-col gap-4 px-4 py-5">
       {modifyDate && (
         <div className="flex items-center justify-end gap-1">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="9" stroke="#A3A3A3" strokeWidth="1.5" />
-            <path d="M12 7v5l3 3" stroke="#A3A3A3" strokeWidth="1.5" strokeLinecap="round" />
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-icon-soft">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           <span className="text-text-disabled text-[12px]">정보 업데이트: {formatModifyDate(modifyDate)}</span>
         </div>
@@ -769,43 +763,20 @@ function InfoTab({
 
       {/* 주소 — 최상단 */}
       {address && (
-        <InfoCard
-          icon={
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                fill="none"
-              />
-            </svg>
-          }
-          title="주소"
-        >
+        <InfoCard icon={<IconMarkerLine className="size-5" />} title="주소">
           <button
             className="flex w-full min-w-0 cursor-pointer items-center gap-1 text-left"
             onClick={() => onCopyAddress(address)}
           >
             <span className="text-text-strong flex-1 text-[13px]">{address}</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="shrink-0">
-              <rect x="9" y="9" width="11" height="11" rx="1.5" stroke="#A3A3A3" strokeWidth="1.5" />
-              <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke="#A3A3A3" strokeWidth="1.5" />
-            </svg>
+            <IconCopyLine className="text-icon-soft size-3.5 shrink-0" />
           </button>
         </InfoCard>
       )}
 
       {/* 요금 안내 */}
       {prices.length > 0 && prices[0].contents.length > 0 && (
-        <InfoCard
-          icon={
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <rect x="2" y="6" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M2 10h20" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
-          }
-          title="요금 안내"
-        >
+        <InfoCard icon={<IconCardLine className="size-5" />} title="요금 안내">
           <div className="flex flex-col gap-2">
             {prices[0].contents.slice(0, 4).map((item, idx) => (
               <div key={`price-${idx}`} className="flex items-center justify-between gap-3">
@@ -855,17 +826,7 @@ function InfoTab({
 
       {/* 추가 정보 (options) */}
       {basic.options.length > 0 && (
-        <InfoCard
-          icon={
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"
-                fill="currentColor"
-              />
-            </svg>
-          }
-          title="추가 정보"
-        >
+        <InfoCard icon={<IconCarFill className="size-5" />} title="추가 정보">
           <div className="flex flex-wrap gap-2">
             {basic.options.map((opt) => (
               <span key={opt} className="bg-primary/10 text-primary rounded-full px-3 py-1.5 text-[12px] font-medium">
@@ -878,18 +839,7 @@ function InfoTab({
 
       {/* 주차장 번호 */}
       {basic.phone && (
-        <InfoCard
-          icon={
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-            </svg>
-          }
-          title="주차장번호"
-        >
+        <InfoCard icon={<IconPhoneLine className="size-5" />} title="주차장번호">
           <a href={`tel:${basic.phone}`} className="text-primary text-[14px] font-medium">
             {basic.phone}
           </a>
@@ -897,12 +847,9 @@ function InfoTab({
       )}
 
       {/* 주의사항 */}
-      <div className="flex items-start gap-3 rounded-xl bg-amber-50 p-4">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="mt-0.5 shrink-0">
-          <path d="M12 2L2 20h20L12 2z" stroke="#F59E0B" strokeWidth="1.5" />
-          <path d="M12 9v5M12 16.5v.5" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-        <p className="text-[12px] leading-relaxed text-amber-700">
+      <div className="bg-caution-lighter flex items-start gap-3 rounded-xl p-4">
+        <IconCautionFill className="mt-0.5 size-5 shrink-0 text-yellow-500" />
+        <p className="text-caution-dark text-[12px] leading-relaxed">
           현장 정보와 일치하지 않아 발생한 피해는 모두의주차장이 책임을 지거나 보상하지 않습니다.
         </p>
       </div>
@@ -985,13 +932,13 @@ const RecommendCard = memo(function RecommendCard({ item, index }: { item: Recom
               ))}
             </div>
           ) : (
-            <div className="flex size-full items-center justify-center bg-[#dee4e9]">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                <rect x="2" y="4" width="20" height="16" rx="2" stroke="#b8c3d0" strokeWidth="1.5" />
-                <circle cx="8.5" cy="10.5" r="2" stroke="#b8c3d0" strokeWidth="1.5" />
+            <div className="flex size-full items-center justify-center bg-slate-200">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-slate-400">
+                <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                <circle cx="8.5" cy="10.5" r="2" stroke="currentColor" strokeWidth="1.5" />
                 <path
                   d="M2 17l5-4 3 2 5-5 7 7"
-                  stroke="#b8c3d0"
+                  stroke="currentColor"
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -1003,12 +950,10 @@ const RecommendCard = memo(function RecommendCard({ item, index }: { item: Recom
 
         <div className="flex items-center justify-between">
           <div className="flex max-w-[180px] min-w-0 items-center gap-1">
-            <span className="truncate text-[15px] font-bold text-[#263238]">{item.name}</span>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" className="shrink-0">
-              <path d="M9 6l6 6-6 6" stroke="#6D7D90" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <span className="truncate text-[15px] font-bold text-slate-700">{item.name}</span>
+            <IconChevronRightLine className="size-[15px] shrink-0 text-slate-600" />
           </div>
-          <div className="flex shrink-0 items-center gap-1.5 text-[13px] text-[#b8c3d0]">
+          <div className="flex shrink-0 items-center gap-1.5 text-[13px] text-slate-400">
             <span>{item.qty ? `${item.qty.toLocaleString()}면` : '정보없음'}</span>
             <span>·</span>
             <span>{item.distance >= 1000 ? `${(item.distance / 1000).toFixed(1)}km` : `${item.distance}m`}</span>
@@ -1066,7 +1011,7 @@ function NearbyTab({ detail }: { detail: ReturnType<typeof useParkingDetailViewM
 
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           {/* 말풍선 */}
-          <div className="border-stroke-soft rounded-2xl rounded-tl-sm border bg-gradient-to-br from-[#fafafa] to-[#f0f4f8] px-4 py-3.5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          <div className="border-stroke-soft from-bg-weak rounded-2xl rounded-tl-sm border bg-gradient-to-br to-slate-100 px-4 py-3.5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
             <p className="text-text-strong text-[13px] leading-relaxed">{detail.aiDescription.response}</p>
             <div className="border-stroke-soft mt-2 border-t pt-2">
               <span className="text-text-disabled text-[11px]">AI가 작성한 정보로 실제와 다를 수 있어요</span>
@@ -1089,9 +1034,7 @@ function NearbyTab({ detail }: { detail: ReturnType<typeof useParkingDetailViewM
                       : 'bg-primary/10 text-primary active:bg-primary/20'
                 }`}
               >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z" />
-                </svg>
+                <IconThumbsUpLine className="size-[13px]" />
                 추천
               </button>
               <button
@@ -1106,9 +1049,7 @@ function NearbyTab({ detail }: { detail: ReturnType<typeof useParkingDetailViewM
                       : 'bg-bg-soft text-text-sub active:bg-bg-weak'
                 }`}
               >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" className="rotate-180">
-                  <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z" />
-                </svg>
+                <IconThumbsDownLine className="size-[13px]" />
                 비추천
               </button>
             </div>

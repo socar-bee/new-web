@@ -274,7 +274,7 @@ export default function AnimationSheet({
             {/* Handle — peek/half 상태에서만 노출, full 상태에서는 navigationBar가 대체 */}
             {snap !== 'full' && (
               <div className="flex justify-center pt-2 pb-1">
-                <span className="block h-1 w-9 rounded-full bg-gray-300" />
+                <span className="block h-1 w-9 rounded-full bg-neutral-300" />
               </div>
             )}
             {peek}

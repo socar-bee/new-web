@@ -1,5 +1,6 @@
 'use client'
 
+import { IconLocateLine, IconSearchLine } from '@socar-inc/modu-ui/icons'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -194,10 +195,7 @@ export default function MapView() {
       {/* Search Bar + Filter Chips */}
       <div className="absolute top-0 left-0 z-[var(--z-map-ui)] flex w-full flex-col gap-2.5 px-4 pt-2">
         <Link href="/search" className="rounded-10 bg-bg-white shadow-02 flex h-12 w-full items-center gap-2.5 px-4">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <circle cx="11" cy="11" r="7" stroke="#A3A3A3" strokeWidth="1.8" />
-            <path d="M16 16L20 20" stroke="#A3A3A3" strokeWidth="1.8" strokeLinecap="round" />
-          </svg>
+          <IconSearchLine className="text-icon-soft size-5" />
           <span className="text-text-soft" style={{ fontSize: 'var(--font-size-b4)' }}>
             목적지 또는 주소 검색
           </span>
@@ -234,11 +232,7 @@ export default function MapView() {
         onClick={() => vm.moveToCurrentLocation()}
         className="bg-bg-white shadow-02 absolute right-4 bottom-4 z-[var(--z-map-ui)] flex size-10 items-center justify-center rounded-full"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="4" fill="#0099FF" />
-          <circle cx="12" cy="12" r="8" stroke="#0099FF" strokeWidth="1.5" />
-          <path d="M12 2V4M12 20V22M2 12H4M20 12H22" stroke="#0099FF" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
+        <IconLocateLine className="text-primary size-5" />
       </button>
 
       {/* Loading — 정중앙 Lottie 애니메이션 */}

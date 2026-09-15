@@ -79,8 +79,8 @@ export function IcoHome({ active, ...props }: IconProps & { active: boolean }) {
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...props}>
       <path
         d="M3 10.5L12 3L21 10.5V20C21 20.5523 20.5523 21 20 21H15V15H9V21H4C3.44772 21 3 20.5523 3 20V10.5Z"
-        fill={active ? '#0099FF' : 'none'}
-        stroke={active ? '#0099FF' : '#222222'}
+        fill={active ? 'var(--color-primary)' : 'none'}
+        stroke={active ? 'var(--color-primary)' : 'var(--color-neutral-900)'}
         strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -94,15 +94,15 @@ export function IcoReviews({ active, ...props }: IconProps & { active: boolean }
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...props}>
       <path
         d="M12 3.25C7.72 3.25 4.25 6.77 4.25 11.1C4.25 12.55 4.64 13.94 5.38 15.15L4.46 18.77L8.15 18.02C9.28 18.66 10.6 19 12 19C16.28 19 19.75 15.48 19.75 11.15C19.75 6.82 16.28 3.25 12 3.25Z"
-        fill={active ? '#0099FF' : 'none'}
-        stroke={active ? '#0099FF' : '#222222'}
+        fill={active ? 'var(--color-primary)' : 'none'}
+        stroke={active ? 'var(--color-primary)' : 'var(--color-neutral-900)'}
         strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M8.25 9.35H15.75M8.25 12.65H13.6"
-        stroke={active ? 'white' : '#222222'}
+        stroke={active ? 'white' : 'var(--color-neutral-900)'}
         strokeWidth="1.8"
         strokeLinecap="round"
       />
@@ -115,8 +115,8 @@ export function IcoNearby({ active, ...props }: IconProps & { active: boolean })
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...props}>
       <path
         d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z"
-        fill={active ? '#0099FF' : 'none'}
-        stroke={active ? '#0099FF' : '#222222'}
+        fill={active ? 'var(--color-primary)' : 'none'}
+        stroke={active ? 'var(--color-primary)' : 'var(--color-neutral-900)'}
         strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -126,7 +126,7 @@ export function IcoNearby({ active, ...props }: IconProps & { active: boolean })
         cy="9"
         r="2.5"
         fill={active ? 'white' : 'none'}
-        stroke={active ? 'white' : '#222222'}
+        stroke={active ? 'white' : 'var(--color-neutral-900)'}
         strokeWidth="1.8"
       />
     </svg>
@@ -142,13 +142,13 @@ export function IcoTickets({ active, ...props }: IconProps & { active: boolean }
         width="15.5"
         height="16.5"
         rx="2.5"
-        fill={active ? '#0099FF' : 'none'}
-        stroke={active ? '#0099FF' : '#222222'}
+        fill={active ? 'var(--color-primary)' : 'none'}
+        stroke={active ? 'var(--color-primary)' : 'var(--color-neutral-900)'}
         strokeWidth="1.8"
       />
       <path
         d="M8.25 8.5H15.75M8.25 12H14.1M8.25 15.5H12.25"
-        stroke={active ? 'white' : '#222222'}
+        stroke={active ? 'white' : 'var(--color-neutral-900)'}
         strokeWidth="1.8"
         strokeLinecap="round"
       />
@@ -163,14 +163,14 @@ export function IcoMyPage({ active, ...props }: IconProps & { active: boolean })
         cx="12"
         cy="8"
         r="4"
-        fill={active ? '#0099FF' : 'none'}
-        stroke={active ? '#0099FF' : '#222222'}
+        fill={active ? 'var(--color-primary)' : 'none'}
+        stroke={active ? 'var(--color-primary)' : 'var(--color-neutral-900)'}
         strokeWidth="1.8"
       />
       <path
         d="M4 20C4 16.6863 6.68629 14 10 14H14C17.3137 14 20 16.6863 20 20V21H4V20Z"
-        fill={active ? '#0099FF' : 'none'}
-        stroke={active ? '#0099FF' : '#222222'}
+        fill={active ? 'var(--color-primary)' : 'none'}
+        stroke={active ? 'var(--color-primary)' : 'var(--color-neutral-900)'}
         strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"

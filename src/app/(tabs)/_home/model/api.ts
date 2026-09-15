@@ -7,14 +7,14 @@ const HERO_BANNERS: HeroBanner[] = [
     id: 'launch',
     title: '제휴 주차장\n사전예약 OPEN',
     subtitle: '원하는 시간에 미리 예약하세요',
-    background: 'linear-gradient(135deg, #0099FF 0%, #1A56DB 100%)',
+    background: 'linear-gradient(135deg, #0099ff 0%, #007acc 100%)',
     image: '/images/banner_launch.webp'
   },
   {
     id: 'discount',
     title: '오늘만! 주차권 30% 할인',
     subtitle: '강남 / 잠실 / 이태원 / 성수 핫플 주차장',
-    background: 'linear-gradient(135deg, #EBF4FF 0%, #DBEAFE 100%)',
+    background: 'linear-gradient(135deg, #e6f5ff 0%, #cceaff 100%)',
     image: '/images/banner_discount.webp'
   }
 ]
@@ -45,7 +45,7 @@ const RECOMMENDED_REGIONS: RecommendedRegion[] = [
     name: '강남·역삼',
     lat: 37.4979,
     lng: 127.0276,
-    gradient: 'linear-gradient(135deg, #FF8A65 0%, #FF5252 100%)',
+    gradient: 'linear-gradient(135deg, #ff8400 0%, #ff4c4c 100%)',
     emoji: '🏙️',
     image: '/images/region_gangnam.webp',
     badge: '인기'
@@ -55,7 +55,7 @@ const RECOMMENDED_REGIONS: RecommendedRegion[] = [
     name: '광화문·종로',
     lat: 37.5759,
     lng: 126.9769,
-    gradient: 'linear-gradient(135deg, #7C4DFF 0%, #448AFF 100%)',
+    gradient: 'linear-gradient(135deg, #af47ff 0%, #008ae6 100%)',
     emoji: '🏛️',
     image: '/images/region_gwanghwamun.webp'
   },
@@ -64,7 +64,7 @@ const RECOMMENDED_REGIONS: RecommendedRegion[] = [
     name: '잠실·송파',
     lat: 37.5133,
     lng: 127.1,
-    gradient: 'linear-gradient(135deg, #FFB74D 0%, #FF7043 100%)',
+    gradient: 'linear-gradient(135deg, #ffb14d 0%, #ff8400 100%)',
     emoji: '🎢',
     image: '/images/region_jamsil.webp',
     badge: '인기'
@@ -74,7 +74,7 @@ const RECOMMENDED_REGIONS: RecommendedRegion[] = [
     name: '명동·을지로',
     lat: 37.5634,
     lng: 126.9836,
-    gradient: 'linear-gradient(135deg, #F06292 0%, #C2185B 100%)',
+    gradient: 'linear-gradient(135deg, #ff7575 0%, #cc3d3d 100%)',
     emoji: '🛍️',
     image: '/images/region_myeongdong.webp'
   },
@@ -83,7 +83,7 @@ const RECOMMENDED_REGIONS: RecommendedRegion[] = [
     name: '이태원·한남',
     lat: 37.5341,
     lng: 126.9947,
-    gradient: 'linear-gradient(135deg, #4DB6AC 0%, #00897B 100%)',
+    gradient: 'linear-gradient(135deg, #00ccc8 0%, #009996 100%)',
     emoji: '🌃',
     image: '/images/region_itaewon.webp',
     badge: '핫플'
@@ -93,7 +93,7 @@ const RECOMMENDED_REGIONS: RecommendedRegion[] = [
     name: '여의도',
     lat: 37.5219,
     lng: 126.9245,
-    gradient: 'linear-gradient(135deg, #4FC3F7 0%, #1976D2 100%)',
+    gradient: 'linear-gradient(135deg, #33adff 0%, #007acc 100%)',
     emoji: '🏢',
     image: '/images/region_yeouido.webp'
   },
@@ -102,7 +102,7 @@ const RECOMMENDED_REGIONS: RecommendedRegion[] = [
     name: '성수',
     lat: 37.5447,
     lng: 127.0557,
-    gradient: 'linear-gradient(135deg, #BA68C8 0%, #6A1B9A 100%)',
+    gradient: 'linear-gradient(135deg, #c275ff 0%, #56148a 100%)',
     emoji: '☕',
     image: '/images/region_seongsu.webp',
     badge: '핫플'
@@ -112,7 +112,7 @@ const RECOMMENDED_REGIONS: RecommendedRegion[] = [
     name: '압구정·청담',
     lat: 37.5274,
     lng: 127.0286,
-    gradient: 'linear-gradient(135deg, #E57373 0%, #B71C1C 100%)',
+    gradient: 'linear-gradient(135deg, #ff7575 0%, #b33535 100%)',
     emoji: '💎',
     image: '/images/region_apgujeong.webp',
     badge: '인기'
@@ -124,7 +124,7 @@ const POPULAR_PARKINGS: PopularParking[] = [
     seq: 60001,
     name: '청량리역 주차장',
     shortLabel: '청량리역',
-    gradient: 'linear-gradient(135deg, #FF8A65 0%, #FF5252 100%)',
+    gradient: 'linear-gradient(135deg, #ff8400 0%, #ff4c4c 100%)',
     emoji: '🚉',
     keyword: '청량리역'
   },
@@ -132,7 +132,7 @@ const POPULAR_PARKINGS: PopularParking[] = [
     seq: 60002,
     name: '서울숲 주차장',
     shortLabel: '서울숲',
-    gradient: 'linear-gradient(135deg, #66BB6A 0%, #2E7D32 100%)',
+    gradient: 'linear-gradient(135deg, #00ccc8 0%, #009996 100%)',
     emoji: '🌳',
     keyword: '서울숲'
   },
@@ -140,7 +140,7 @@ const POPULAR_PARKINGS: PopularParking[] = [
     seq: 60003,
     name: '그랑서울 주차장',
     shortLabel: '그랑서울',
-    gradient: 'linear-gradient(135deg, #42A5F5 0%, #1565C0 100%)',
+    gradient: 'linear-gradient(135deg, #33adff 0%, #006bb3 100%)',
     emoji: '🏢',
     keyword: '그랑서울'
   },
@@ -148,7 +148,7 @@ const POPULAR_PARKINGS: PopularParking[] = [
     seq: 60004,
     name: '수원역 주차장',
     shortLabel: '수원역',
-    gradient: 'linear-gradient(135deg, #FFB74D 0%, #E65100 100%)',
+    gradient: 'linear-gradient(135deg, #ffb14d 0%, #d97000 100%)',
     emoji: '🚆',
     keyword: '수원역'
   },
@@ -156,7 +156,7 @@ const POPULAR_PARKINGS: PopularParking[] = [
     seq: 60005,
     name: '광명역 주차장',
     shortLabel: '광명역',
-    gradient: 'linear-gradient(135deg, #7C4DFF 0%, #311B92 100%)',
+    gradient: 'linear-gradient(135deg, #af47ff 0%, #3f0e65 100%)',
     emoji: '🚄',
     keyword: '광명역'
   },
@@ -164,7 +164,7 @@ const POPULAR_PARKINGS: PopularParking[] = [
     seq: 60006,
     name: '을지트윈타워',
     shortLabel: '을지로',
-    gradient: 'linear-gradient(135deg, #26C6DA 0%, #00838F 100%)',
+    gradient: 'linear-gradient(135deg, #00e6e1 0%, #009996 100%)',
     emoji: '🏙️',
     keyword: '을지트윈타워'
   },
@@ -172,7 +172,7 @@ const POPULAR_PARKINGS: PopularParking[] = [
     seq: 60007,
     name: '개화역 환승주차장',
     shortLabel: '개화역',
-    gradient: 'linear-gradient(135deg, #EC407A 0%, #880E4F 100%)',
+    gradient: 'linear-gradient(135deg, #ff7575 0%, #992e2e 100%)',
     emoji: '🚌',
     keyword: '개화역'
   }

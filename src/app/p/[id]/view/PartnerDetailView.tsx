@@ -1,5 +1,6 @@
 'use client'
 
+import { IconSearchLine } from '@socar-inc/modu-ui/icons'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -170,10 +171,7 @@ export default function PartnerDetailView({ seq, initialDetail }: PartnerDetailV
             href="/search"
             className="rounded-10 bg-bg-white shadow-02 flex h-12 w-full cursor-pointer items-center gap-2.5 px-4"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <circle cx="11" cy="11" r="7" stroke="#A3A3A3" strokeWidth="1.8" />
-              <path d="M16 16L20 20" stroke="#A3A3A3" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
+            <IconSearchLine className="text-icon-soft size-5" />
             <span className="text-text-soft" style={{ fontSize: 'var(--font-size-b4)' }}>
               목적지 또는 주소 검색
             </span>
