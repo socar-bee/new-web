@@ -157,11 +157,23 @@ export interface Platform {
 
 ## 결제 연결
 
-> **2026-09-16 갱신**: 1차 구현은 외부 pay 가 아니라 **자체 결제 화면 `/payment`** 로 연결한다
-> (`src/app/payment/` — payment-webview 브랜치의 DailyPaymentView 이관). 웹은 같은 탭 이동,
-> 앱은 `open-url/internal` 로 새 웹뷰. 진입값은 쿼리(`couponSeq`·`parkingDate`)만 싣고 금액의
-> 원본은 상세 조회다. 결제 API(payByPoint/Billkey/Webview)는 payload 계약 확정 전이라 완료 화면
-> 연결까지가 1차. 아래 외부 pay 연동 계약은 되돌아갈 때를 위해 보존한다.
+> **2026-09-16 갱신**: 결제는 **자체 결제 화면 `/payment`** 가 맡는다 — pay 서비스
+> (`modu-webview-monorepo/apps/pay`)의 **회원 partner 플로우 로직을 그대로 이관**했다
+> (`src/app/payment/model/{types,checkout,api}.ts`). 웹은 같은 탭 이동, 앱은 `open-url/internal` 새 웹뷰.
+>
+> - 진입: 쿼리 `couponSeq`·`parkingDate` (Pref 아님 — 우리 화면이 우리를 연다). 금액·상품명 원본은 상세 조회
+> - 조회: `GET /user/payment-config?price&parkinglotSeq` (카드·쿠폰·차량·포인트 — **쌍 미완성 시 호출 금지, 400**),
+>   `GET /ticket/{couponSeq}/daily-able-time` (requiresEntryTime 상품만)
+> - 금액: 상품가 → 쿠폰 차감(그 값이 포인트 상한) → 포인트 차감 → 0 하한. **`price`=최종액 / `totalPrice`=원가** — 바꿔 넣으면 원가 승인
+> - 실행: `POST /ticket/payment/{webview/{pgType}|billkey|point}` — 0원은 point, 카드는 billkey 즉시 승인,
+>   토스페이·네이버페이·휴대폰(mobilians)은 PG `redirectUrl` 이동. 시각은 전부 `toServerTime`(ISO-UTC)
+> - 결과: 즉시 승인도 `/payment/callback` 으로 합류. 앱은 Pref `payment/PaymentResult`(성공만, `{type:'p',seq}`) 기록
+>   후 닫기, 웹은 `/purchase/result`. 실패는 sessionStorage 토스트로 복귀
+> - 가드: 차량 확인 1회 되묻기, `uncertain`·`approved` 후 CTA 잠금 유지(더블탭=2차 결제), 프리셀렉트 1회 래치,
+>   재조회로 사라진 카드·쿠폰·차량은 즉시 비움
+> - 미이관: pay guest(전화인증) 플로우 — 웹 비로그인은 로그인 유도. 카드·차량 등록은 앱 딥링크(`cards/register` 등)
+>
+> 아래 외부 pay 연동 계약은 되돌아갈 때를 위해 보존한다.
 
 ### 앱 — Pref 기록 후 pay 를 새 웹뷰로
 

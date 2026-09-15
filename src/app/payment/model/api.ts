@@ -1,49 +1,68 @@
-// 주차권 결제 API (안드로이드 TicketApi 대응)
-// endpoint 패턴: /ticket/payment[/{kind}]/{method}
-//   kind: '' (일반) | 'monthly' | 'monthly/extension' | 'share'
-//   method: 'point' | 'billkey' | 'webview/{pgType}'
-// 원본: payment-webview 브랜치 src/api/payment.ts · src/api/user.ts (2026-09-16 이관)
+// 주차권 결제 API — pay 서비스 계약 이관 (partner flowType 한정)
+// 원본: modu-webview-monorepo/apps/pay/src/shared/api/{paymentExecution,paymentConfig,predictTime}/index.ts (2026-09-16 확인)
 import apiClient from '@/shared/lib/apiClient'
 
-import type { PaymentKind, PaymentWebResult, PgType } from './types'
-
-const BASE = '/ticket/payment'
-
-// TODO(구현): payload 타입 확정 (안드로이드 PaymentRequestPayload / TicketPaymentRepository 참조)
-//   타입별·결제수단별 요청 바디 매핑은 정기권(monthly) 한 바퀴부터 채운다.
-
-/** 포인트 결제 (결제금액 0) */
-export async function payByPoint(kind: PaymentKind, payload: unknown) {
-  const path = kind ? `${BASE}/${kind}/point` : `${BASE}/point`
-  const { data } = await apiClient.post(path, payload)
-  return data
-}
-
-/** 카드(빌링키) 결제 */
-export async function payByBillkey(kind: PaymentKind, payload: unknown) {
-  const path = kind ? `${BASE}/${kind}/billkey` : `${BASE}/billkey`
-  const { data } = await apiClient.post(path, payload)
-  return data
-}
-
-/** 웹뷰 PG 결제 (네이버페이/모빌리언스) */
-export async function payByWebview(kind: PaymentKind, pgType: PgType, payload: unknown) {
-  const path = kind ? `${BASE}/${kind}/webview/${pgType}` : `${BASE}/webview/${pgType}`
-  const { data } = await apiClient.post<PaymentWebResult>(path, payload)
-  return data
-}
-
-interface PointResult {
-  point: { totalAmount: number }
-}
+import type {
+  DailyAbleTime,
+  PaymentConfig,
+  PaymentConfigParams,
+  PaymentTicketBillkeyBody,
+  PaymentTicketPointBody,
+  PaymentTicketWebBody,
+  PgType
+} from './types'
 
 /**
- * 충전금(포인트) 잔액 조회 — GET /user/asset/point
- * 앱: 브릿지 인터셉터가 토큰을 붙인다. 웹: authStore 토큰을 인자로 받는다.
+ * 인증 헤더 — 앱은 브릿지 인터셉터가 붙인다(빈 옵션). 웹은 authStore 토큰을 넘긴다.
+ * 이미 Authorization 이 붙는 앱 경로에서는 accessToken 을 넘기지 않는다.
  */
-export async function fetchPointBalance(accessToken?: string | null): Promise<number> {
-  const { data } = await apiClient.get<{ data: PointResult }>('/user/asset/point', {
-    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined
+const withAuth = (accessToken?: string | null) =>
+  accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : undefined
+
+/**
+ * 결제 진입 통합 조회 — 카드·쿠폰·차량·포인트·최근수단·최근영수증이메일 한 방.
+ * `price` 와 `parkinglotSeq` 는 쌍이다 — 상세 조회가 끝나 둘 다 채워진 뒤에만 호출한다.
+ */
+export async function fetchPaymentConfig(
+  params: PaymentConfigParams,
+  accessToken?: string | null
+): Promise<PaymentConfig> {
+  const { data } = await apiClient.get<{ data: PaymentConfig }>('/user/payment-config', {
+    params,
+    ...withAuth(accessToken)
   })
-  return data.data.point.totalAmount
+  // SPA 폴백 HTML 200 방어 — point 가 없으면 정상 응답이 아니다
+  if (!data?.data?.point) throw new Error('payment-config 응답이 비어 있습니다')
+  return data.data
+}
+
+/** partner 입차 예정시간 슬롯 — GET /ticket/{couponSeq}/daily-able-time?parkingDate */
+export async function fetchDailyAbleTimes(
+  couponSeq: number,
+  parkingDate: string,
+  accessToken?: string | null
+): Promise<DailyAbleTime[]> {
+  const { data } = await apiClient.get<{ data: { times: DailyAbleTime[] } }>(`/ticket/${couponSeq}/daily-able-time`, {
+    params: { parkingDate },
+    ...withAuth(accessToken)
+  })
+  return data.data.times
+}
+
+// ── 결제 실행 — ticket variant (partner) ──
+// POST /ticket/payment/webview/{pgType} | /ticket/payment/billkey | /ticket/payment/point
+
+export async function executeWebviewPayment(pgType: PgType, body: PaymentTicketWebBody, accessToken?: string | null) {
+  const { data } = await apiClient.post(`/ticket/payment/webview/${pgType}`, body, withAuth(accessToken))
+  return data
+}
+
+export async function executeBillkeyPayment(body: PaymentTicketBillkeyBody, accessToken?: string | null) {
+  const { data } = await apiClient.post('/ticket/payment/billkey', body, withAuth(accessToken))
+  return data
+}
+
+export async function executePointPayment(body: PaymentTicketPointBody, accessToken?: string | null) {
+  const { data } = await apiClient.post('/ticket/payment/point', body, withAuth(accessToken))
+  return data
 }

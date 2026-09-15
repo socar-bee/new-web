@@ -55,8 +55,8 @@ test.describe('주차권 상세 — 당일권 (판매중)', () => {
     expect(url.searchParams.get('couponSeq')).toBe('9101')
     expect(url.searchParams.get('parkingDate')).toBe(seoulDate())
 
-    // 결제 화면이 실제로 그려진다
-    await expect(page.getByRole('heading', { name: '결제하기' })).toBeVisible()
+    // 비로그인 웹 진입 — 결제 화면이 로그인 유도로 응답한다
+    await expect(page.getByText('로그인이 필요해요')).toBeVisible()
   })
 
   test('이런 이용권은 어떠세요? — 현재권 제외 목록, 탭하면 해당 상세로 이동', async ({ page }) => {

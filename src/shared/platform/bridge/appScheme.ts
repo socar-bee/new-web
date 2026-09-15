@@ -3,7 +3,13 @@ const APP_SCHEME = 'parkingshare://'
 
 export const APP_DEEPLINK = {
   /** 가입·로그인 수단 바텀시트 (앱팀 제공, fc 395.7.0-fc260820SignupDeeplink.0) */
-  signupSheet: `${APP_SCHEME}signup-sheet`
+  signupSheet: `${APP_SCHEME}signup-sheet`,
+  /** 차량 등록 — 결제 웹뷰 위에 쌓이고, 복귀(onResume) 시 payment-config 를 재조회한다 */
+  registerCar: `${APP_SCHEME}cars/register`,
+  /** 결제카드 등록 */
+  registerCard: `${APP_SCHEME}cards/register`,
+  /** 충전금 충전 */
+  chargeVoucher: `${APP_SCHEME}voucher`
 } as const
 
 /**

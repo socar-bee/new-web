@@ -1,68 +1,134 @@
 import { expect, test } from '@playwright/test'
 
+import type { Page } from '@playwright/test'
+
 import { gotoHydrated } from './utils'
 
 const seoulDate = (offsetDays = 0) =>
   new Date(Date.now() + offsetDays * 86_400_000).toLocaleDateString('en-CA', { timeZone: 'Asia/Seoul' })
 
-test.describe('결제 화면 (/payment)', () => {
-  test('상세 조회가 화면의 원본이다 — 주차권 정보·금액이 실데이터로 그려진다', async ({ page }) => {
-    await gotoHydrated(page, `/payment?couponSeq=9101&parkingDate=${seoulDate()}`)
+/** 웹 회원 로그인 시드 — authStore(zustand persist) 스냅샷을 심는다 */
+const seedLogin = (page: Page) =>
+  page.addInitScript(() => {
+    localStorage.setItem(
+      'auth-storage',
+      JSON.stringify({
+        state: {
+          accessToken: 'e2e-access-token',
+          refreshToken: 'e2e-refresh-token',
+          userVerificationId: null,
+          isLoggedIn: true,
+          profile: null
+        },
+        version: 0
+      })
+    )
+  })
 
-    // 웹 헤더 제목
-    await expect(page.getByRole('heading', { name: '결제하기' })).toBeVisible()
+const entryUrl = () => `/payment?couponSeq=9101&parkingDate=${seoulDate()}`
 
-    // 1. 주차권 정보 — 진입 쿼리가 아닌 GET /ticket/{couponSeq} 응답 기준
-    await expect(page.getByText('평일 당일권')).toBeVisible()
-    await expect(page.getByText('서울숲디티타워 주차장')).toBeVisible()
-    await expect(page.getByText('00:00~23:59 이용가능')).toBeVisible()
+test.describe('결제 화면 — 비로그인 웹', () => {
+  test('로그인 유도 화면으로 막는다', async ({ page }) => {
+    await gotoHydrated(page, entryUrl())
 
-    // 섹션 골격 — 쿠폰 / 충전금 / 결제 금액 / 결제 수단 / 영수증
-    await expect(page.getByText('쿠폰', { exact: true })).toBeVisible()
-    await expect(page.getByText('충전금', { exact: true })).toBeVisible()
-    await expect(page.getByText('결제 금액')).toBeVisible()
-    await expect(page.getByText('결제 수단', { exact: true })).toBeVisible()
-    await expect(page.getByText('영수증(현금영수증) 신청')).toBeVisible()
-
-    // CTA — 상품 금액 그대로 (충전금 미사용)
-    await expect(page.getByRole('button', { name: '25,000원 결제하기' })).toBeEnabled()
+    await expect(page.getByText('로그인이 필요해요')).toBeVisible()
+    await expect(page.getByRole('button', { name: '로그인하기' })).toBeEnabled()
   })
 
   test('couponSeq 없이 진입하면 잘못된 접근으로 막는다', async ({ page }) => {
     await gotoHydrated(page, '/payment')
 
     await expect(page.getByText('잘못된 접근입니다.')).toBeVisible()
-    await expect(page.getByRole('button', { name: '닫기' })).toBeVisible()
+  })
+})
+
+test.describe('결제 화면 — 회원 (pay 계약)', () => {
+  test.beforeEach(async ({ page }) => {
+    await seedLogin(page)
   })
 
-  test('결제 수단 — 다른 결제 수단을 고르면 네이버페이/휴대폰 칩이 나온다', async ({ page }) => {
-    await gotoHydrated(page, `/payment?couponSeq=9101&parkingDate=${seoulDate()}`)
+  test('상세·payment-config 실데이터로 그려진다', async ({ page }) => {
+    await gotoHydrated(page, entryUrl())
 
-    // 기본: 신용/체크카드 + 새 카드 추가 영역
-    await expect(page.getByText('+ 새 카드 추가')).toBeVisible()
+    // 상품 정보 — GET /ticket/{couponSeq} 가 원본
+    await expect(page.getByText('평일 당일권')).toBeVisible()
+    await expect(page.getByText('서울숲디티타워 주차장')).toBeVisible()
 
-    await page.getByText('다른 결제 수단').click()
-    await expect(page.getByRole('button', { name: '네이버페이' })).toBeVisible()
-    await expect(page.getByRole('button', { name: '휴대폰' })).toBeVisible()
-    await expect(page.getByText('+ 새 카드 추가')).toHaveCount(0)
+    // 입차 예정시간 슬롯 — GET /ticket/{couponSeq}/daily-able-time
+    await expect(page.getByRole('button', { name: '10:00 ~ 10:30' })).toBeVisible()
+
+    // 차량 — payment-config 의 기본 차량이 프리셀렉트
+    await expect(page.getByRole('button', { name: '12가3456' })).toBeVisible()
+
+    // 쿠폰 — couponPrice=null 쿠폰은 적용 불가
+    await expect(page.getByText('신규가입 할인')).toBeVisible()
+    await expect(page.getByText('-2,000원')).toBeVisible()
+    await expect(page.getByText('적용 불가', { exact: true })).toBeVisible()
+
+    // 충전금 잔액
+    await expect(page.getByText('보유 1,500P')).toBeVisible()
+
+    // 결제 정보 — 상품가 그대로
+    await expect(page.getByRole('button', { name: '25,000원 결제하기' })).toBeVisible()
   })
 
-  test('비로그인 웹 — 충전금 잔액 0, 모두사용 비활성', async ({ page }) => {
-    await gotoHydrated(page, `/payment?couponSeq=9101&parkingDate=${seoulDate()}`)
+  test('입차시간이 채워져야 CTA 가 열린다', async ({ page }) => {
+    await gotoHydrated(page, entryUrl())
 
-    await expect(page.getByText('보유 0P')).toBeVisible()
-    await expect(page.getByRole('button', { name: '모두사용' })).toBeDisabled()
+    const cta = page.getByRole('button', { name: /원 결제하기/ })
+    await expect(cta).toBeDisabled()
+
+    await page.getByRole('button', { name: '10:00 ~ 10:30' }).click()
+    await expect(cta).toBeEnabled()
   })
 
-  test('결제하기 → 결제 완료 화면으로 이어진다', async ({ page }) => {
-    await gotoHydrated(page, `/payment?couponSeq=9101&parkingDate=${seoulDate()}`)
+  test('쿠폰·충전금 — 상품가 → 쿠폰 차감 → 포인트 차감 순서로 금액이 갱신된다', async ({ page }) => {
+    await gotoHydrated(page, entryUrl())
+
+    await page.getByText('신규가입 할인').click()
+    await expect(page.getByRole('button', { name: '23,000원 결제하기' })).toBeVisible()
+
+    await page.getByRole('button', { name: '모두사용' }).click()
+    await expect(page.getByRole('button', { name: '21,500원 결제하기' })).toBeVisible()
+  })
+
+  test('카드(빌링키) — 차량 확인 1회 후 즉시 승인 → 완료 화면', async ({ page }) => {
+    await gotoHydrated(page, entryUrl())
+
+    await page.getByRole('button', { name: '10:00 ~ 10:30' }).click()
+    await page.getByText('신용/체크카드').click()
+    // 카드 결제 선택 시 첫 카드가 자동 선택된다
+    await expect(page.getByText('KB국민')).toBeVisible()
 
     await page.getByRole('button', { name: '25,000원 결제하기' }).click()
 
+    // 결제 전 차량번호 재확인 (pay carNotConfirmed 규칙)
+    await expect(page.getByText('차량번호를 확인해주세요')).toBeVisible()
+    await expect(page.getByText('12가3456 차량으로 결제할까요?')).toBeVisible()
+    await page.getByRole('button', { name: '결제하기', exact: true }).click()
+
+    // 즉시 승인 → /payment/callback 합류 → 완료 화면
     await page.waitForURL(/\/purchase\/result\?/)
-    expect(new URL(page.url()).searchParams.get('couponSeq')).toBe('9101')
+    const url = new URL(page.url())
+    expect(url.searchParams.get('type')).toBe('p')
+    expect(url.searchParams.get('seq')).toBe('90001')
     await expect(page.getByText('결제가 완료되었어요')).toBeVisible()
-    await expect(page.getByRole('button', { name: '주차권 상세 보기' })).toBeVisible()
+  })
+
+  test('네이버페이(PG) — redirectUrl 왕복 후 완료 화면', async ({ page }) => {
+    await gotoHydrated(page, entryUrl())
+
+    await page.getByRole('button', { name: '10:00 ~ 10:30' }).click()
+    await page.getByText('다른 결제 수단').click()
+    await page.getByRole('button', { name: '네이버페이' }).click()
+
+    await page.getByRole('button', { name: '25,000원 결제하기' }).click()
+    await page.getByRole('button', { name: '결제하기', exact: true }).click()
+
+    // mock 이 PG·BE 302 를 생략하고 returnUrl(=/payment/callback)로 성공 복귀시킨다
+    await page.waitForURL(/\/purchase\/result\?/)
+    expect(new URL(page.url()).searchParams.get('seq')).toBe('90003')
+    await expect(page.getByText('결제가 완료되었어요')).toBeVisible()
   })
 })
 
@@ -72,11 +138,11 @@ test.describe('결제 화면 — 앱 웹뷰', () => {
       'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36 ParkingShare/400.0.0'
   })
 
-  test('앱 진입 — 웹 헤더는 숨고 충전금 잔액을 브릿지 인증으로 조회한다', async ({ page }) => {
-    await gotoHydrated(page, `/payment?couponSeq=9101&parkingDate=${seoulDate()}`)
+  test('웹 헤더는 숨고 브릿지 인증 전제로 payment-config 를 조회한다', async ({ page }) => {
+    await gotoHydrated(page, entryUrl())
 
     await expect(page.locator('header[data-web-only]')).toBeHidden()
-    // 앱 판정이면 (브릿지 인터셉터 전제로) 잔액 조회가 돈다 — mock 1,500P
+    // 앱 판정이면 토큰 시드 없이도 조회가 돈다 (브릿지 인터셉터 전제, mock 은 인증 미검사)
     await expect(page.getByText('보유 1,500P')).toBeVisible()
   })
 })
