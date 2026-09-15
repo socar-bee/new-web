@@ -14,9 +14,10 @@ pnpm build        # type-check + next build
 pnpm type-check   # tsc --noEmit
 pnpm lint         # ESLint
 pnpm format       # Prettier
+pnpm test:e2e     # Playwright E2E (mock API 4010 + dev 4300 자동 기동)
 ```
 
-테스트 러너 미설정. 커밋 전 lint-staged hook이 `eslint --fix` + `prettier --write` 자동 실행. TypeScript 편집 후 `pnpm eslint src --ext .ts,.tsx --fix`로 import 순서 정리.
+커밋 전 lint-staged hook이 `eslint --fix` + `prettier --write` 자동 실행. TypeScript 편집 후 `pnpm eslint src --ext .ts,.tsx --fix`로 import 순서 정리.
 
 ## 라우트 구조 (MVVM)
 
@@ -49,6 +50,8 @@ src/app/<route>/
 - **Hydration mismatch**: `useState` 초기값에서 `localStorage`/`window` 읽지 말 것 → `useEffect` 마운트 후 동기화. ([05-ui-patterns.md](./docs/05-ui-patterns.md#hydration-안전-패턴))
 - **시간필터 누락**: 사전예약 endpoint는 `parkingDate`/`durationId` 필수 — query string으로 carry, queryKey에 포함. ([02-api-layer.md](./docs/02-api-layer.md#parkingdate--durationid-query-규칙))
 - **잘못된 axios client**: 사전예약(advance purchase) preview는 반드시 `advanceApiClient` 사용. ([02-api-layer.md](./docs/02-api-layer.md))
+- **dev 서버는 `localhost` 로만 접근**: `127.0.0.1` 은 Next dev 가 `/_next` 를 cross-origin 차단 → 에러 없이 hydration 만 죽어 모든 클릭 무반응. ([07-app-webview.md](./docs/07-app-webview.md#함정))
+- **앱 웹뷰 판정은 UA 한 가지로**: `ParkingShare/\d` → `<html data-platform="app">`. 웹 전용 크롬은 `data-web-only`. ([07-app-webview.md](./docs/07-app-webview.md))
 
 ## 패키지 매니저 / Node
 

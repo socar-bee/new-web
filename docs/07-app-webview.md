@@ -1,6 +1,6 @@
 # 07 · 앱 웹뷰 겸용 구조 (웹브릿지)
 
-> 상태: **구현 전 설계** (2026-09-15). 이 문서를 기준으로 구현을 시작한다. 구현하면서 함정이 나오면 여기에 등재한다.
+> 상태: **1차 구현 반영** (2026-09-16). `src/shared/platform/` 골격 · 브릿지 설치/인증/상단바 · `/t/[id]` 플랫폼 전환(안드로이드 기준 재구성) · `/p/[id]` viewmodel 연결 · `/purchase/result` 스캐폴드 · E2E(`e2e/`)까지 반영. 남은 것: 실기기 검증(구현 순서 8), `/p/[id]` 시트 상단바 완전 전환, 내주차권, 서드파티 스크립트 제한.
 
 ## 한 줄 요약
 
@@ -232,6 +232,12 @@ useEffect(() => platform.onReturn(() => refetch()), [platform, refetch])
 - **Android 상단바는 `actionUrl` 을 무시한다.** Android 는 `jsFunction`(window 전역 함수 이름), iOS 는 `actionUrl` 로 분기한다. 전역 함수는 브릿지 설치 여부와 무관하게 먼저 등록한다 — 등록이 풀린 틈에 탭이 삼켜진다.
 - **앱 기본 아이콘 위임은 간헐적으로만 그려진다.** `iconUrl` 로 72px(24pt @3x) PNG 를 넘긴다.
 - 상단바 구성은 `retentionSite` 밖 도메인으로 나갔다 오면 파기된다. `pageshow`(`persisted`)·`onResume` 에서 다시 건다.
+
+**E2E · 로컬 검증**
+
+- **`127.0.0.1` 로 dev 서버에 접근하면 hydration 이 통째로 죽는다.** Next 16 dev 가 `/_next/*` 요청을 cross-origin 으로 차단(`allowedDevOrigins`)하는데, HTML 은 200 으로 내려와서 **화면은 멀쩡히 보이고 에러도 없다** — React 만 조용히 부팅 실패해 모든 클릭이 무반응. 반드시 `localhost` 로 접근한다 (`playwright.config.ts`).
+- E2E 는 SSR 도 mock 을 타야 해서 `page.route` 가 아니라 **mock API 서버**(`e2e/mock-server.mjs`) 위에 dev 서버를 띄운다. `NEXT_PUBLIC_*` 는 webServer env 로 주입.
+- SSR HTML 은 hydration 전에도 보여서 바로 클릭하면 이벤트가 유실된다 — `PlatformProvider` 가 다는 `html[data-hydrated]` 를 기다린다 (`e2e/utils.ts` `gotoHydrated`).
 
 **웹뷰 제약**
 
