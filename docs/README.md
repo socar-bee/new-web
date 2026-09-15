@@ -12,6 +12,7 @@
 | 04  | [reservation-flow.md](./04-reservation-flow.md) | 제휴주차장 예매 플로우 (`/p/[id]`, `/parking/[id]`, `/payment`), 티켓 list/detail, `ParkingDetailSheet` 스크롤-스파이 |
 | 05  | [ui-patterns.md](./05-ui-patterns.md)           | `AnimationSheet`(3-snap), `DockBar`/아이콘, hydration 안전 패턴, Lottie 로더                                          |
 | 06  | [conventions.md](./06-conventions.md)           | 네이밍, import 순서, 커밋 스타일, ESLint/Prettier 규칙                                                                |
+| 07  | [app-webview.md](./07-app-webview.md)           | 앱 웹뷰 겸용 구조 — UA 환경 판정, `usePlatform` 어댑터, 웹브릿지 인증·상단바, 결제 연결 (구현 전 설계)                |
 
 ## 문서 갱신 원칙
 

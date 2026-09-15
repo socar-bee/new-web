@@ -41,6 +41,7 @@ src/app/<route>/
 | 04  | [docs/04-reservation-flow.md](./docs/04-reservation-flow.md) | 제휴주차장 예매 플로우, ticket list/detail, ParkingDetailSheet 스크롤-스파이                   |
 | 05  | [docs/05-ui-patterns.md](./docs/05-ui-patterns.md)           | AnimationSheet 3-snap, DockBar/아이콘, **hydration 안전 패턴**, Lottie 로더                    |
 | 06  | [docs/06-conventions.md](./docs/06-conventions.md)           | 네이밍/import 순서/커밋 스타일/ESLint·Prettier                                                 |
+| 07  | [docs/07-app-webview.md](./docs/07-app-webview.md)           | 앱 웹뷰 겸용 구조 — UA 판정, `usePlatform` 어댑터, 웹브릿지, 결제 연결 (설계)                  |
 
 ## 핵심 함정 모음 (긴급 참고)
 
