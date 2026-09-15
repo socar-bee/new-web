@@ -31,10 +31,9 @@ const server = createServer((req, res) => {
     return
   }
 
-  // pay 비회원 진입 목적지 (PAY_HOST mock) — 결제 진입 URL 검증용
-  if (pathname === '/guest') {
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
-    res.end('<!doctype html><html><body><h1>pay guest</h1></body></html>')
+  // 충전금(포인트) 잔액 — 결제 화면이 인증 수단이 있을 때 조회
+  if (pathname === '/user/asset/point') {
+    json(res, { data: { point: { totalAmount: 1500 } } })
     return
   }
 

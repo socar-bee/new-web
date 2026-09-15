@@ -1,15 +1,17 @@
 import type { CheckoutTicket } from '@/shared/platform/types'
 import type { ModuWebBridgeClient } from '@socar-inc/modu-web-bridge'
 
+import { paymentEntryUrl } from '@/app/payment/routes'
 import { internalUrlDeeplink, openAppScheme } from '@/shared/platform/bridge/appScheme'
-import { putPaymentEntry } from '@/shared/platform/bridge/paymentEntry'
-import { payHost, webCheckout, webOnReturn } from '@/shared/platform/web'
+import { webCheckout, webOnReturn } from '@/shared/platform/web'
 
 /**
- * 앱 결제 — Pref `payment/PaymentEntry` 기록 후 pay 를 **새 웹뷰**로 연다.
- * 같은 웹뷰로 이동하면 pay 가 결제 후 웹뷰를 닫을 때 이 상세 화면까지 같이 닫힌다.
+ * 앱 결제 — 자체 결제 화면(`/payment`)을 **새 웹뷰**로 연다.
+ * 같은 웹뷰로 이동하면 결제 화면이 닫힐 때 이 상세 화면까지 같이 닫힌다.
+ * 진입값은 쿼리로 싣는다 — 외부 pay 용 Pref `payment/PaymentEntry` 계약은
+ * `bridge/paymentEntry.ts` 에 보존 (외부 pay 연동으로 돌아갈 때 사용).
  *
- * UA 는 앱인데 브릿지가 없으면 구버전 앱이다 → 웹 비회원 결제로 폴백한다.
+ * UA 는 앱인데 브릿지가 없으면 구버전 앱이다 → 같은 탭 이동으로 폴백한다.
  */
 export async function appCheckout(bridge: ModuWebBridgeClient | null, ticket: CheckoutTicket) {
   if (!bridge?.isAvailable()) {
@@ -17,14 +19,8 @@ export async function appCheckout(bridge: ModuWebBridgeClient | null, ticket: Ch
     return
   }
 
-  const host = payHost()
-  if (!host) {
-    console.error('NEXT_PUBLIC_PAY_HOST 미설정 — 결제 진입을 진행할 수 없습니다')
-    return
-  }
-
-  await putPaymentEntry(bridge, { flowType: 'partner', ...ticket })
-  openAppScheme(internalUrlDeeplink(host))
+  const paymentUrl = `${window.location.origin}${paymentEntryUrl(ticket.couponSeq, ticket.parkingDate)}`
+  openAppScheme(internalUrlDeeplink(paymentUrl))
 }
 
 /**

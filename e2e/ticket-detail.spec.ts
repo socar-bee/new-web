@@ -41,20 +41,22 @@ test.describe('주차권 상세 — 당일권 (판매중)', () => {
     await expect(cells.nth(1)).toHaveAttribute('aria-pressed', 'true')
   })
 
-  test('CTA 「25,000원 결제하기」 → pay 비회원 경로로 이동한다', async ({ page }) => {
+  test('CTA 「25,000원 결제하기」 → 자체 결제 화면(/payment)으로 이동한다', async ({ page }) => {
     await gotoHydrated(page, `/t/9101?parkingDate=${seoulDate()}`)
 
     const cta = page.getByRole('button', { name: '25,000원 결제하기' })
     await expect(cta).toBeEnabled()
     await cta.click()
 
-    // {PAY_HOST}/guest?couponSeq&parkingDate&guestSeq — 같은 탭 이동, 토큰 없음
-    await page.waitForURL(/\/guest\?/)
+    // /payment?couponSeq&parkingDate — 조회 키만 싣는다 (금액의 원본은 상세 조회)
+    await page.waitForURL(/\/payment\?/)
     const url = new URL(page.url())
-    expect(url.pathname).toBe('/guest')
+    expect(url.pathname).toBe('/payment')
     expect(url.searchParams.get('couponSeq')).toBe('9101')
     expect(url.searchParams.get('parkingDate')).toBe(seoulDate())
-    expect(url.searchParams.get('guestSeq')).toBe('0')
+
+    // 결제 화면이 실제로 그려진다
+    await expect(page.getByRole('heading', { name: '결제하기' })).toBeVisible()
   })
 
   test('이런 이용권은 어떠세요? — 현재권 제외 목록, 탭하면 해당 상세로 이동', async ({ page }) => {

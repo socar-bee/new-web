@@ -157,6 +157,12 @@ export interface Platform {
 
 ## 결제 연결
 
+> **2026-09-16 갱신**: 1차 구현은 외부 pay 가 아니라 **자체 결제 화면 `/payment`** 로 연결한다
+> (`src/app/payment/` — payment-webview 브랜치의 DailyPaymentView 이관). 웹은 같은 탭 이동,
+> 앱은 `open-url/internal` 로 새 웹뷰. 진입값은 쿼리(`couponSeq`·`parkingDate`)만 싣고 금액의
+> 원본은 상세 조회다. 결제 API(payByPoint/Billkey/Webview)는 payload 계약 확정 전이라 완료 화면
+> 연결까지가 1차. 아래 외부 pay 연동 계약은 되돌아갈 때를 위해 보존한다.
+
 ### 앱 — Pref 기록 후 pay 를 새 웹뷰로
 
 ```ts

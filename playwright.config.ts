@@ -35,8 +35,7 @@ export default defineConfig({
       timeout: 120_000,
       env: {
         APP_ENV: 'local',
-        NEXT_PUBLIC_MODU_API_HOST: MOCK_HOST,
-        NEXT_PUBLIC_PAY_HOST: MOCK_HOST
+        NEXT_PUBLIC_MODU_API_HOST: MOCK_HOST
       }
     }
   ]
