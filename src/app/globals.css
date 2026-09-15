@@ -2,8 +2,10 @@
 
 @theme {
   /* ═══════════════════════════════════════════════════════
-     MODO Design System — Foundation Tokens
-     Source: Figma "모두의주차장 디자인 시스템 통합"
+     MODU Design System — Foundation Tokens
+     Source: @socar-inc/modu-ui@1.1.0 styles.css (--color-modu-*)
+     시맨틱 토큰은 modu-ui CSS 변수를 alias 한다 — 값의 원본은 modu-ui 이고,
+     fallback hex 는 같은 값의 사본이다 (modu-ui styles.css 미로딩 환경 대비).
      ═══════════════════════════════════════════════════════ */
 
   /* ─── Font Family ─── */
@@ -23,7 +25,7 @@
   --color-neutral-400: #a3a3a3;
   --color-neutral-300: #d1d1d1;
   --color-neutral-200: #ebebeb;
-  --color-neutral-100: #f7f7f7;
+  --color-neutral-100: #f5f5f5;
   --color-neutral-50: #f7f7f7;
   --color-neutral-0: #ffffff;
 
@@ -81,122 +83,125 @@
   --color-red-50: #fff1f1;
 
   /* ─── Yellow ─── */
-  --color-yellow-950: #7a6d33;
-  --color-yellow-900: #998940;
-  --color-yellow-800: #b3a04b;
-  --color-yellow-700: #ccb756;
-  --color-yellow-600: #e6ce60;
-  --color-yellow-500: #ffe56b;
-  --color-yellow-400: #ffe978;
-  --color-yellow-300: #ffed85;
-  --color-yellow-200: #fff3ad;
-  --color-yellow-100: #fff9d6;
-  --color-yellow-50: #fffdf2;
+  --color-yellow-950: #403100;
+  --color-yellow-900: #664f00;
+  --color-yellow-800: #8c6d00;
+  --color-yellow-700: #b38b00;
+  --color-yellow-600: #d9a900;
+  --color-yellow-500: #ffc600;
+  --color-yellow-400: #ffd31a;
+  --color-yellow-300: #ffe04d;
+  --color-yellow-200: #ffed80;
+  --color-yellow-100: #fff4b3;
+  --color-yellow-50: #fffbe6;
 
   /* ─── Orange ─── */
-  --color-orange-950: #7a4a1a;
-  --color-orange-900: #995d21;
-  --color-orange-800: #b37027;
-  --color-orange-700: #cc832e;
-  --color-orange-600: #e69634;
-  --color-orange-500: #ffa93b;
-  --color-orange-400: #ffba62;
-  --color-orange-300: #ffcb8a;
-  --color-orange-200: #ffddb1;
-  --color-orange-100: #ffeed8;
-  --color-orange-50: #fff7ec;
+  --color-orange-950: #402100;
+  --color-orange-900: #663400;
+  --color-orange-800: #8c4800;
+  --color-orange-700: #b35c00;
+  --color-orange-600: #d97000;
+  --color-orange-500: #ff8400;
+  --color-orange-400: #ff9b1a;
+  --color-orange-300: #ffb14d;
+  --color-orange-200: #ffc680;
+  --color-orange-100: #ffe0b3;
+  --color-orange-50: #fff3e6;
 
   /* ─── Purple ─── */
-  --color-purple-950: #7200fa;
-  --color-purple-900: #8f00d9;
-  --color-purple-800: #a700e3;
-  --color-purple-700: #bf00cc;
-  --color-purple-600: #d700e6;
-  --color-purple-500: #ef00ff;
-  --color-purple-400: #ee33ff;
-  --color-purple-300: #f166ff;
-  --color-purple-200: #f599ff;
-  --color-purple-100: #faccff;
-  --color-purple-50: #fde6ff;
+  --color-purple-950: #280940;
+  --color-purple-900: #3f0e65;
+  --color-purple-800: #56148a;
+  --color-purple-700: #6d19af;
+  --color-purple-600: #841fd4;
+  --color-purple-500: #9b24f9;
+  --color-purple-400: #af47ff;
+  --color-purple-300: #c275ff;
+  --color-purple-200: #d6a3ff;
+  --color-purple-100: #ebd2ff;
+  --color-purple-50: #f5e9ff;
 
   /* ═══════════════════════════════════════════════════════
      2. Semantic Color Tokens (Light Mode)
      ═══════════════════════════════════════════════════════ */
 
   /* ─── Primary (primary/) ─── */
-  --color-primary: #0099ff;
-  --color-primary-dark: #006bb3;
-  --color-primary-darker: #007acc;
-  --color-primary-light: #cceaff;
-  --color-primary-lighter: #e6f5ff;
+  --color-primary: var(--color-modu-primary-base, #0099ff);
+  --color-primary-dark: var(--color-modu-primary-dark, #006bb3);
+  --color-primary-darker: var(--color-modu-primary-darker, #007acc);
+  --color-primary-light: var(--color-modu-primary-light, #cceaff);
+  --color-primary-lighter: var(--color-modu-primary-lighter, #e6f5ff);
 
   /* ─── Static (static/) ─── */
-  --color-static-black: #171717;
-  --color-static-white: #ffffff;
+  --color-static-black: var(--color-modu-static-black, #171717);
+  --color-static-white: var(--color-modu-static-white, #ffffff);
 
   /* ─── Background (bg/) ─── */
-  --color-bg-strong: #171717;
-  --color-bg-surface: #262626;
-  --color-bg-sub: #d1d1d1;
-  --color-bg-soft: #ebebeb;
-  --color-bg-weak: #f7f7f7;
-  --color-bg-white: #ffffff;
+  --color-bg-strong: var(--color-modu-bg-strong-950, #171717);
+  --color-bg-surface: var(--color-modu-bg-surface-800, #262626);
+  --color-bg-sub: var(--color-modu-bg-sub-300, #d1d1d1);
+  --color-bg-soft: var(--color-modu-bg-soft-200, #ebebeb);
+  --color-bg-weak: var(--color-modu-bg-weak-50, #f7f7f7);
+  --color-bg-white: var(--color-modu-bg-weak-0, #ffffff);
 
   /* ─── Text (text/) ─── */
-  --color-text-strong: #171717;
-  --color-text-sub: #5c5c5c;
-  --color-text-soft: #a3a3a3;
-  --color-text-disabled: #d1d1d1;
-  --color-text-white: #ffffff;
+  --color-text-strong: var(--color-modu-text-strong-950, #171717);
+  --color-text-sub: var(--color-modu-text-sub-600, #5c5c5c);
+  --color-text-soft: var(--color-modu-text-soft-400, #a3a3a3);
+  --color-text-disabled: var(--color-modu-text-disabled-300, #d1d1d1);
+  --color-text-white: var(--color-modu-text-white-0, #ffffff);
 
   /* ─── Stroke (stroke/) ─── */
-  --color-stroke-strong: #171717;
-  --color-stroke-sub: #d1d1d1;
-  --color-stroke-soft: #ebebeb;
-  --color-stroke-disabled: #ffffff;
+  --color-stroke-strong: var(--color-modu-stroke-strong-950, #171717);
+  --color-stroke-sub: var(--color-modu-stroke-sub-300, #d1d1d1);
+  --color-stroke-soft: var(--color-modu-stroke-soft-200, #ebebeb);
+  --color-stroke-disabled: var(--color-modu-stroke-disabled-0, #ffffff);
 
   /* ─── Icon (icon/) ─── */
-  --color-icon-strong: #171717;
-  --color-icon-sub: #5c5c5c;
-  --color-icon-soft: #a3a3a3;
-  --color-icon-disabled: #d1d1d1;
-  --color-icon-white: #ffffff;
+  --color-icon-strong: var(--color-modu-icon-strong-950, #171717);
+  --color-icon-sub: var(--color-modu-icon-sub-600, #5c5c5c);
+  --color-icon-soft: var(--color-modu-icon-soft-400, #a3a3a3);
+  --color-icon-disabled: var(--color-modu-icon-disabled-300, #d1d1d1);
+  --color-icon-white: var(--color-modu-icon-white-0, #ffffff);
 
   /* ─── State / Faded (state/faded/) ─── */
-  --color-faded-dark: #262626;
-  --color-faded-base: #7b7b7b;
-  --color-faded-light: #ebebeb;
-  --color-faded-lighter: #f7f7f7;
+  --color-faded-dark: var(--color-modu-faded-dark, #262626);
+  --color-faded-base: var(--color-modu-faded-base, #7b7b7b);
+  --color-faded-light: var(--color-modu-faded-light, #ebebeb);
+  --color-faded-lighter: var(--color-modu-faded-lighter, #f5f5f5);
 
   /* ─── State / Information (state/information/) ─── */
-  --color-information-dark: #003d66;
-  --color-information-base: #0099ff;
-  --color-information-light: #99d6ff;
-  --color-information-lighter: #e6f5ff;
+  --color-information-dark: var(--color-modu-information-dark, #003d66);
+  --color-information-base: var(--color-modu-information-base, #0099ff);
+  --color-information-light: var(--color-modu-information-light, #99d6ff);
+  --color-information-lighter: var(--color-modu-information-lighter, #e6f5ff);
 
   /* ─── State / Error (state/error/) ─── */
-  --color-error-dark: #7a2525;
-  --color-error-base: #ff4c4c;
-  --color-error-light: #ffc5c5;
-  --color-error-lighter: #fff1f1;
+  --color-error-dark: var(--color-modu-error-dark, #7a2525);
+  --color-error-base: var(--color-modu-error-base, #ff4c4c);
+  --color-error-light: var(--color-modu-error-light, #ffc5c5);
+  --color-error-lighter: var(--color-modu-error-lighter, #fff1f1);
 
   /* ─── State / Stable (state/stable/) ─── */
-  --color-stable-dark: #004d4b;
-  --color-stable-base: #00fffa;
-  --color-stable-light: #99fff9;
-  --color-stable-lighter: #e6ffff;
+  --color-stable-dark: var(--color-modu-stable-dark, #004d4b);
+  --color-stable-base: var(--color-modu-stable-base, #00fffa);
+  --color-stable-light: var(--color-modu-stable-light, #99fff9);
+  --color-stable-lighter: var(--color-modu-stable-lighter, #e6ffff);
 
-  /* ─── State / Caution (state/caution/) ─── */
-  --color-caution-dark: #7a4a1a;
-  --color-caution-base: #ffa93b;
-  --color-caution-light: #ffddb1;
-  --color-caution-lighter: #fff7ec;
+  /* ─── State / Caution (state/caution/) — modu-ui 기준 yellow 계열 ─── */
+  --color-caution-dark: var(--color-modu-caution-dark, #8c6d00);
+  --color-caution-base: var(--color-modu-caution-base, #ffc600);
+  --color-caution-light: var(--color-modu-caution-light, #ffed80);
+  --color-caution-lighter: var(--color-modu-caution-lighter, #fffbe6);
 
   /* ─── State / Highlighted (state/highlighted/) ─── */
-  --color-highlighted-dark: #7200fa;
-  --color-highlighted-base: #ef00ff;
-  --color-highlighted-light: #f599ff;
-  --color-highlighted-lighter: #fde6ff;
+  --color-highlighted-dark: var(--color-modu-highlighted-dark, #280940);
+  --color-highlighted-base: var(--color-modu-highlighted-base, #9b24f9);
+  --color-highlighted-light: var(--color-modu-highlighted-light, #d6a3ff);
+  --color-highlighted-lighter: var(--color-modu-highlighted-lighter, #f5e9ff);
+
+  /* ─── Overlay ─── */
+  --color-overlay-gray: var(--color-modu-overlay-gray, #000000bf);
 
   /* ═══════════════════════════════════════════════════════
      3. Typography
@@ -374,6 +379,13 @@ body::-webkit-scrollbar {
   --safe-area-right: env(safe-area-inset-right);
   /* DockBar mount 시 ResizeObserver가 실측값으로 덮어씀 */
   --dock-height: 0px;
+}
+
+/* ─── 앱 웹뷰 ───
+   인라인 판정 스크립트가 <html data-platform="app"> 을 단다 (src/shared/platform/detect.ts).
+   웹 전용 크롬(화면 안 헤더·DockBar)은 data-web-only 로 표시해 앱에서 숨긴다. */
+html[data-platform='app'] [data-web-only] {
+  display: none;
 }
 
 /* ─── Utilities ─── */

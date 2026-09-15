@@ -36,3 +36,10 @@ next-env.d.ts
 .vscode
 .cursor
 .mcp.json
+
+# npm registry auth (GitHub Packages 토큰이 커밋되지 않도록)
+.npmrc
+
+# playwright
+/test-results/
+/playwright-report/

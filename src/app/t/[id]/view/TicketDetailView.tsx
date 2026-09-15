@@ -1,12 +1,16 @@
 'use client'
 
+import { MButton, MIcon, MText } from '@socar-inc/modu-ui/components'
+import { IconAlertFill, IconChevronLeftLine, IconChevronRightLine, IconXLine } from '@socar-inc/modu-ui/icons'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
 import DockBar from '@/shared/components/layout/DockBar'
 
-import { useTicketDetailViewModel } from '../viewmodel'
+import type { DateCellModel } from '../viewmodel/useTicketDetailViewModel'
+
+import { TICKET_DETAIL_TITLE, useTicketDetailViewModel } from '../viewmodel'
 import type { ParkingLotDetail, TicketDetail, TicketListItem, TicketPhoto } from '@/shared/types/parking'
 
 interface TicketDetailViewProps {
@@ -16,6 +20,11 @@ interface TicketDetailViewProps {
   pin?: ParkingLotDetail
 }
 
+/**
+ * 주차권 상세 — modu-android `ticket/detail/TicketDetailScreen.kt` 기준 재구성.
+ * bg-weak 바탕 위에 흰 섹션 카드가 8px 간격으로 얹힌다.
+ * 웹 전용 크롬(헤더·DockBar)은 data-web-only — 앱 웹뷰에서는 네이티브 상단바가 대신한다.
+ */
 export default function TicketDetailView({ couponSeq, initialTicket, parkingTickets, pin }: TicketDetailViewProps) {
   const vm = useTicketDetailViewModel({ couponSeq, initialTicket, parkingTickets, pin })
   const [viewer, setViewer] = useState<{ open: boolean; startIndex: number }>({ open: false, startIndex: 0 })
@@ -24,7 +33,9 @@ export default function TicketDetailView({ couponSeq, initialTicket, parkingTick
     return (
       <div className="flex h-full flex-col">
         <main className="flex flex-1 items-center justify-center">
-          <div className="text-text-soft text-[14px]">로딩 중…</div>
+          <MText typography="body_b4" color="text_soft_400">
+            로딩 중…
+          </MText>
         </main>
         <DockBar />
       </div>
@@ -32,152 +43,186 @@ export default function TicketDetailView({ couponSeq, initialTicket, parkingTick
   }
 
   const t = vm.ticket
-  const parkinglotName = pin?.basic.name
-  const address = pin?.basic.newAddress || pin?.basic.address
+  const parkinglotName = pin?.basic.name ?? t.parkinglot?.parkinglotName
+  const periodLabel = t.usagePeriodLabel || t.usingTimeLabel
 
   return (
     <div className="flex h-full flex-col">
       <main className="bg-bg-weak scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto">
-        {/* ─── Sticky Header ─── */}
-        <header className="bg-bg-white border-stroke-soft/60 sticky top-0 z-20 flex h-12 shrink-0 items-center justify-between border-b px-2">
+        {/* ─── 웹 전용 헤더 — 앱은 네이티브 TopAppBar 가 맡는다 ─── */}
+        <header
+          data-web-only
+          className="bg-bg-white sticky top-0 z-20 flex h-12 shrink-0 items-center justify-between px-1"
+        >
           <button
             onClick={vm.goBack}
             aria-label="뒤로"
-            className="flex size-10 cursor-pointer items-center justify-center"
+            className="flex size-11 cursor-pointer items-center justify-center"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M15 18L9 12L15 6"
-                stroke="#171717"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <MIcon icon={IconChevronLeftLine} size={24} decorative />
           </button>
-          <h1 className="text-text-strong mx-2 flex-1 truncate text-center text-[16px] font-bold">
-            {vm.ticket?.couponName ?? '주차권 상세'}
+          <h1 className="modu-typography-title-t4 text-text-strong mx-1 flex-1 truncate text-center">
+            {TICKET_DETAIL_TITLE}
           </h1>
-          <div className="size-10 shrink-0" />
+          <div className="size-11 shrink-0" />
         </header>
 
-        {/* ─── Hero — primary 톤 카드 (우측에 사진 임베드) ─── */}
-        <section className="bg-bg-white px-5 pt-5 pb-6">
-          <div
-            className="border-stroke-soft relative overflow-hidden rounded-[16px] border p-5"
-            style={{ background: 'linear-gradient(135deg, #F0F8FF 0%, #E1F0FF 100%)' }}
-          >
-            <span aria-hidden className="bg-primary/10 absolute -top-10 -right-10 size-32 rounded-full blur-2xl" />
-            <div className="relative z-10 flex items-center gap-4">
-              <div className="min-w-0 flex-1">
-                {parkinglotName && (
-                  <p className="text-primary truncate text-[12px] font-semibold tracking-[-0.2px]">{parkinglotName}</p>
-                )}
-                <h2 className="text-text-strong mt-1.5 line-clamp-2 text-[20px] leading-[1.25] font-extrabold tracking-[-0.4px]">
-                  {t.couponName}
-                </h2>
-                <p className="text-text-strong mt-2.5 text-[24px] leading-none font-extrabold tabular-nums">
-                  {t.price.toLocaleString()}
-                  <span className="text-text-sub ml-0.5 text-[14px] font-bold">원</span>
-                </p>
-                {t.usagePeriodLabel && (
-                  <p className="text-text-sub mt-2 inline-flex items-center gap-1 text-[12px]">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
-                      <circle cx="12" cy="12" r="9" stroke="#A3A3A3" strokeWidth="1.5" />
-                      <path d="M12 7v5l3 3" stroke="#A3A3A3" strokeWidth="1.5" strokeLinecap="round" />
-                    </svg>
-                    {t.usagePeriodLabel}
-                  </p>
-                )}
+        {/* ─── 헤더 섹션 — 주차장명 · 주차권명+가격 · 이용기간 · 날짜 선택 ─── */}
+        <section className="bg-bg-white flex flex-col gap-6 py-6">
+          <div className="flex flex-col gap-2 px-4">
+            {parkinglotName && (
+              <button
+                onClick={() => pin && vm.goToParkinglotDetail(pin.seq)}
+                disabled={!pin}
+                className={`flex items-center gap-0.5 self-start ${pin ? 'cursor-pointer' : ''}`}
+              >
+                <MText typography="title_t4" color="text_sub_600" className="truncate">
+                  {parkinglotName}
+                </MText>
+                {pin && <MIcon icon={IconChevronRightLine} size={16} color="icon_sub_600" decorative />}
+              </button>
+            )}
+            <div className="flex items-baseline justify-between gap-3">
+              <MText typography="heading_h4" color="text_strong_950" className="min-w-0 flex-1 truncate">
+                {t.couponName}
+              </MText>
+              <MText typography="heading_h4" color="text_strong_950" className="shrink-0 tabular-nums">
+                {t.price.toLocaleString()}원
+              </MText>
+            </div>
+            {periodLabel && (
+              <MText typography="title_t4" color="text_strong_950">
+                {periodLabel}
+              </MText>
+            )}
+          </div>
+
+          {/* 날짜 선택 — Daily 만 (Monthly 숨김), 일요일만 빨간색 */}
+          {vm.showDatePicker && (
+            <div className="scrollbar-hide overflow-x-auto">
+              <div className="flex w-max gap-2 px-4">
+                {vm.dateCells.map((cell) => (
+                  <DateCell key={cell.date} cell={cell} onSelect={vm.selectDate} />
+                ))}
               </div>
-              {t.photos.length > 0 && (
-                <HeroPhoto photos={t.photos} onClick={() => setViewer({ open: true, startIndex: 0 })} />
-              )}
+            </div>
+          )}
+        </section>
+
+        {/* ─── 주차장 사진 ─── */}
+        {t.photos.length > 0 && (
+          <section className="bg-bg-white mt-2 flex flex-col gap-4 py-6">
+            <MText typography="title_t2" color="text_strong_950" className="px-4">
+              주차장 사진
+            </MText>
+            <div className="scrollbar-hide overflow-x-auto">
+              <div className="flex w-max gap-2 px-4">
+                {t.photos.map((photo, index) => (
+                  <button
+                    key={photo.fileName}
+                    onClick={() => setViewer({ open: true, startIndex: index })}
+                    aria-label="주차장 사진 크게 보기"
+                    className="border-stroke-soft bg-bg-soft rounded-8 relative h-[144px] w-[256px] shrink-0 cursor-pointer overflow-hidden border"
+                  >
+                    <Image
+                      src={photo.fileName}
+                      alt={photo.pictureDesc ?? ''}
+                      fill
+                      sizes="256px"
+                      className="object-cover"
+                      priority={index === 0}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ─── 이용 안내 ─── */}
+        <section className="bg-bg-white mt-2 flex flex-col gap-4 py-6">
+          <MText typography="title_t2" color="text_strong_950" className="px-4">
+            이용 안내
+          </MText>
+          <div className="flex flex-col gap-4 px-4">
+            {/* 꼭 확인해주세요 — 서버 notice2 */}
+            {t.notice2 && (
+              <div className="bg-information-lighter rounded-8 flex flex-col gap-2 p-4">
+                <div className="flex items-center gap-1.5">
+                  <MIcon icon={IconAlertFill} size={16} decorative className="text-information-base" />
+                  <span className="modu-typography-title-t4 text-information-dark">꼭 확인해주세요</span>
+                </div>
+                <NoticeDotList body={t.notice2} className="text-information-dark" />
+              </div>
+            )}
+
+            {/* 일반 안내 — 입출차 + 공통 */}
+            {(t.enteringNotice || t.notice) && (
+              <NoticeDotList body={[t.enteringNotice, t.notice].filter(Boolean).join('\n')} className="text-text-sub" />
+            )}
+
+            {/* 면책 문구 */}
+            <div className="bg-bg-weak rounded-8 p-4">
+              <MText typography="body_b4" color="text_sub_600">
+                현장에서 발생한 사고는 일체 책임지지 않으며, 사정에 따라 이용이 어려울 수 있습니다.
+              </MText>
             </div>
           </div>
         </section>
 
-        {/* ─── 주차장 정보 — Hero 바로 아래 (정보 우선순위 상향) ─── */}
-        {pin && (
-          <section className="bg-bg-white px-5 pb-4">
-            <button
-              onClick={() => vm.goToParkinglotDetail(pin.seq)}
-              className="border-stroke-soft hover:border-primary/40 flex w-full cursor-pointer items-center justify-between rounded-[14px] border px-4 py-3.5 text-left transition-colors"
-            >
-              <div className="flex min-w-0 items-center gap-3">
-                <span className="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-full">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </span>
-                <div className="flex min-w-0 flex-col gap-0.5">
-                  <span className="text-text-strong truncate text-[14px] font-semibold">주차장 정보</span>
-                  {address && <span className="text-text-soft truncate text-[12px]">{address}</span>}
-                </div>
-              </div>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-text-disabled shrink-0">
-                <path
-                  d="M9 6l6 6-6 6"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </section>
-        )}
-
-        {/* ─── 같은 주차장 주차권 (가로 스크롤 pill) ─── */}
-        {vm.tabs.length > 0 && (
-          <section className="bg-bg-white pb-5">
-            <p className="text-text-sub px-5 pb-2 text-[12px] font-semibold">같은 주차장 주차권</p>
+        {/* ─── 이런 이용권은 어떠세요? ─── */}
+        {vm.anotherTickets.length > 0 && (
+          <section className="bg-bg-white mt-2 flex flex-col gap-4 py-6">
+            <MText typography="title_t2" color="text_strong_950" className="px-4">
+              이런 이용권은 어떠세요?
+            </MText>
             <div className="scrollbar-hide overflow-x-auto">
-              <ul className="flex w-max gap-2 px-5">
-                {vm.tabs.map((tab) => (
-                  <li key={tab.couponSeq}>
-                    <button
-                      onClick={() => vm.goToTicketDetail(tab.couponSeq)}
-                      className={`shrink-0 cursor-pointer rounded-full border px-3.5 py-2 text-[13px] font-semibold whitespace-nowrap transition-colors ${
-                        tab.isActive
-                          ? 'border-primary bg-primary text-static-white'
-                          : 'border-stroke-soft bg-bg-white text-text-sub hover:text-text-strong'
+              <div className="flex w-max gap-2 px-4">
+                {vm.anotherTickets.map((another) => (
+                  <button
+                    key={another.couponSeq}
+                    onClick={() => vm.goToTicketDetail(another.couponSeq)}
+                    className={`rounded-8 flex w-[227px] shrink-0 cursor-pointer flex-col gap-1 border p-4 text-left ${
+                      another.isAvailable ? 'border-primary bg-bg-white' : 'border-stroke-sub bg-bg-weak'
+                    }`}
+                  >
+                    <span
+                      className={`modu-typography-body-b3 truncate ${
+                        another.isAvailable ? 'text-text-strong' : 'text-text-soft'
                       }`}
                     >
-                      {tab.couponName}
-                    </button>
-                  </li>
+                      {another.couponName}
+                    </span>
+                    <span
+                      className={`modu-typography-title-t4 tabular-nums ${
+                        another.isAvailable ? 'text-text-strong' : 'text-text-soft'
+                      }`}
+                    >
+                      {another.price.toLocaleString()}원
+                    </span>
+                    {another.subLabel && (
+                      <span
+                        className={`modu-typography-body-b4 truncate ${
+                          another.isAvailable ? 'text-text-sub' : 'text-text-soft'
+                        }`}
+                      >
+                        {another.subLabel}
+                      </span>
+                    )}
+                  </button>
                 ))}
-              </ul>
+              </div>
             </div>
           </section>
         )}
 
-        {/* ─── 안내사항 카드 모음 ─── */}
-        <section className="flex flex-col gap-2.5 px-5 py-2">
-          {t.notice && <NoticeCard icon="info" title="안내사항" body={t.notice} />}
-          {t.notice2 && <NoticeCard icon="caution" title="결제 전 유의사항" body={t.notice2} />}
-          {t.enteringNotice && <NoticeCard icon="car" title="입출차 주의사항" body={t.enteringNotice} />}
-        </section>
+        <div className="mt-2 flex-1" />
 
-        <div className="h-6" />
-
-        {/* ─── Sticky 구매 버튼 ─── */}
-        <footer className="bg-bg-white border-stroke-soft/60 sticky bottom-0 z-20 border-t px-5 pt-3 pb-4">
-          <button
-            onClick={vm.handleClickPurchase}
-            disabled={vm.purchaseButton.disabled}
-            className={`w-full rounded-[14px] py-4 font-bold whitespace-pre-line transition-all ${
-              vm.purchaseButton.disabled
-                ? 'bg-bg-soft text-text-disabled cursor-default'
-                : 'bg-primary text-static-white cursor-pointer active:scale-[0.98]'
-            } ${vm.purchaseButton.fontSize === 'caption' ? 'text-[12px] leading-[1.45]' : 'text-[15px]'}`}
-          >
+        {/* ─── 하단 고정 CTA — {가격} 결제하기 / {일시}부터 구매가능 / 판매예정 / 매진 ─── */}
+        <footer className="bg-bg-white sticky bottom-0 z-20 px-6 pt-3 pb-[max(env(safe-area-inset-bottom),12px)]">
+          <MButton size="xLarge" fullWidth disabled={vm.purchaseButton.disabled} onClick={vm.handleClickPurchase}>
             {vm.purchaseButton.text}
-          </button>
+          </MButton>
         </footer>
       </main>
 
@@ -197,22 +242,47 @@ export default function TicketDetailView({ couponSeq, initialTicket, parkingTick
   )
 }
 
-/* ─── Hero Photo — 우측 임베드 정사각 라운드 썸네일 (2장 이상이면 +N 뱃지) ─── */
-function HeroPhoto({ photos, onClick }: { photos: TicketPhoto[]; onClick: () => void }) {
-  const [first, ...rest] = photos
+/* ─── 날짜 셀 — modu-android MDSDateCell (58×58, radius8) ─── */
+function DateCell({ cell, onSelect }: { cell: DateCellModel; onSelect: (date: string) => void }) {
+  const labelColor = cell.isSelected ? 'text-static-white' : cell.isHoliday ? 'text-red-500' : 'text-text-strong'
+
   return (
     <button
-      onClick={onClick}
-      aria-label="주차권 사진 크게 보기"
-      className="bg-bg-soft relative size-[100px] shrink-0 cursor-pointer overflow-hidden rounded-[12px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition-transform active:scale-95"
+      onClick={() => onSelect(cell.date)}
+      aria-pressed={cell.isSelected}
+      className={`rounded-8 flex size-[58px] shrink-0 cursor-pointer flex-col items-center justify-center gap-0.5 ${
+        cell.isSelected ? 'bg-primary' : 'bg-transparent'
+      }`}
     >
-      <Image src={first.fileName} alt={first.pictureDesc ?? ''} fill sizes="100px" className="object-cover" priority />
-      {rest.length > 0 && (
-        <span className="pointer-events-none absolute right-1.5 bottom-1.5 rounded-full bg-black/65 px-2 py-0.5 text-[10px] font-semibold text-white tabular-nums">
-          +{rest.length}
-        </span>
-      )}
+      <span className={`modu-typography-title-t6 ${labelColor}`}>{cell.label}</span>
+      <span className={`modu-typography-title-t4 tabular-nums ${labelColor}`}>{cell.dayText}</span>
     </button>
+  )
+}
+
+/* ─── 안내 dot 리스트 — modu-android NoticeDotListView 규칙:
+   줄 단위 split, "- " prefix 제거 후 bullet, "(" 시작 줄은 bullet 없는 들여쓰기 ─── */
+function NoticeDotList({ body, className }: { body: string; className?: string }) {
+  const lines = body
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+
+  return (
+    <ul className={`flex flex-col gap-1 ${className ?? ''}`}>
+      {lines.map((line, index) => {
+        const noBullet = line.startsWith('(')
+        const text = line.startsWith('- ') ? line.slice(2) : line
+        return (
+          <li key={index} className="modu-typography-body-b4 flex gap-1.5">
+            <span aria-hidden className={noBullet ? 'w-1.5 shrink-0' : 'w-1.5 shrink-0 text-center'}>
+              {noBullet ? '' : '·'}
+            </span>
+            <span className="min-w-0 flex-1 whitespace-pre-wrap">{text}</span>
+          </li>
+        )
+      })}
+    </ul>
   )
 }
 
@@ -263,12 +333,12 @@ function PhotoViewer({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-[var(--z-modal,9999)] flex items-center justify-center bg-black/95"
+      className="bg-overlay-gray fixed inset-0 z-[var(--z-modal,9999)] flex items-center justify-center"
       onClick={onClose}
     >
       {/* 상단바 — z-10 으로 슬라이더 위에 렌더 (X 버튼 클릭 영역 확보) */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 pt-[max(env(safe-area-inset-top),12px)] pb-3">
-        <span className="text-[14px] font-semibold text-white tabular-nums">
+        <span className="modu-typography-title-t5 text-static-white tabular-nums">
           {photos.length > 1 ? `${index + 1} / ${photos.length}` : ''}
         </span>
         <button
@@ -277,11 +347,9 @@ function PhotoViewer({
             onClose()
           }}
           aria-label="닫기"
-          className="pointer-events-auto flex size-10 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+          className="bg-static-white/10 hover:bg-static-white/20 pointer-events-auto flex size-10 cursor-pointer items-center justify-center rounded-full transition-colors"
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
+          <MIcon icon={IconXLine} size={22} color="icon_white_0" decorative />
         </button>
       </div>
 
@@ -310,49 +378,5 @@ function PhotoViewer({
         ))}
       </div>
     </motion.div>
-  )
-}
-
-/* ─── Notice Card ─── */
-function NoticeCard({ icon, title, body }: { icon: 'info' | 'caution' | 'car'; title: string; body: string }) {
-  return (
-    <div className="bg-bg-white border-stroke-soft rounded-[14px] border px-4 py-4">
-      <div className="flex items-center gap-2">
-        <NoticeIcon kind={icon} />
-        <h3 className="text-text-strong text-[14px] font-bold tracking-[-0.2px]">{title}</h3>
-      </div>
-      <p className="text-text-sub mt-2.5 text-[13px] leading-[1.65] whitespace-pre-wrap">{body}</p>
-    </div>
-  )
-}
-
-function NoticeIcon({ kind }: { kind: 'info' | 'caution' | 'car' }) {
-  const tone =
-    kind === 'caution'
-      ? { bg: 'bg-[#FFF6E0]', color: '#C9A227' }
-      : { bg: 'bg-primary/10', color: 'var(--color-primary)' }
-  return (
-    <span
-      className={`flex size-7 shrink-0 items-center justify-center rounded-full ${tone.bg}`}
-      style={{ color: tone.color }}
-    >
-      {kind === 'info' && (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
-          <path d="M12 8v4M12 15.5v.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        </svg>
-      )}
-      {kind === 'caution' && (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2L2 20h20L12 2z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-          <path d="M12 9v5M12 16.5v.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        </svg>
-      )}
-      {kind === 'car' && (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z" />
-        </svg>
-      )}
-    </span>
   )
 }

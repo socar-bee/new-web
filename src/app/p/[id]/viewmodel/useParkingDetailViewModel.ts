@@ -6,6 +6,8 @@ import { useCallback, useMemo, useState } from 'react'
 import { useParkingLotDetail, useTicketList } from '../model'
 import type { ParkingLotDetail, ParkingLotType } from '@/shared/types/parking'
 
+import { usePlatform } from '@/shared/platform'
+
 export type DetailTabKey = 'tickets' | 'info' | 'recommend' | 'nearby'
 
 export const DETAIL_TABS: { key: DetailTabKey; label: string }[] = [
@@ -18,6 +20,7 @@ export const DETAIL_TABS: { key: DetailTabKey; label: string }[] = [
 export function useParkingDetailViewModel(seq: number | null, type?: ParkingLotType, initialDetail?: ParkingLotDetail) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const platform = usePlatform()
   const [activeTab, setActiveTab] = useState<DetailTabKey>('tickets')
 
   const parkingDate = searchParams?.get('parkingDate') ?? undefined
@@ -28,11 +31,19 @@ export function useParkingDetailViewModel(seq: number | null, type?: ParkingLotT
     if (parkingDate) p.set('parkingDate', parkingDate)
     if (durationId) p.set('durationId', durationId)
     const s = p.toString()
-    return s ? `&${s}` : ''
+    return s ? `?${s}` : ''
   }, [parkingDate, durationId])
 
   const { data: detail, isLoading: isDetailLoading } = useParkingLotDetail(seq, type, initialDetail)
   const { data: tickets, isLoading: isTicketsLoading } = useTicketList(seq, parkingDate, durationId)
+
+  /** 뒤로가기 — 웹은 지도 홈으로, 앱은 웹뷰 닫기 (platform 이 분기) */
+  const goBack = useCallback(() => {
+    platform.back('/')
+  }, [platform])
+
+  // 앱 웹뷰 네이티브 상단바 — 웹은 no-op (시트 내 NavigationBar 가 맡는다)
+  platform.useTopBar({ title: detail?.basic.name ?? '주차장 상세', onBack: goBack })
 
   const isLoading = isDetailLoading || isTicketsLoading
 
@@ -68,6 +79,7 @@ export function useParkingDetailViewModel(seq: number | null, type?: ParkingLotT
     activeTab,
     setActiveTab,
     copyAddress,
+    goBack,
     goToTicketDetail,
     formatCurrentFee
   }

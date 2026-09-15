@@ -67,6 +67,8 @@ export default function DockBar() {
   return (
     <nav
       ref={navRef}
+      // 앱 웹뷰에서는 네이티브 탭이 있어 숨긴다 (html[data-platform='app'] [data-web-only])
+      data-web-only
       className="border-stroke-soft bg-bg-white relative z-[var(--z-dock)] mx-auto w-full max-w-[480px] shrink-0 border-t pb-[env(safe-area-inset-bottom)]"
     >
       <div className="flex items-center justify-around py-2.5">
@@ -103,7 +105,7 @@ export default function DockBar() {
                 <Icon active={isActive} />
               ) : null}
               <span
-                className={`text-[10px] leading-[14px] ${isActive ? 'text-primary font-medium' : 'text-[#222222]'}`}
+                className={`text-[10px] leading-[14px] ${isActive ? 'text-primary font-medium' : 'text-neutral-900'}`}
               >
                 {item.label}
               </span>
