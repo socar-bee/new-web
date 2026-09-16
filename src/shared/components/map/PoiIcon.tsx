@@ -44,16 +44,15 @@ function getMarkerPalette(isOn: boolean) {
   return null
 }
 
-/** 즐겨찾기 ⭐ 미니 뱃지 — 마커 우상단 오버레이 */
+/** 즐겨찾기 별(icn_favorite) 미니 뱃지 — 마커 우상단 오버레이 */
 function FavoriteBadge() {
   return (
     <div
       className="absolute -top-[5px] -right-[5px] z-[1] flex h-[14px] w-[14px] items-center justify-center rounded-full bg-white"
       style={{ boxShadow: '0 1px 2px rgba(14,18,27,0.25)' }}
     >
-      <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--color-yellow-500)" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2l2.95 6.36 6.96.84-5.14 4.77 1.36 6.87L12 17.4l-6.13 3.44 1.36-6.87-5.14-4.77 6.96-.84L12 2z" />
-      </svg>
+      {/* eslint-disable-next-line @next/next/no-img-element -- 네이버 마커 DOM 에 img 직접 렌더 */}
+      <img src="/images/icn_favorite.webp" alt="" width={10} height={10} className="h-[10px] w-[10px] object-contain" />
     </div>
   )
 }
@@ -76,7 +75,7 @@ function PinLabel({
   if (palette) {
     return (
       <div
-        className="mt-[2px] rounded-full px-[6px] py-[1px] text-center text-[11px] leading-[15px] font-bold whitespace-nowrap"
+        className="text-t6 mt-[2px] rounded-full px-[6px] py-[1px] text-center font-bold whitespace-nowrap"
         style={{ backgroundColor: palette.labelBg, color: palette.labelText }}
       >
         {label}
@@ -86,7 +85,7 @@ function PinLabel({
   const accentText = accent === 'brand' ? 'text-brand-800' : 'text-slate-600'
   return (
     <div
-      className={`mt-[2px] rounded-full bg-white px-[6px] py-[1px] text-center text-[11px] leading-[15px] font-bold whitespace-nowrap ${accentText}`}
+      className={`text-t6 mt-[2px] rounded-full bg-white px-[6px] py-[1px] text-center font-bold whitespace-nowrap ${accentText}`}
       style={{ boxShadow: SHADOW_CIRCLE }}
     >
       {label}
@@ -109,7 +108,7 @@ function NormalPublicPOI({ label, isOn, isFavorite }: { label: string; isOn: boo
             ...(palette ? { borderColor: palette.solidBorder, backgroundColor: palette.solidBg } : {})
           }}
         >
-          <span className={`text-[12px] leading-none font-bold ${palette ? 'text-white' : 'text-slate-600'}`}>P</span>
+          <span className={`text-t6 leading-none font-bold ${palette ? 'text-white' : 'text-slate-600'}`}>P</span>
           {isFavorite && <FavoriteBadge />}
         </div>
         <PinLabel label={label} palette={palette} />
@@ -133,7 +132,7 @@ function NormalPartnerPOI({ label, isOn, isFavorite }: { label: string; isOn: bo
             ...(palette ? { borderColor: palette.solidBorder, backgroundColor: palette.solidBg } : {})
           }}
         >
-          <span className="text-[13px] leading-none font-bold text-white">P</span>
+          <span className="text-t5 leading-none font-bold text-white">P</span>
           {isFavorite && <FavoriteBadge />}
         </div>
         <PinLabel label={label} palette={palette} accent="brand" />
@@ -157,7 +156,7 @@ function NormalSharePOI({ label, isOn, isFavorite }: { label: string; isOn: bool
             ...(palette ? { borderColor: palette.solidBorder, backgroundColor: palette.solidBg } : {})
           }}
         >
-          <span className={`text-[13px] leading-none font-bold ${palette ? 'text-white' : 'text-brand-700'}`}>S</span>
+          <span className={`text-t5 leading-none font-bold ${palette ? 'text-white' : 'text-brand-700'}`}>S</span>
           {isFavorite && <FavoriteBadge />}
         </div>
         <PinLabel label={label} palette={palette} accent="brand" />
@@ -190,8 +189,8 @@ function PrimaryTicketPOI({
           }}
         >
           <div className="flex min-w-[68px] flex-col items-center px-[10px] pt-[5px] pb-[6px]">
-            <div className="text-[10px] leading-[14px] font-medium whitespace-nowrap text-white/75">{name}</div>
-            <div className="mt-[1px] text-[15px] leading-[18px] font-bold text-white">{price}</div>
+            <div className="text-c4 font-medium whitespace-nowrap text-white/75">{name}</div>
+            <div className="text-t4 mt-[1px] font-bold text-white">{price}</div>
           </div>
           {isFavorite && <FavoriteBadge />}
         </div>
@@ -233,18 +232,10 @@ function PrimaryTicketDisabledPOI({
           }}
         >
           <div className="flex min-w-[68px] flex-col items-center px-[10px] pt-[5px] pb-[6px]">
-            <div
-              className={`text-[10px] leading-[14px] font-medium whitespace-nowrap ${
-                palette ? 'text-white/75' : 'text-slate-400'
-              }`}
-            >
+            <div className={`text-c4 font-medium whitespace-nowrap ${palette ? 'text-white/75' : 'text-slate-400'}`}>
               {name}
             </div>
-            <div
-              className={`mt-[1px] text-[15px] leading-[18px] font-bold ${palette ? 'text-white' : 'text-slate-500'}`}
-            >
-              {price}
-            </div>
+            <div className={`text-t4 mt-[1px] font-bold ${palette ? 'text-white' : 'text-slate-500'}`}>{price}</div>
           </div>
           {isFavorite && <FavoriteBadge />}
         </div>

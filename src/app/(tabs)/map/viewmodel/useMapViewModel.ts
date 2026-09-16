@@ -278,7 +278,8 @@ export function useMapViewModel(options: UseMapViewModelOptions = {}) {
       const icon = {
         content,
         size: new naver.maps.Size(width, height),
-        anchor: new naver.maps.Point(width / 2, height)
+        // 꼬리 없는 원형이라 중심 앵커 — 클러스터는 영역 대표점이다
+        anchor: new naver.maps.Point(width / 2, height / 2)
       }
       clusterIconCache.current.set(count, icon)
       return icon

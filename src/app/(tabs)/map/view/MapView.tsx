@@ -89,7 +89,8 @@ export default function MapView() {
     initialTimeFilterOpen,
     onPinClick: (data: ParkingDetailData) => {
       if (data.parkingType === ParkingLotType.SHARE) {
-        showToast('준비중인 서비스입니다')
+        // 공유핀 → 공유주차장 상세 라우트 (modu-web-app /s 기준) — 지도 배경 유지하며 peek 시트로 진입
+        router.push(`/s/${data.seq}#sheet=1`)
         return
       }
       // 핀 직접 클릭 → 이미 지도에 보이므로 location 수신 후 지도 이동 불필요
@@ -196,7 +197,7 @@ export default function MapView() {
       <div className="absolute top-0 left-0 z-[var(--z-map-ui)] flex w-full flex-col gap-2.5 px-4 pt-2">
         <Link href="/search" className="rounded-10 bg-bg-white shadow-02 flex h-12 w-full items-center gap-2.5 px-4">
           <IconSearchLine className="text-icon-soft size-5" />
-          <span className="text-text-soft" style={{ fontSize: 'var(--font-size-b4)' }}>
+          <span className="text-text-soft" style={{ fontSize: 'var(--text-b4)' }}>
             목적지 또는 주소 검색
           </span>
         </Link>
@@ -206,14 +207,14 @@ export default function MapView() {
           {entryTimeLabel && (
             <button
               onClick={vm.openTimeFilter}
-              className="border-primary bg-primary text-static-white inline-flex min-h-[34px] shrink-0 items-center justify-center rounded-full border px-3 py-1 text-[13px] font-medium whitespace-nowrap"
+              className="border-primary bg-primary text-static-white text-c2 inline-flex min-h-[34px] shrink-0 items-center justify-center rounded-full border px-3 py-1 font-medium whitespace-nowrap"
             >
               {entryTimeLabel}
             </button>
           )}
           <button
             onClick={vm.toggleBuyableOnly}
-            className={`inline-flex min-h-[34px] shrink-0 items-center justify-center rounded-full border px-3 py-1 text-[13px] font-medium whitespace-nowrap ${
+            className={`text-c2 inline-flex min-h-[34px] shrink-0 items-center justify-center rounded-full border px-3 py-1 font-medium whitespace-nowrap ${
               vm.buyableOnly
                 ? 'border-primary bg-primary text-static-white'
                 : 'border-stroke-soft bg-bg-white text-text-strong'
@@ -226,6 +227,15 @@ export default function MapView() {
 
       {/* Map */}
       <div id="map" className="size-full" />
+
+      {/* 즐겨찾기 — 현재위치 FAB 위 */}
+      <Link
+        href="/favorites"
+        aria-label="즐겨찾기"
+        className="bg-bg-white shadow-02 absolute right-4 bottom-[68px] z-[var(--z-map-ui)] flex size-10 items-center justify-center rounded-full"
+      >
+        <img src="/images/icn_favorite.webp" alt="" width={22} height={22} className="size-[22px] object-contain" />
+      </Link>
 
       {/* Current Location */}
       <button
