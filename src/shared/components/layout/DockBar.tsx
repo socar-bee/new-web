@@ -18,7 +18,7 @@ type NavItem = {
 
 const NAV_ITEMS: readonly NavItem[] = [
   { label: '홈', href: '/', imageSrc: '/images/dock_home.webp' },
-  { label: '즐겨찾기', href: '/favorites', imageSrc: '/images/dock_favorites.png' },
+  { label: '혜택', href: '/benefit', imageSrc: '/images/icn_together.webp' },
   { label: '내 주변', href: '/map', imageSrc: '/images/dock_map_pin.webp' },
   { label: '내 주차권', href: '/tickets', imageSrc: '/images/dock_tickets.webp' },
   { label: 'MY', href: '/my', imageSrc: '/images/dock_my.webp' }
@@ -104,9 +104,7 @@ export default function DockBar() {
               ) : Icon ? (
                 <Icon active={isActive} />
               ) : null}
-              <span
-                className={`text-[10px] leading-[14px] ${isActive ? 'text-primary font-medium' : 'text-neutral-900'}`}
-              >
+              <span className={`text-c4 ${isActive ? 'text-primary font-medium' : 'text-neutral-900'}`}>
                 {item.label}
               </span>
             </button>
