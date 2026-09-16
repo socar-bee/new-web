@@ -9,23 +9,22 @@ import DockBar from '@/shared/components/layout/DockBar'
 import MapPinLoader from '@/shared/components/map/MapPinLoader'
 import { type SheetSnap } from '@/shared/components/ui/AnimationSheet'
 
-import type { ParkingLotDetail, ParkingLotType } from '@/shared/types/parking'
+import type { SharedParkingLotDetail } from '@/shared/types/parking'
 import { ParkingLotType as PLType } from '@/shared/types/parking'
 
-import ParkingDetailSheet, { type ParkingDetailData } from '@/app/(tabs)/map/view/ParkingDetailSheet'
+import { type ParkingDetailData } from '@/app/(tabs)/map/view/ParkingDetailSheet'
 import { useMapViewModel } from '@/app/(tabs)/map/viewmodel'
 
-interface PartnerDetailViewProps {
+import SharedDetailSheet from './SharedDetailSheet'
+
+interface SharedDetailViewProps {
   seq: number
-  initialDetail?: ParkingLotDetail
+  initialDetail?: SharedParkingLotDetail
 }
 
 /**
- * Hash 기반 시트 상태 파싱.
- * - `#sheet=0` → 닫힘
- * - `#sheet=1` / `#sheet=peek` → 열림 + peek
- * - `#sheet=half` → 열림 + half
- * - `#sheet=full` → 열림 + full (예: 추천 주차장 진입, 주차권 상세 뒤로가기)
+ * 공유주차장 상세 (/s/[id]) — modu-web-app /s 라우트 기준.
+ * /p/[id](PartnerDetailView)와 동일한 지도 배경 + 시트 구조, 시트 내용만 공유주차장 전용.
  */
 function parseSheetHash(hash: string): { open: boolean; snap: SheetSnap | null } {
   const m = hash.match(/^#sheet=(.+)$/)
@@ -34,13 +33,13 @@ function parseSheetHash(hash: string): { open: boolean; snap: SheetSnap | null }
   if (v === '0') return { open: false, snap: null }
   if (v === 'full') return { open: true, snap: 'full' }
   if (v === 'half') return { open: true, snap: 'half' }
-  return { open: true, snap: 'peek' } // '1' / 'peek' / 그 외
+  return { open: true, snap: 'peek' }
 }
 
-export default function PartnerDetailView({ seq, initialDetail }: PartnerDetailViewProps) {
+export default function SharedDetailView({ seq, initialDetail }: SharedDetailViewProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  // /p/[id] 진입은 기본 'full'. hash로 명시(half/peek/full)하면 그 값 우선.
+  // /s/[id] 직접 진입은 기본 'full'. hash로 명시(half/peek/full)하면 그 값 우선.
   const initialSnap: SheetSnap = (() => {
     if (typeof window !== 'undefined') {
       const fromHash = parseSheetHash(window.location.hash).snap
@@ -57,13 +56,6 @@ export default function PartnerDetailView({ seq, initialDetail }: PartnerDetailV
 
   const lat = initialDetail?.basic.latitude
   const lng = initialDetail?.basic.longitude
-
-  const parkingData: ParkingDetailData = {
-    seq,
-    name: initialDetail?.basic.name ?? '',
-    isPartner: initialDetail?.basic.partnerStatus,
-    parkingType: 'P' as ParkingLotType
-  }
 
   // hash 동기화 — hash가 바뀌면 open 상태 + snap 동시 반영
   useEffect(() => {
@@ -97,7 +89,7 @@ export default function PartnerDetailView({ seq, initialDetail }: PartnerDetailV
     setDetailOpen(false)
   }
 
-  // sheet "열림 → 닫힘" 전환 시에만 snap 리셋 (초기 mount의 false 상태로 hash snap을 덮지 않도록)
+  // sheet "열림 → 닫힘" 전환 시에만 snap 리셋
   const prevOpenRef = useRef(detailOpen)
   useEffect(() => {
     if (prevOpenRef.current && !detailOpen) setDetailSnap('peek')
@@ -115,12 +107,11 @@ export default function PartnerDetailView({ seq, initialDetail }: PartnerDetailV
     },
     searchCoords: lat && lng ? { lat, lng } : null,
     onPinClick: (data: ParkingDetailData) => {
-      // 공유핀 → 공유주차장 상세 라우트 (modu-web-app /s 기준)
+      // 핀 클릭은 JS 이벤트 → 크롤러 못 따라감 → 상세 라우트로 전환
       if (data.parkingType === PLType.SHARE) {
         router.push(`/s/${data.seq}#sheet=1`)
         return
       }
-      // 핀 클릭은 JS 이벤트 → 크롤러 못 따라감 → /map SPA로 전환하여 UX 확보
       router.push(`/map?type=${data.parkingType ?? 'P'}&id=${data.seq}#sheet=1`)
     }
   })
@@ -148,6 +139,12 @@ export default function PartnerDetailView({ seq, initialDetail }: PartnerDetailV
     },
     [centerOnLatLng]
   )
+
+  // SSR로 좌표를 못 받은 경우(클라 fetch 경로)엔 로드 후 지도 이동 필요
+  useEffect(() => {
+    if (lat == null || lng == null) needPanRef.current = true
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // 지도 스크립트 로드 + initMap
   useEffect(() => {
@@ -188,13 +185,12 @@ export default function PartnerDetailView({ seq, initialDetail }: PartnerDetailV
         {/* Loading — 정중앙 Lottie 애니메이션 */}
         <MapPinLoader show={vm.isLoading} />
 
-        {/* ParkingDetailSheet — initialSnap이 full/half면 슬라이드업 생략하고 즉시 정착 */}
-        <ParkingDetailSheet
+        <SharedDetailSheet
+          seq={seq}
           isOpen={detailOpen}
           snap={detailSnap}
           onSnapChange={setDetailSnap}
           onClose={closeSheet}
-          data={parkingData}
           onLocationKnown={handleLocationKnown}
           skipMountAnimation={initialSnap !== 'peek'}
         />

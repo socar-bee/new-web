@@ -295,7 +295,7 @@ export default function ParkingDetailSheet({
       overlay={
         <button
           onClick={onClose}
-          className="bg-primary text-static-white shadow-02 pointer-events-auto flex h-11 items-center gap-1.5 rounded-full px-5 text-[14px] font-semibold"
+          className="bg-primary text-static-white shadow-02 text-t5 pointer-events-auto flex h-11 items-center gap-1.5 rounded-full px-5 font-semibold"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z" />
@@ -346,7 +346,7 @@ export default function ParkingDetailSheet({
               </div>
               {heroImages.length > 1 && (
                 <div className="pointer-events-none absolute right-3 bottom-3 flex h-6 min-w-[43px] items-center justify-center rounded-full bg-black/50 px-2">
-                  <span className="text-[11px] font-medium text-white">
+                  <span className="text-c3 font-medium text-white">
                     {slideIndex + 1}/{heroImages.length}
                   </span>
                 </div>
@@ -361,8 +361,8 @@ export default function ParkingDetailSheet({
             {/* 타이틀 */}
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <h2 className="text-text-strong text-[18px] leading-snug font-bold">{displayName}</h2>
-                <div className="text-text-sub mt-1 flex items-center gap-1.5 text-[13px]">
+                <h2 className="text-text-strong text-t3 font-bold">{displayName}</h2>
+                <div className="text-text-sub text-b4 mt-1 flex items-center gap-1.5">
                   <span>{getCategoryLabel()}</span>
                   {capacity !== null && (
                     <>
@@ -400,13 +400,13 @@ export default function ParkingDetailSheet({
                 className="bg-primary text-static-white flex size-[53px] shrink-0 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-[8px]"
               >
                 <IconNaviFill className="size-5" />
-                <span className="text-[10px] font-medium tracking-[0.3px]">길찾기</span>
+                <span className="text-c4 font-medium">길찾기</span>
               </button>
             </div>
             {/* CommentSection — 주차권 없는 경우만 */}
             {(!isPartner || sortedTickets.length === 0) && (
               <div className="bg-bg-soft mt-3.5 rounded-md px-5 py-2 text-center">
-                <p className="text-text-sub text-[13px]">아직 주차권을 판매하지 않는 현장입니다.</p>
+                <p className="text-text-sub text-b4">아직 주차권을 판매하지 않는 현장입니다.</p>
               </div>
             )}
           </div>
@@ -438,7 +438,7 @@ export default function ParkingDetailSheet({
                   }`}
                 >
                   <span className="inline-flex flex-col items-stretch gap-[10px]">
-                    <span className="text-[15px] leading-none font-semibold">{tab.label}</span>
+                    <span className="text-t4 leading-none font-semibold">{tab.label}</span>
                     <span className={`h-1 rounded-full ${isActive ? 'bg-primary' : 'invisible'}`} />
                   </span>
                 </button>
@@ -469,7 +469,7 @@ export default function ParkingDetailSheet({
           <NearbyTab detail={detail} />
         </div>
 
-        <Footer />
+        <DetailFooter />
       </div>
       <Toast id={toastMsg?.id} message={toastMsg?.message ?? null} onDismiss={() => setToastMsg(null)} />
     </AnimationSheet>
@@ -484,7 +484,7 @@ function NavigationBar({ title, showTitle, onBack }: { title: string; showTitle:
         <IconChevronLeftLine className="text-icon-strong size-[22px]" />
       </button>
       <h2
-        className={`text-text-strong truncate px-2 text-[16px] font-bold transition-opacity duration-200 ${
+        className={`text-text-strong text-t4 truncate px-2 font-bold transition-opacity duration-200 ${
           showTitle ? 'opacity-100' : 'opacity-0'
         }`}
         aria-hidden={!showTitle}
@@ -515,8 +515,8 @@ function PeekBar({
   return (
     <div className="flex items-center justify-between gap-3 px-5 pt-1 pb-5">
       <div className="min-w-0 flex-1">
-        <h3 className="text-text-strong truncate text-[18px] leading-[1.4] font-bold">{name}</h3>
-        <div className="text-text-sub mt-0.5 flex items-center gap-1.5 text-[14px]">
+        <h3 className="text-text-strong text-t3 truncate font-bold">{name}</h3>
+        <div className="text-text-sub text-b4 mt-0.5 flex items-center gap-1.5">
           {typeLabel && <span>{typeLabel}</span>}
           {typeLabel && capacity !== null && (
             <svg width="4" height="4" viewBox="0 0 4 4" fill="none">
@@ -553,7 +553,7 @@ function PeekBar({
         className="bg-primary text-static-white flex size-[53px] shrink-0 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-[8px]"
       >
         <IconNaviFill className="size-5" />
-        <span className="text-[10px] font-medium tracking-[0.3px]">길찾기</span>
+        <span className="text-c4 font-medium">길찾기</span>
       </button>
     </div>
   )
@@ -579,7 +579,7 @@ function TicketList({
     <div className="bg-bg-white px-4 pb-4">
       {moduComment && (
         <div className="bg-brand-50 mb-3 rounded-md px-5 py-2 text-center">
-          <p className="text-text-strong text-[13px]">{moduComment}</p>
+          <p className="text-text-strong text-b4">{moduComment}</p>
         </div>
       )}
       <div className="flex flex-col gap-2.5 pt-4">
@@ -590,10 +590,10 @@ function TicketList({
       {hasMore && !expanded && (
         <button
           onClick={() => setExpanded(true)}
-          className="border-primary/20 text-primary mt-2.5 flex h-[48px] w-full cursor-pointer items-center justify-center gap-1.5 rounded-2xl border bg-white text-[14px] font-semibold shadow-[0_2px_10px_rgba(59,130,246,0.09)] transition-all hover:shadow-[0_2px_14px_rgba(59,130,246,0.14)] active:scale-[0.99]"
+          className="border-primary/20 text-primary text-t5 mt-2.5 flex h-[48px] w-full cursor-pointer items-center justify-center gap-1.5 rounded-2xl border bg-white font-semibold shadow-[0_2px_10px_rgba(59,130,246,0.09)] transition-all hover:shadow-[0_2px_14px_rgba(59,130,246,0.14)] active:scale-[0.99]"
         >
           전체보기
-          <span className="text-primary/60 text-[13px] font-medium">({tickets.length}개)</span>
+          <span className="text-primary/60 text-c2 font-medium">({tickets.length}개)</span>
           <IconChevronDownLine className="ml-0.5 size-4" />
         </button>
       )}
@@ -645,17 +645,15 @@ const TicketStubCard = memo(function TicketStubCard({
         >
           <div className="flex items-center gap-1.5">
             <span className={`h-[6px] w-[6px] shrink-0 rounded-full ${statusColor}`} />
-            <span className={`text-[11px] font-medium ${isDisabled ? 'text-slate-400' : 'text-slate-600'}`}>
+            <span className={`text-c3 font-medium ${isDisabled ? 'text-slate-400' : 'text-slate-600'}`}>
               {statusLabel}
             </span>
           </div>
-          <p
-            className={`truncate text-[15px] leading-tight font-bold ${isDisabled ? 'text-slate-400' : 'text-slate-800'}`}
-          >
+          <p className={`text-t4 truncate font-bold ${isDisabled ? 'text-slate-400' : 'text-slate-800'}`}>
             {ticket.couponName}
           </p>
           {descLine && (
-            <p className={`truncate text-[11px] ${isDisabled ? 'text-slate-300' : 'text-slate-400'}`}>{descLine}</p>
+            <p className={`text-b5 truncate ${isDisabled ? 'text-slate-300' : 'text-slate-400'}`}>{descLine}</p>
           )}
         </div>
 
@@ -678,16 +676,16 @@ const TicketStubCard = memo(function TicketStubCard({
           className={`flex w-[92px] shrink-0 flex-col items-center justify-center gap-1 rounded-r-2xl border-y border-r px-2 ${cardBg} ${cardBorder} ${cardShadow}`}
         >
           <p
-            className={`leading-none font-bold tracking-tight whitespace-nowrap ${
-              isLarge ? 'text-[15px]' : 'text-[18px]'
+            className={`leading-none font-bold whitespace-nowrap ${
+              isLarge ? 'text-t4' : 'text-t3'
             } ${isDisabled ? 'text-slate-300' : 'text-primary'}`}
           >
             {ticket.price.toLocaleString()}
-            <span className={`ml-0.5 text-[11px] font-medium ${isDisabled ? 'text-slate-300' : 'text-primary/80'}`}>
+            <span className={`text-c3 ml-0.5 font-medium ${isDisabled ? 'text-slate-300' : 'text-primary/80'}`}>
               원
             </span>
           </p>
-          {!isDisabled && <span className="text-primary/60 text-[11px] font-medium">구매하기 ›</span>}
+          {!isDisabled && <span className="text-primary/60 text-c3 font-medium">구매하기 ›</span>}
         </div>
       </div>
     </div>
@@ -715,7 +713,7 @@ function HeroPlaceholder() {
             />
           </svg>
         </span>
-        <span className="text-text-soft text-[12px]">이미지 준비중</span>
+        <span className="text-text-soft text-b5">이미지 준비중</span>
       </div>
     </div>
   )
@@ -757,7 +755,7 @@ function InfoTab({
             <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
             <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
-          <span className="text-text-disabled text-[12px]">정보 업데이트: {formatModifyDate(modifyDate)}</span>
+          <span className="text-text-disabled text-b5">정보 업데이트: {formatModifyDate(modifyDate)}</span>
         </div>
       )}
 
@@ -768,7 +766,7 @@ function InfoTab({
             className="flex w-full min-w-0 cursor-pointer items-center gap-1 text-left"
             onClick={() => onCopyAddress(address)}
           >
-            <span className="text-text-strong flex-1 text-[13px]">{address}</span>
+            <span className="text-text-strong text-b4 flex-1">{address}</span>
             <IconCopyLine className="text-icon-soft size-3.5 shrink-0" />
           </button>
         </InfoCard>
@@ -780,8 +778,8 @@ function InfoTab({
           <div className="flex flex-col gap-2">
             {prices[0].contents.slice(0, 4).map((item, idx) => (
               <div key={`price-${idx}`} className="flex items-center justify-between gap-3">
-                <span className="text-text-sub text-[13px]">{item.key}</span>
-                <span className="text-text-strong text-right text-[13px]">{item.value}</span>
+                <span className="text-text-sub text-b4">{item.key}</span>
+                <span className="text-text-strong text-b4 text-right">{item.value}</span>
               </div>
             ))}
           </div>
@@ -802,8 +800,8 @@ function InfoTab({
           <div className="flex flex-col gap-2">
             {times[0].contents.map((item, idx) => (
               <div key={`time-${idx}`} className="flex items-center justify-between gap-3">
-                <span className="text-text-sub text-[13px]">{item.key}</span>
-                <span className="text-text-strong text-right text-[13px]">{item.value}</span>
+                <span className="text-text-sub text-b4">{item.key}</span>
+                <span className="text-text-strong text-b4 text-right">{item.value}</span>
               </div>
             ))}
           </div>
@@ -813,14 +811,14 @@ function InfoTab({
       {/* 요약 요금/시간 — 상세 데이터 없을 때 fallback */}
       {(prices.length === 0 || prices[0].contents.length === 0) && currentFee && (
         <div className="flex items-center justify-between gap-3">
-          <span className="text-text-sub shrink-0 text-[14px]">현장 요금</span>
-          <span className="text-text-strong text-right text-[14px]">{currentFee}</span>
+          <span className="text-text-sub text-b4 shrink-0">현장 요금</span>
+          <span className="text-text-strong text-b4 text-right">{currentFee}</span>
         </div>
       )}
       {(times.length === 0 || times[0].contents.length === 0) && operationTime && (
         <div className="flex items-center justify-between gap-3">
-          <span className="text-text-sub shrink-0 text-[14px]">운영 시간</span>
-          <span className="text-text-strong text-right text-[14px]">{operationTime}</span>
+          <span className="text-text-sub text-b4 shrink-0">운영 시간</span>
+          <span className="text-text-strong text-b4 text-right">{operationTime}</span>
         </div>
       )}
 
@@ -829,7 +827,7 @@ function InfoTab({
         <InfoCard icon={<IconCarFill className="size-5" />} title="추가 정보">
           <div className="flex flex-wrap gap-2">
             {basic.options.map((opt) => (
-              <span key={opt} className="bg-primary/10 text-primary rounded-full px-3 py-1.5 text-[12px] font-medium">
+              <span key={opt} className="bg-primary/10 text-primary text-c3 rounded-full px-3 py-1.5 font-medium">
                 {opt}
               </span>
             ))}
@@ -840,7 +838,7 @@ function InfoTab({
       {/* 주차장 번호 */}
       {basic.phone && (
         <InfoCard icon={<IconPhoneLine className="size-5" />} title="주차장번호">
-          <a href={`tel:${basic.phone}`} className="text-primary text-[14px] font-medium">
+          <a href={`tel:${basic.phone}`} className="text-primary text-c2 font-medium">
             {basic.phone}
           </a>
         </InfoCard>
@@ -849,7 +847,7 @@ function InfoTab({
       {/* 주의사항 */}
       <div className="bg-caution-lighter flex items-start gap-3 rounded-xl p-4">
         <IconCautionFill className="mt-0.5 size-5 shrink-0 text-yellow-500" />
-        <p className="text-caution-dark text-[12px] leading-relaxed">
+        <p className="text-caution-dark text-b5">
           현장 정보와 일치하지 않아 발생한 피해는 모두의주차장이 책임을 지거나 보상하지 않습니다.
         </p>
       </div>
@@ -862,20 +860,20 @@ function InfoCard({ icon, title, children }: { icon: React.ReactNode; title: str
     <div className="border-stroke-soft flex flex-col gap-3 rounded-xl border p-4">
       <div className="flex items-center gap-2">
         <span className="text-primary">{icon}</span>
-        <span className="text-text-strong text-[14px] font-bold">{title}</span>
+        <span className="text-text-strong text-t5 font-bold">{title}</span>
       </div>
       {children}
     </div>
   )
 }
 
-/* ─── RecommendTab ─── */
-function RecommendTab({ seq, lat, lng }: { seq: number; lat?: number; lng?: number }) {
+/* ─── RecommendTab — /s 공유주차장 상세에서도 재사용 ─── */
+export function RecommendTab({ seq, lat, lng }: { seq: number; lat?: number; lng?: number }) {
   const { items, isLoaded } = useRecommendParkingViewModel({ seq, lat, lng })
 
   return (
     <div className="flex flex-col gap-3 px-4 py-6">
-      <h2 className="text-text-strong text-[18px] font-bold">추천 주차장</h2>
+      <h2 className="text-text-strong text-t3 font-bold">추천 주차장</h2>
 
       {!isLoaded ? (
         <div className="scrollbar-hide flex gap-3 overflow-x-auto">
@@ -888,7 +886,7 @@ function RecommendTab({ seq, lat, lng }: { seq: number; lat?: number; lng?: numb
           ))}
         </div>
       ) : items.length === 0 ? (
-        <p className="text-text-soft py-6 text-center text-[14px]">주변에 추천할 주차장이 없습니다.</p>
+        <p className="text-text-soft text-b4 py-6 text-center">주변에 추천할 주차장이 없습니다.</p>
       ) : (
         <div className="scrollbar-hide -mx-4 flex gap-3 overflow-x-auto px-4">
           {items.map((item, i) => (
@@ -950,10 +948,10 @@ const RecommendCard = memo(function RecommendCard({ item, index }: { item: Recom
 
         <div className="flex items-center justify-between">
           <div className="flex max-w-[180px] min-w-0 items-center gap-1">
-            <span className="truncate text-[15px] font-bold text-slate-700">{item.name}</span>
+            <span className="text-t4 truncate font-bold text-slate-700">{item.name}</span>
             <IconChevronRightLine className="size-[15px] shrink-0 text-slate-600" />
           </div>
-          <div className="flex shrink-0 items-center gap-1.5 text-[13px] text-slate-400">
+          <div className="text-b4 flex shrink-0 items-center gap-1.5 text-slate-400">
             <span>{item.qty ? `${item.qty.toLocaleString()}면` : '정보없음'}</span>
             <span>·</span>
             <span>{item.distance >= 1000 ? `${(item.distance / 1000).toFixed(1)}km` : `${item.distance}m`}</span>
@@ -961,7 +959,7 @@ const RecommendCard = memo(function RecommendCard({ item, index }: { item: Recom
         </div>
 
         {firstTicket && (
-          <p className="text-primary truncate text-[13px] font-medium">
+          <p className="text-primary text-c2 truncate font-medium">
             {firstTicket.name} {firstTicket.price.toLocaleString()}원{extraCount > 0 && ` 외 ${extraCount}개`}
           </p>
         )}
@@ -979,11 +977,11 @@ function NearbyTab({ detail }: { detail: ReturnType<typeof useParkingDetailViewM
       <div className="p-5">
         <div className="mb-4 flex items-center gap-2">
           <div className="bg-primary/10 flex items-center rounded-full px-2 py-0.5">
-            <span className="text-primary text-[10px] font-bold">AI</span>
+            <span className="text-primary text-c4 font-bold">AI</span>
           </div>
-          <span className="text-text-strong text-[15px] font-bold">주변 정보</span>
+          <span className="text-text-strong text-t4 font-bold">주변 정보</span>
         </div>
-        <p className="text-text-disabled text-[14px]">주변 정보가 없습니다.</p>
+        <p className="text-text-disabled text-b4">주변 정보가 없습니다.</p>
       </div>
     )
   }
@@ -992,9 +990,9 @@ function NearbyTab({ detail }: { detail: ReturnType<typeof useParkingDetailViewM
     <div className="px-4 py-5">
       <div className="mb-4 flex items-center gap-2">
         <div className="bg-primary/10 flex items-center rounded-full px-2 py-0.5">
-          <span className="text-primary text-[10px] font-bold">AI</span>
+          <span className="text-primary text-c4 font-bold">AI</span>
         </div>
-        <span className="text-text-strong text-[15px] font-bold">주변 정보</span>
+        <span className="text-text-strong text-t4 font-bold">주변 정보</span>
       </div>
 
       <div className="flex items-start gap-2.5">
@@ -1012,21 +1010,21 @@ function NearbyTab({ detail }: { detail: ReturnType<typeof useParkingDetailViewM
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           {/* 말풍선 */}
           <div className="border-stroke-soft from-bg-weak rounded-2xl rounded-tl-sm border bg-gradient-to-br to-slate-100 px-4 py-3.5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-            <p className="text-text-strong text-[13px] leading-relaxed">{detail.aiDescription.response}</p>
+            <p className="text-text-strong text-b4">{detail.aiDescription.response}</p>
             <div className="border-stroke-soft mt-2 border-t pt-2">
-              <span className="text-text-disabled text-[11px]">AI가 작성한 정보로 실제와 다를 수 있어요</span>
+              <span className="text-text-disabled text-b5">AI가 작성한 정보로 실제와 다를 수 있어요</span>
             </div>
           </div>
 
           {/* 피드백 버튼 */}
           <div className="flex items-center gap-3">
-            <span className="text-text-disabled text-[12px]">도움이 됐나요?</span>
+            <span className="text-text-disabled text-b5">도움이 됐나요?</span>
             <div className="flex gap-2">
               <button
                 type="button"
                 disabled={feedback === 'dislike'}
                 onClick={() => setFeedback((prev) => (prev === 'like' ? null : 'like'))}
-                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] leading-none font-medium transition-all ${
+                className={`text-c3 flex items-center gap-1.5 rounded-full px-3.5 py-1.5 leading-none font-medium transition-all ${
                   feedback === 'like'
                     ? 'bg-primary pointer-events-none text-white shadow-[0_2px_8px_rgba(59,130,246,0.3)]'
                     : feedback !== null
@@ -1041,7 +1039,7 @@ function NearbyTab({ detail }: { detail: ReturnType<typeof useParkingDetailViewM
                 type="button"
                 disabled={feedback === 'like'}
                 onClick={() => setFeedback((prev) => (prev === 'dislike' ? null : 'dislike'))}
-                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] leading-none font-medium transition-all ${
+                className={`text-c3 flex items-center gap-1.5 rounded-full px-3.5 py-1.5 leading-none font-medium transition-all ${
                   feedback === 'dislike'
                     ? 'bg-primary pointer-events-none text-white shadow-[0_2px_8px_rgba(59,130,246,0.3)]'
                     : feedback !== null
@@ -1060,12 +1058,12 @@ function NearbyTab({ detail }: { detail: ReturnType<typeof useParkingDetailViewM
   )
 }
 
-/* ─── Footer ─── */
-function Footer() {
+/* ─── Footer — /s 공유주차장 상세에서도 재사용 ─── */
+export function DetailFooter() {
   return (
     <div className="bg-bg-soft px-4 py-6 pb-24">
       <button
-        className="border-stroke-soft text-text-strong h-[38px] w-full rounded-lg border bg-white text-[13px] font-medium"
+        className="border-stroke-soft text-text-strong text-c2 h-[38px] w-full rounded-lg border bg-white font-medium"
         onClick={() => window.open('https://l.modu.kr/main', '_blank')}
       >
         앱 다운로드하기
@@ -1078,7 +1076,7 @@ function Footer() {
           '서비스 문의 번호: 1899-8242, Fax: 02-6969-9333',
           '주소: 제주특별자치도 제주시 공항서로 141 (도두이동)'
         ].map((text) => (
-          <p key={text} className="text-text-sub text-[11px] leading-[1.5]">
+          <p key={text} className="text-text-sub text-b5">
             {text}
           </p>
         ))}
@@ -1094,7 +1092,7 @@ function Footer() {
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-text-sub text-[11px] underline underline-offset-2"
+                className="text-text-sub text-b5 underline underline-offset-2"
               >
                 {item.label}
               </Link>

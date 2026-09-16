@@ -111,6 +111,43 @@ export interface ParkingLotDetail {
   isFeedbackExist: boolean
 }
 
+/* ─── Shared ParkingLot Detail (공유주차장, /poi/pins/S/{seq}) ─── */
+
+export interface SharedParkingLotBasic {
+  calcPrices: Record<string, number>
+  qty: number
+  url: string | null
+  name: string
+  /** 개별 면 공유(UNIT) / 구역 공유(SECTION) */
+  type: 'UNIT' | 'SECTION'
+  phone: string | null
+  photos: ParkingLotPhoto[]
+  address: string
+  caution: string | null
+  comment: string | null
+  extLink: string | null
+  options: string[]
+  category: number
+  extLinkText: string | null
+  newAddress: string
+  moduComment: string
+  operationSeq: number
+  isTestOperation: boolean
+  isAbleUsingPoint: boolean
+  operationTime: string
+  latitude: number
+  longitude: number
+  shareLink: string
+}
+
+export interface SharedParkingLotDetail {
+  type: ParkingLotType.SHARE
+  seq: number
+  basic: SharedParkingLotBasic
+  times: ParkingLotTimeContent[]
+  prices: ParkingLotTimeContent[]
+}
+
 /* ─── Ticket (주차장에 속한 주차권 목록/상세) ─── */
 
 export interface TicketListItem {

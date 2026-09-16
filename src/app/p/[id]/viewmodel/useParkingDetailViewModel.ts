@@ -38,7 +38,7 @@ export function useParkingDetailViewModel(seq: number | null, type?: ParkingLotT
 
   const { data: detail, isLoading: isDetailLoading } = useParkingLotDetail(seq, type, initialDetail)
 
-  // 상세 조회 성공 시 "다시 방문" 기록 (홈 최근 방문 섹션용)
+  // 상세 조회 성공 시 "최근 본 주차장" 기록 (홈 섹션용)
   useEffect(() => {
     if (!detail) return
     addRecentParking({
