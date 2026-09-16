@@ -1,4 +1,5 @@
 import type { CheckoutTicket } from '@/shared/platform/types'
+import { useAuthStore } from '@/shared/stores/authStore'
 
 /** 게스트 채널 코드 — pay `/user/login/guest` body 에 실린다. 모웹 기본값 0 과 동일 (pay guestEntry.ts) */
 const GUEST_CHANNEL_SEQ = 0
@@ -12,15 +13,31 @@ export function payHost(): string | null {
 }
 
 /**
- * 웹 결제 — pay 비회원(guest-pay) 경로로 **같은 탭 이동**한다.
- * 계약: `{PAY_HOST}/guest?couponSeq&parkingDate&guestSeq` (pay guestEntry.ts).
- * 토큰은 넘기지 않는다 — 전화인증·게스트 토큰 발급은 pay 가 안에서 끝낸다.
+ * 웹 결제 — 로그인 여부로 pay 진입 경로가 갈린다. 둘 다 **같은 탭 이동**이고,
  * 결제 결과는 pay 가 이 웹의 `/purchase/result` 로 돌려보낸다.
+ *
+ * - 로그인: 회원 플로우 `{PAY_HOST}/?flowType=partner&couponSeq&parkingDate&returnUrl#at=<token>`
+ *   진입값은 앱 Pref(PaymentEntry)와 같은 키를 query 로, 토큰은 hash 핸드오프로 싣는다
+ *   (pay webEntry.ts / webHandoffAuth.ts 가 소비). 구매가 계정에 귀속돼 내 주차권에 잡힌다.
+ * - 미로그인: 비회원 `{PAY_HOST}/guest?couponSeq&parkingDate&guestSeq` (pay guestEntry.ts).
+ *   토큰은 넘기지 않는다 — 전화인증·게스트 토큰 발급은 pay 가 안에서 끝낸다.
  */
 export function webCheckout({ couponSeq, parkingDate }: CheckoutTicket) {
   const host = payHost()
   if (!host) {
     console.error('NEXT_PUBLIC_PAY_HOST 미설정 — 결제 진입을 진행할 수 없습니다')
+    return
+  }
+
+  const { accessToken } = useAuthStore.getState()
+  if (accessToken) {
+    const query = new URLSearchParams({
+      flowType: 'partner',
+      couponSeq: String(couponSeq),
+      parkingDate,
+      returnUrl: `${window.location.origin}/purchase/result`
+    })
+    window.location.assign(`${host}/?${query.toString()}#at=${encodeURIComponent(accessToken)}`)
     return
   }
 
