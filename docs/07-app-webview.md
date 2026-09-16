@@ -157,23 +157,17 @@ export interface Platform {
 
 ## 결제 연결
 
-> **2026-09-16 갱신**: 결제는 **자체 결제 화면 `/payment`** 가 맡는다 — pay 서비스
-> (`modu-webview-monorepo/apps/pay`)의 **회원 partner 플로우 로직을 그대로 이관**했다
-> (`src/app/payment/model/{types,checkout,api}.ts`). 웹은 같은 탭 이동, 앱은 `open-url/internal` 새 웹뷰.
+> **2026-09-16 갱신**: 결제는 **pay 서비스가 맡는다** — 자체 결제 화면은 만들지 않는다
+> (한때 이관했다가 걷어냄). 웹은 pay **guest-pay**(`milestone/guest-pay` 의 `/guest` 라우트,
+> 전화인증→게스트 토큰→PG)로 같은 탭 이동, 앱은 아래 Pref 계약대로 pay 회원 플로우를 새 웹뷰로 연다.
 >
-> - 진입: 쿼리 `couponSeq`·`parkingDate` (Pref 아님 — 우리 화면이 우리를 연다). 금액·상품명 원본은 상세 조회
-> - 조회: `GET /user/payment-config?price&parkinglotSeq` (카드·쿠폰·차량·포인트 — **쌍 미완성 시 호출 금지, 400**),
->   `GET /ticket/{couponSeq}/daily-able-time` (requiresEntryTime 상품만)
-> - 금액: 상품가 → 쿠폰 차감(그 값이 포인트 상한) → 포인트 차감 → 0 하한. **`price`=최종액 / `totalPrice`=원가** — 바꿔 넣으면 원가 승인
-> - 실행: `POST /ticket/payment/{webview/{pgType}|billkey|point}` — 0원은 point, 카드는 billkey 즉시 승인,
->   토스페이·네이버페이·휴대폰(mobilians)은 PG `redirectUrl` 이동. 시각은 전부 `toServerTime`(ISO-UTC)
-> - 결과: 즉시 승인도 `/payment/callback` 으로 합류. 앱은 Pref `payment/PaymentResult`(성공만, `{type:'p',seq}`) 기록
->   후 닫기, 웹은 `/purchase/result`. 실패는 sessionStorage 토스트로 복귀
-> - 가드: 차량 확인 1회 되묻기, `uncertain`·`approved` 후 CTA 잠금 유지(더블탭=2차 결제), 프리셀렉트 1회 래치,
->   재조회로 사라진 카드·쿠폰·차량은 즉시 비움
-> - 미이관: pay guest(전화인증) 플로우 — 웹 비로그인은 로그인 유도. 카드·차량 등록은 앱 딥링크(`cards/register` 등)
+> **guest-pay 복귀 계약** — pay `/guest/callback` 이 이 웹 `/purchase/result` 로 돌려보낸다
+> (`src/app/purchase/result` 가 수신):
 >
-> 아래 외부 pay 연동 계약은 되돌아갈 때를 위해 보존한다.
+> - 성공: `?result=success&type=p&parkingSeq={couSeq}&guestCode=..&guestSeq=..`
+>   (제휴인데 파라미터 이름이 parkingSeq — 구매건 couSeq 가 실린다)
+> - 실패/취소: `?result=fail&type=p&couponSeq=..&guestSeq=..` — pay 게스트 세션은 유지라 재시도 가능
+> - pay 의 모웹 호스트 설정이 이 웹 도메인을 가리켜야 한다 (prod `app.modu.kr` / dev `webapp-dev.modudev.cloud`)
 
 ### 앱 — Pref 기록 후 pay 를 새 웹뷰로
 
@@ -286,7 +280,7 @@ useEffect(() => platform.onReturn(() => refetch()), [platform, refetch])
 
 ## 미정 사항
 
-- **웹 결제 결과 페이지** — pay 비회원 결제는 성공하면 `app.modu.kr/purchase/result` 로 돌려보낸다. 이 저장소에는 해당 라우트가 없다. 결과 페이지를 여기서 만들지, 반환 주소를 바꿀지 pay 와 정한다.
+- ~~웹 결제 결과 페이지~~ — 해결: `/purchase/result` 가 guest-pay 복귀 계약(result/type/parkingSeq·couponSeq/guestCode)을 받는다. 남은 것: pay 쪽 모웹 호스트가 이 웹 도메인을 가리키는지 확인.
 - **화면 스펙 기준** — 지금 `/t/[id]` 는 안드로이드 화면과 다르다 (버튼 문구 「구매하기」 vs 「N원 결제하기」, 판매 예정 문구, 다른 주차권 탭 vs 가로 카드). 앱 웹뷰로 쓰려면 어느 쪽을 기준으로 맞출지 기획에서 정한다.
 - **주차장 상세의 날짜 목록** — 앱 주차권 상세는 메인 필터의 선택 가능 날짜(`availableDates`)로 날짜 셀을 그린다. 웹 진입값에는 이 목록이 없다.
 

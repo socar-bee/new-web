@@ -28,12 +28,12 @@ test.describe('앱 웹뷰 판정', () => {
     await expect(page.getByRole('button', { name: '25,000원 결제하기' })).toBeVisible()
   })
 
-  test('구버전 앱(브릿지 없음) — 결제는 같은 탭 /payment 로 폴백한다', async ({ page }) => {
+  test('구버전 앱(브릿지 없음) — 결제는 pay 비회원 경로로 폴백한다', async ({ page }) => {
     await gotoHydrated(page, '/t/9101')
 
-    // 브라우저 환경엔 네이티브 transport 가 없어 브릿지 isAvailable=false → 같은 탭 폴백
+    // 브라우저 환경엔 네이티브 transport 가 없어 브릿지 isAvailable=false → 웹(guest-pay) 폴백
     await page.getByRole('button', { name: '25,000원 결제하기' }).click()
-    await page.waitForURL(/\/payment\?/)
+    await page.waitForURL(/\/guest\?/)
     expect(new URL(page.url()).searchParams.get('couponSeq')).toBe('9101')
   })
 })

@@ -18,7 +18,7 @@ import { readPlatformKind } from '@/shared/platform/detect'
  * 브릿지는 토큰 창구다 — 설치 라우트를 허용 목록으로 한정한다 (docs/07-app-webview.md).
  * 앱 판정이어도 이 밖의 라우트에서는 브릿지를 싣지 않는다.
  */
-const BRIDGE_ALLOWED_PREFIXES = ['/t/', '/p/', '/purchase', '/payment']
+const BRIDGE_ALLOWED_PREFIXES = ['/t/', '/p/', '/purchase']
 
 /**
  * 환경(웹/앱 웹뷰)을 정하고, 앱이면 웹브릿지를 설치해 context 로 내려준다.

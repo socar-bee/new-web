@@ -16,6 +16,4 @@ export { isAppUserAgent, PLATFORM_DETECT_SCRIPT, readPlatformKind } from '@/shar
 export { PlatformProvider } from '@/shared/platform/PlatformProvider'
 export type { CheckoutTicket, Platform } from '@/shared/platform/types'
 export { usePlatform } from '@/shared/platform/usePlatform'
-export { webCheckout, webOnReturn } from '@/shared/platform/web'
-export { RESULT_PREF, savePaymentResult, toPaymentResultPayload } from '@/shared/platform/bridge/paymentResult'
-export type { PaymentResultPayload, PaymentResultType } from '@/shared/platform/bridge/paymentResult'
+export { payHost, webCheckout, webOnReturn } from '@/shared/platform/web'
