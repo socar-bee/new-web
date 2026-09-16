@@ -12,7 +12,7 @@ test.describe('결제 결과 (/purchase/result)', () => {
     await gotoHydrated(page, '/purchase/result?result=success&type=p&parkingSeq=90001&guestCode=abc123&guestSeq=0')
 
     await expect(page.getByText('결제가 완료되었어요')).toBeVisible()
-    await expect(page.getByRole('button', { name: '확인' })).toBeEnabled()
+    await expect(page.getByRole('button', { name: '확인', exact: true })).toBeEnabled()
   })
 
   test('guest-pay 실패 복귀 — 다시 시도하면 주차권 상세로 돌아간다', async ({ page }) => {
@@ -41,7 +41,7 @@ test.describe('결제 결과 (/purchase/result)', () => {
   test('확인 → 홈으로 이동한다 (웹)', async ({ page }) => {
     await gotoHydrated(page, '/purchase/result')
 
-    await page.getByRole('button', { name: '확인' }).click()
+    await page.getByRole('button', { name: '확인', exact: true }).click()
     await expect(page).toHaveURL(/\/$/)
   })
 })
