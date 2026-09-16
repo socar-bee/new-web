@@ -28,7 +28,7 @@ export default function MyView() {
     <main className="bg-bg-weak flex min-h-full flex-col">
       {/* App Bar */}
       <header className="bg-bg-white sticky top-0 z-10 flex h-14 items-center justify-between px-5">
-        <h1 className="text-text-strong text-[20px] font-extrabold tracking-tight">MY</h1>
+        <h1 className="text-text-strong text-h4 font-extrabold">MY</h1>
         <div className="flex items-center gap-1">
           <AppBarBtn ariaLabel="알림" onClick={vm.goNotices} dot={(vm.profile?.noticeCount ?? 0) > 0}>
             <IconBellLine className="size-[22px]" />
@@ -120,12 +120,12 @@ export default function MyView() {
       <section className="bg-bg-white flex items-center justify-between px-5 pt-4 pb-4">
         <button
           onClick={vm.handleLogout}
-          className="text-text-soft hover:text-text-sub flex cursor-pointer items-center gap-1.5 text-[13px] transition-colors"
+          className="text-text-soft hover:text-text-sub text-b4 flex cursor-pointer items-center gap-1.5 transition-colors"
         >
           <IconLogoutLine className="size-[15px]" />
           로그아웃
         </button>
-        <span className="text-text-disabled text-[11px] tabular-nums">v 1.0.0</span>
+        <span className="text-text-disabled text-b5 tabular-nums">v 1.0.0</span>
       </section>
     </main>
   )
@@ -169,23 +169,21 @@ function ProfileRow({ profile }: { profile: UserProfile }) {
       <Avatar src={profile.profileThumbnail} name={profile.userName} verified={profile.isVerifiedUser} />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <div className="flex items-center gap-2">
-          <span className="text-text-strong truncate text-[17px] font-extrabold tracking-tight">
-            {profile.userName || '이름 없음'}
-          </span>
+          <span className="text-text-strong text-t3 truncate font-extrabold">{profile.userName || '이름 없음'}</span>
           {profile.isVerifiedUser && (
-            <span className="bg-primary/10 text-primary shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold">
+            <span className="bg-primary/10 text-primary text-c4 shrink-0 rounded-full px-2 py-0.5 font-bold">
               인증 완료
             </span>
           )}
         </div>
-        <p className="text-text-sub truncate text-[13px]">{profile.email}</p>
+        <p className="text-text-sub text-b4 truncate">{profile.email}</p>
         {linked.length > 0 && (
           <div className="mt-1 flex items-center gap-1">
             {linked.map((s) => (
               <span
                 key={s.key}
                 title={s.name}
-                className="flex size-[15px] items-center justify-center rounded-full text-[8px] font-extrabold"
+                className="text-c5 flex size-[15px] items-center justify-center rounded-full font-extrabold"
                 style={{ backgroundColor: s.bg, color: s.fg }}
               >
                 {s.short}
@@ -228,7 +226,7 @@ function Avatar({ src, name, verified }: { src?: string; name: string; verified?
           />
         ) : initial ? (
           <span
-            className="text-static-white flex h-full w-full items-center justify-center text-[20px] font-extrabold"
+            className="text-static-white text-h4 flex h-full w-full items-center justify-center font-extrabold"
             style={{ background: 'linear-gradient(135deg,var(--color-brand-200),var(--color-primary))' }}
           >
             {initial}
@@ -270,8 +268,8 @@ function VerifyBanner() {
         </svg>
       </span>
       <div className="flex flex-1 flex-col gap-0.5">
-        <span className="text-primary text-[14px] font-bold">본인인증을 진행해 주세요</span>
-        <span className="text-text-sub text-[12px]">사전예약 · 결제를 위해 필요해요</span>
+        <span className="text-primary text-t5 font-bold">본인인증을 진행해 주세요</span>
+        <span className="text-text-sub text-b5">사전예약 · 결제를 위해 필요해요</span>
       </div>
       <IconChevronRightLine className="text-text-disabled size-4" />
     </button>
@@ -306,17 +304,17 @@ function MenuRow({
       <span className="text-text-sub flex size-[22px] shrink-0 items-center justify-center">{icon}</span>
       <div className={`flex flex-1 items-center gap-2 py-[15px] ${last ? '' : 'border-stroke-soft/60 border-b'}`}>
         <div className="flex flex-1 flex-col gap-0.5">
-          <span className="text-text-strong text-[14px] font-semibold">{label}</span>
-          {sub && <span className="text-text-soft text-[12px]">{sub}</span>}
+          <span className="text-text-strong text-t5 font-semibold">{label}</span>
+          {sub && <span className="text-text-soft text-b5">{sub}</span>}
         </div>
         {value != null && (
-          <span className="text-text-sub flex items-center gap-1 text-[13px] tabular-nums">
+          <span className="text-text-sub text-b4 flex items-center gap-1 tabular-nums">
             <span className="text-primary font-semibold">{value}</span>
             {unit && <span>{unit}</span>}
           </span>
         )}
         {badge != null && badge > 0 && (
-          <span className="bg-primary text-static-white flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold">
+          <span className="bg-primary text-static-white text-c4 flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 font-bold">
             {badge}
           </span>
         )}
@@ -342,10 +340,10 @@ function ProfileSkeleton() {
 function ProfileError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="flex items-center justify-between">
-      <p className="text-text-sub text-[13px]">프로필을 불러오지 못했어요</p>
+      <p className="text-text-sub text-b4">프로필을 불러오지 못했어요</p>
       <button
         onClick={onRetry}
-        className="bg-primary text-static-white cursor-pointer rounded-full px-4 py-1.5 text-[13px] font-semibold"
+        className="bg-primary text-static-white text-t5 cursor-pointer rounded-full px-4 py-1.5 font-semibold"
       >
         다시 시도
       </button>

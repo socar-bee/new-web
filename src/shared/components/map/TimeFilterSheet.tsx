@@ -114,9 +114,7 @@ export default function TimeFilterSheet({
           >
             {/* Header */}
             <div className="px-4 pt-4 pb-0">
-              <h2 className="text-text-strong text-center text-[20px] leading-[30px] font-bold tracking-[-0.5px]">
-                날짜 및 이용시간
-              </h2>
+              <h2 className="text-text-strong text-h4 text-center font-bold">날짜 및 이용시간</h2>
             </div>
 
             {/* Calendar */}
@@ -130,9 +128,7 @@ export default function TimeFilterSheet({
 
             {/* Duration chips — 4열 grid */}
             <div className="px-6 pt-2 pb-2">
-              <p className="text-text-strong mb-3 text-[16px] leading-[22px] font-semibold tracking-[-1px]">
-                주차 예정 시간
-              </p>
+              <p className="text-text-strong text-t4 mb-3 font-semibold">주차 예정 시간</p>
               <div className="grid grid-cols-4 gap-2">
                 {options.durations.map((dur) => {
                   const isSelected = dur.id === draftDurationId
@@ -140,7 +136,7 @@ export default function TimeFilterSheet({
                     <button
                       key={dur.id}
                       onClick={() => setDraftDurationId(dur.id)}
-                      className={`flex h-[30px] cursor-pointer items-center justify-center rounded-full border text-[14px] leading-[22px] font-medium whitespace-nowrap transition-colors ${
+                      className={`text-c2 flex h-[30px] cursor-pointer items-center justify-center rounded-full border font-medium whitespace-nowrap transition-colors ${
                         isSelected
                           ? 'border-primary bg-primary text-static-white'
                           : 'border-stroke-soft bg-bg-white text-text-strong'
@@ -157,13 +153,13 @@ export default function TimeFilterSheet({
             <div className="flex gap-2 px-4 py-4">
               <button
                 onClick={onClose}
-                className="rounded-8 bg-bg-soft text-text-strong flex h-[52px] flex-1 cursor-pointer items-center justify-center text-[15px] font-semibold"
+                className="rounded-8 bg-bg-soft text-text-strong text-t4 flex h-[52px] flex-1 cursor-pointer items-center justify-center font-semibold"
               >
                 닫기
               </button>
               <button
                 onClick={handleConfirm}
-                className="rounded-8 bg-primary text-static-white flex h-[52px] flex-1 cursor-pointer items-center justify-center text-[15px] font-semibold"
+                className="rounded-8 bg-primary text-static-white text-t4 flex h-[52px] flex-1 cursor-pointer items-center justify-center font-semibold"
               >
                 선택 완료
               </button>

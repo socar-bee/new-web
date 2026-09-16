@@ -208,84 +208,88 @@
      ═══════════════════════════════════════════════════════ */
 
   /* ─── Heading (Bold / 700) ─── */
-  --font-size-h1: 2.25rem; /* 36px */
-  --font-size-h1--line-height: 2.625rem; /* 42px */
-  --font-size-h1--letter-spacing: -0.02em;
+  --text-h1: 2.25rem; /* 36px */
+  --text-h1--line-height: 2.625rem; /* 42px */
+  --text-h1--letter-spacing: -0.02em;
 
-  --font-size-h2: 1.875rem; /* 30px */
-  --font-size-h2--line-height: 2.25rem; /* 36px */
-  --font-size-h2--letter-spacing: -0.015em;
+  --text-h2: 1.875rem; /* 30px */
+  --text-h2--line-height: 2.25rem; /* 36px */
+  --text-h2--letter-spacing: -0.015em;
 
-  --font-size-h3: 1.5rem; /* 24px */
-  --font-size-h3--line-height: 2.125rem; /* 34px */
-  --font-size-h3--letter-spacing: -0.01em;
+  --text-h3: 1.5rem; /* 24px */
+  --text-h3--line-height: 2.125rem; /* 34px */
+  --text-h3--letter-spacing: -0.01em;
 
-  --font-size-h4: 1.25rem; /* 20px */
-  --font-size-h4--line-height: 1.875rem; /* 30px */
-  --font-size-h4--letter-spacing: -0.005em;
+  --text-h4: 1.25rem; /* 20px */
+  --text-h4--line-height: 1.875rem; /* 30px */
+  --text-h4--letter-spacing: -0.005em;
 
   /* ─── Title (SemiBold / 600) ─── */
-  --font-size-t1: 1.5rem; /* 24px */
-  --font-size-t1--line-height: 2rem; /* 32px */
-  --font-size-t1--letter-spacing: -0.02em;
+  --text-t1: 1.5rem; /* 24px */
+  --text-t1--line-height: 2rem; /* 32px */
+  --text-t1--letter-spacing: -0.02em;
 
-  --font-size-t2: 1.25rem; /* 20px */
-  --font-size-t2--line-height: 1.625rem; /* 26px */
-  --font-size-t2--letter-spacing: -0.015em;
+  --text-t2: 1.25rem; /* 20px */
+  --text-t2--line-height: 1.625rem; /* 26px */
+  --text-t2--letter-spacing: -0.015em;
 
-  --font-size-t3: 1rem; /* 16px */
-  --font-size-t3--line-height: 1.375rem; /* 22px */
-  --font-size-t3--letter-spacing: -0.01em;
+  --text-t3: 1.125rem; /* 18px */
+  --text-t3--line-height: 1.5rem; /* 24px */
+  --text-t3--letter-spacing: -0.0125em;
 
-  --font-size-t4: 0.875rem; /* 14px */
-  --font-size-t4--line-height: 1.25rem; /* 20px */
-  --font-size-t4--letter-spacing: -0.005em;
+  --text-t4: 1rem; /* 16px */
+  --text-t4--line-height: 1.375rem; /* 22px */
+  --text-t4--letter-spacing: -0.01em;
 
-  --font-size-t5: 0.75rem; /* 12px */
-  --font-size-t5--line-height: 1.125rem; /* 18px */
-  --font-size-t5--letter-spacing: 0;
+  --text-t5: 0.875rem; /* 14px */
+  --text-t5--line-height: 1.25rem; /* 20px */
+  --text-t5--letter-spacing: -0.005em;
+
+  --text-t6: 0.75rem; /* 12px */
+  --text-t6--line-height: 1.125rem; /* 18px */
+  --text-t6--letter-spacing: 0;
 
   /* ─── Body (Regular / 400) ─── */
-  --font-size-b1: 1.25rem; /* 20px */
-  --font-size-b1--line-height: 1.875rem; /* 30px */
-  --font-size-b1--letter-spacing: -0.015em;
+  --text-b1: 1.25rem; /* 20px */
+  --text-b1--line-height: 1.875rem; /* 30px */
+  --text-b1--letter-spacing: -0.015em;
 
-  --font-size-b2: 1.125rem; /* 18px */
-  --font-size-b2--line-height: 1.75rem; /* 28px */
-  --font-size-b2--letter-spacing: -0.01em;
+  --text-b2: 1.125rem; /* 18px */
+  --text-b2--line-height: 1.75rem; /* 28px */
+  --text-b2--letter-spacing: -0.01em;
 
-  --font-size-b3: 1rem; /* 16px */
-  --font-size-b3--line-height: 1.625rem; /* 26px */
-  --font-size-b3--letter-spacing: 0;
+  --text-b3: 1rem; /* 16px */
+  --text-b3--line-height: 1.625rem; /* 26px */
+  --text-b3--letter-spacing: 0;
 
-  --font-size-b4: 0.875rem; /* 14px */
-  --font-size-b4--line-height: 1.4375rem; /* 23px */
-  --font-size-b4--letter-spacing: 0;
+  --text-b4: 0.875rem; /* 14px */
+  --text-b4--line-height: 1.4375rem; /* 23px */
+  --text-b4--letter-spacing: 0;
 
-  --font-size-b5: 0.75rem; /* 12px */
-  --font-size-b5--line-height: 1.25rem; /* 20px */
-  --font-size-b5--letter-spacing: 0.01em;
+  --text-b5: 0.75rem; /* 12px */
+  --text-b5--line-height: 1.25rem; /* 20px */
+  --text-b5--letter-spacing: 0.01em;
 
   /* ─── Caption (Medium / 500) ─── */
-  --font-size-c1: 1rem; /* 16px */
-  --font-size-c1--line-height: 1.5rem; /* 24px */
-  --font-size-c1--letter-spacing: 0;
+  --text-c1: 1rem; /* 16px */
+  --text-c1--line-height: 1.5rem; /* 24px */
+  --text-c1--letter-spacing: 0;
 
-  --font-size-c2: 0.875rem; /* 14px */
-  --font-size-c2--line-height: 1.375rem; /* 22px */
-  --font-size-c2--letter-spacing: 0.01em;
+  --text-c2: 0.875rem; /* 14px */
+  --text-c2--line-height: 1.375rem; /* 22px */
+  --text-c2--letter-spacing: 0.01em;
 
-  --font-size-c3: 0.75rem; /* 12px */
-  --font-size-c3--line-height: 1.25rem; /* 20px */
-  --font-size-c3--letter-spacing: 0.02em;
+  --text-c3: 0.75rem; /* 12px */
+  --text-c3--line-height: 1.25rem; /* 20px */
+  --text-c3--letter-spacing: 0.02em;
 
-  --font-size-c4: 0.625rem; /* 10px */
-  --font-size-c4--line-height: 1rem; /* 16px */
-  --font-size-c4--letter-spacing: 0.03em;
+  --text-c4: 0.625rem; /* 10px */
+  --text-c4--line-height: 1rem; /* 16px */
+  --text-c4--letter-spacing: 0.03em;
 
-  --font-size-c5: 0.5rem; /* 8px */
-  --font-size-c5--line-height: 0.875rem; /* 14px */
-  --font-size-c5--letter-spacing: 0.05em;
+  --text-c5: 0.5rem; /* 8px */
+  --text-c5--line-height: 0.875rem; /* 14px */
+  --text-c5--letter-spacing: 0.05em;
 
   /* ═══════════════════════════════════════════════════════
      4. Border Radius

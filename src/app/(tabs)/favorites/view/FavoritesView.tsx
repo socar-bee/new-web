@@ -57,12 +57,12 @@ function Header({
   return (
     <header className="bg-bg-white border-stroke-soft sticky top-0 z-10 border-b">
       <div className="flex items-center justify-between px-5 pt-4 pb-3">
-        <h1 className="text-text-strong flex items-baseline gap-1.5 text-[20px] font-extrabold tracking-[-0.3px]">
+        <h1 className="text-text-strong text-h4 flex items-baseline gap-1.5 font-extrabold">
           즐겨찾기
-          {count > 0 && <span className="text-primary text-[14px] tabular-nums">{count}</span>}
+          {count > 0 && <span className="text-primary text-b4 tabular-nums">{count}</span>}
         </h1>
         {count > 0 && (
-          <button onClick={onRequestClear} className="text-text-sub cursor-pointer text-[12px] font-medium">
+          <button onClick={onRequestClear} className="text-text-sub text-c3 cursor-pointer font-medium">
             전체삭제
           </button>
         )}
@@ -85,7 +85,7 @@ function SortPill({ active, onClick, children }: { active: boolean; onClick: () 
   return (
     <button
       onClick={onClick}
-      className={`cursor-pointer rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors ${
+      className={`text-t6 cursor-pointer rounded-full px-3 py-1.5 font-semibold transition-colors ${
         active ? 'bg-primary text-static-white' : 'bg-bg-soft text-text-sub'
       }`}
     >
@@ -110,8 +110,8 @@ function EmptyState({ onCtaClick }: { onCtaClick: () => void }) {
         />
       </span>
       <div className="flex flex-col items-center gap-2">
-        <p className="text-text-strong text-[16px] font-bold">아직 즐겨찾기가 없어요</p>
-        <p className="text-text-soft text-center text-[13px] leading-relaxed">
+        <p className="text-text-strong text-t4 font-bold">아직 즐겨찾기가 없어요</p>
+        <p className="text-text-soft text-b4 text-center">
           자주 가는 주차장을 즐겨찾기에 추가하면
           <br />
           빠르게 찾아볼 수 있어요
@@ -119,7 +119,7 @@ function EmptyState({ onCtaClick }: { onCtaClick: () => void }) {
       </div>
       <button
         onClick={onCtaClick}
-        className="bg-primary text-static-white mt-1 cursor-pointer rounded-full px-6 py-3 text-[14px] font-semibold transition-transform active:scale-95"
+        className="bg-primary text-static-white text-t5 mt-1 cursor-pointer rounded-full px-6 py-3 font-semibold transition-transform active:scale-95"
       >
         지도에서 찾아보기
       </button>
@@ -169,15 +169,9 @@ const FavoriteCard = memo(function FavoriteCard({
       >
         <FavoriteThumbnail src={favorite.image} alt={favorite.name} />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <p className="text-text-strong truncate text-[15px] leading-tight font-semibold tracking-[-0.2px]">
-            {favorite.name}
-          </p>
-          {favorite.areaLabel && (
-            <p className="text-text-soft truncate text-[12px] leading-tight">{favorite.areaLabel}</p>
-          )}
-          <p className="text-text-disabled text-[11px] leading-tight tabular-nums">
-            {formatRelative(favorite.addedAt)}
-          </p>
+          <p className="text-text-strong text-t4 truncate font-semibold">{favorite.name}</p>
+          {favorite.areaLabel && <p className="text-text-soft text-b5 truncate">{favorite.areaLabel}</p>}
+          <p className="text-text-disabled text-b5 tabular-nums">{formatRelative(favorite.addedAt)}</p>
         </div>
       </button>
       <button
@@ -266,7 +260,7 @@ function ConfirmClearDialog({ onConfirm, onCancel }: { onConfirm: () => void; on
         transition={{ duration: 0.18, ease: 'easeOut' }}
         className="fixed top-1/2 left-1/2 z-50 w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-5 shadow-2xl"
       >
-        <p className="text-text-strong text-center text-[15px] font-semibold">
+        <p className="text-text-strong text-t4 text-center font-semibold">
           모든 즐겨찾기를
           <br />
           삭제할까요?
@@ -274,13 +268,13 @@ function ConfirmClearDialog({ onConfirm, onCancel }: { onConfirm: () => void; on
         <div className="mt-5 flex gap-2">
           <button
             onClick={onCancel}
-            className="bg-bg-soft text-text-strong flex-1 cursor-pointer rounded-xl py-2.5 text-[14px] font-semibold"
+            className="bg-bg-soft text-text-strong text-t5 flex-1 cursor-pointer rounded-xl py-2.5 font-semibold"
           >
             취소
           </button>
           <button
             onClick={onConfirm}
-            className="bg-primary text-static-white flex-1 cursor-pointer rounded-xl py-2.5 text-[14px] font-semibold"
+            className="bg-primary text-static-white text-t5 flex-1 cursor-pointer rounded-xl py-2.5 font-semibold"
           >
             삭제
           </button>

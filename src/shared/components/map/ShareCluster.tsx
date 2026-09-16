@@ -18,7 +18,7 @@ export default function ShareCluster({ count }: ShareClusterProps) {
       {/* Marker */}
       <div className="relative z-[10] flex flex-col items-center">
         <div className="border-brand-400 bg-brand-100 flex h-[48px] w-[48px] items-center justify-center rounded-full border-[2.5px] shadow-[0_2px_6px_rgba(0,0,0,0.25)]">
-          <span className="text-brand-700 text-[16px] leading-none font-bold">{count}</span>
+          <span className="text-brand-700 text-t4 leading-none font-bold">{count}</span>
         </div>
       </div>
     </div>
