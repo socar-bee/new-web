@@ -1,7 +1,9 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+
+import { addRecentParking } from '@/shared/hooks/useRecentParkings'
 
 import { useParkingLotDetail, useTicketList } from '../model'
 import type { ParkingLotDetail, ParkingLotType } from '@/shared/types/parking'
@@ -35,6 +37,16 @@ export function useParkingDetailViewModel(seq: number | null, type?: ParkingLotT
   }, [parkingDate, durationId])
 
   const { data: detail, isLoading: isDetailLoading } = useParkingLotDetail(seq, type, initialDetail)
+
+  // 상세 조회 성공 시 "다시 방문" 기록 (홈 최근 방문 섹션용)
+  useEffect(() => {
+    if (!detail) return
+    addRecentParking({
+      seq: detail.seq,
+      name: detail.basic.name,
+      image: detail.basic.photos[0]?.thumbnail
+    })
+  }, [detail])
   const { data: tickets, isLoading: isTicketsLoading } = useTicketList(seq, parkingDate, durationId)
 
   /** 뒤로가기 — 웹은 지도 홈으로, 앱은 웹뷰 닫기 (platform 이 분기) */

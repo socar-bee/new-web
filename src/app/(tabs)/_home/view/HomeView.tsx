@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 
 import Toast from '@/shared/components/ui/Toast'
+import { useRecentParkings, type RecentParking } from '@/shared/hooks/useRecentParkings'
 import { useRecentSearches } from '@/shared/hooks/useRecentSearches'
 
 import type { HeroBanner, PopularKeyword, QuickMenuItem, RecommendedRegion, TopParking } from '../model'
@@ -53,24 +54,27 @@ export default function HomeView() {
       <div className="bg-bg-weak h-2.5" />
       <AnimatePresence>{showReviewSheet && <ReviewSheet onClose={() => setShowReviewSheet(false)} />}</AnimatePresence>
       <Toast id={toastMsg?.id} message={toastMsg?.message ?? null} onDismiss={() => setToastMsg(null)} />
-      <RegionsSection
+      {/* 지역 BEST — 임시 비활성화 (2026-09-16). 재활성화 시 아래 주석 해제 */}
+      {/* <RegionsSection
         regions={vm.regions}
         isLoading={vm.isRegionsLoading}
         onClickRegion={vm.goToRegion}
         onNearby={vm.goNearby}
       />
-      <div className="bg-bg-weak h-2.5" />
+      <div className="bg-bg-weak h-2.5" /> */}
       <PopularKeywordsSection
         keywords={vm.popularKeywords}
         isLoading={vm.isPopularKeywordsLoading}
         onClickKeyword={vm.goToKeyword}
       />
       <div className="bg-bg-weak h-2.5" />
-      <TopParkingsSection
+      {/* 주차장 BEST — 임시 비활성화 (2026-09-16). 해당 슬롯을 '다시 방문'(최근 조회)으로 대체 */}
+      {/* <TopParkingsSection
         parkings={vm.topParkings}
         isLoading={vm.isTopParkingsLoading}
         onClickParking={vm.goToTopParking}
-      />
+      /> */}
+      <RecentParkingsSection />
       <HomeFooter />
     </div>
   )
@@ -416,7 +420,8 @@ function QuickMenuGrid({ items, onAction }: { items: QuickMenuItem[]; onAction?:
   )
 }
 
-/* ─── 어디로 가시나요? (라운드 지역 카드) ─── */
+/* ─── 어디로 가시나요? (라운드 지역 카드) — 임시 비활성화 중 (렌더 위치 주석 참조) ─── */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function RegionsSection({
   regions,
   isLoading,
@@ -498,6 +503,84 @@ const RegionCard = memo(function RegionCard({
 })
 
 /* ─── 인기 주차장 BEST (사진 가로 스크롤) ─── */
+/* ─── 다시 방문 (최근 조회 주차장 — localStorage, 비로그인 가용) ─── */
+function RecentParkingsSection() {
+  const router = useRouter()
+  const { parkings } = useRecentParkings()
+
+  return (
+    <>
+      <section className="bg-bg-white py-6">
+        <div className="flex items-center gap-1.5 px-5">
+          <IconUsageHistoryLine className="text-icon-sub size-[18px]" />
+          <h2 className="text-text-strong text-[18px] font-bold tracking-[-0.3px]">다시 방문</h2>
+        </div>
+        {parkings.length ? (
+          <div className="scrollbar-hide mt-4 overflow-x-auto">
+            <div className="flex w-max gap-3 px-5">
+              {parkings.map((p, i) => (
+                <RecentParkingCard key={p.seq} parking={p} index={i} onSelect={() => router.push(`/p/${p.seq}`)} />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="bg-bg-weak mx-5 mt-4 flex flex-col items-center gap-3 rounded-2xl px-4 py-8">
+            <p className="text-text-sub text-center text-[13px] leading-relaxed">
+              최근 둘러본 주차장이 여기에 모여요.
+              <br />내 주변 주차장부터 찾아볼까요?
+            </p>
+            <button
+              onClick={() => router.push('/map')}
+              className="bg-primary text-static-white cursor-pointer rounded-full px-4 py-2 text-[13px] font-semibold"
+            >
+              내 주변 주차장 보기
+            </button>
+          </div>
+        )}
+      </section>
+      <div className="bg-bg-weak h-2.5" />
+    </>
+  )
+}
+
+const RecentParkingCard = memo(function RecentParkingCard({
+  parking,
+  index,
+  onSelect
+}: {
+  parking: RecentParking
+  index: number
+  onSelect: () => void
+}) {
+  return (
+    <motion.button
+      onClick={onSelect}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.04, duration: 0.22, ease: 'easeOut' }}
+      className="flex w-[104px] shrink-0 cursor-pointer flex-col gap-1.5 text-left"
+    >
+      <div className="bg-bg-soft relative h-[104px] w-[104px] overflow-hidden rounded-2xl">
+        {parking.image ? (
+          <img
+            src={parking.image}
+            alt={parking.name}
+            draggable={false}
+            className="h-full w-full object-cover select-none"
+          />
+        ) : (
+          <div className="text-text-soft flex h-full w-full items-center justify-center text-[28px] font-bold">P</div>
+        )}
+      </div>
+      <span className="text-text-strong truncate text-[12px] leading-tight font-semibold tracking-[-0.2px]">
+        {parking.name}
+      </span>
+    </motion.button>
+  )
+})
+
+// 임시 비활성화 중 (렌더 위치 주석 참조)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function TopParkingsSection({
   parkings,
   isLoading,
