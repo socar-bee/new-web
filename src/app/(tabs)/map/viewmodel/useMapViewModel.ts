@@ -15,6 +15,7 @@ import { createClustering, type ClusteringInstance } from '@/shared/lib/clusteri
 import type { Bounds, TicketGroupPin, TimeFilterDefaults } from '../model/types'
 import type { ParkingDetailData } from '../view/ParkingDetailSheet'
 
+import { trimPinCache } from '../model/pinCache'
 import { usePins, useTimeFilterOptions } from '../model/queries'
 import { createPinFromV2, MarkerType, PinV2Type } from '@/shared/types/map'
 import type { Pin, PinsGroupV2 } from '@/shared/types/map'
@@ -65,6 +66,10 @@ export function useMapViewModel(options: UseMapViewModelOptions = {}) {
   const mapRef = useRef<naver.maps.Map | null>(null)
   const cachedMarkers = useRef<Record<string, naver.maps.Marker>>({})
   const cachedPinsMap = useRef<Record<string, CachedPinEntry>>({})
+  // LRU 사용 순서 (오래된 것 → 최신 순). trimPinCache 가 직접 갱신한다.
+  const recentGeohashesRef = useRef<Set<string>>(new Set())
+  // 현재 뷰포트 geohash — LRU 정리에서 화면 내 영역 보호용
+  const activeGeohashesRef = useRef<ReadonlySet<string>>(new Set())
   const cachedPinsBySeq = useRef<Record<number, Pin>>({})
   const selectedSeqRef = useRef<number | null>(null)
   const clusteringRef = useRef<ClusteringInstance | null>(null)
@@ -426,6 +431,7 @@ export function useMapViewModel(options: UseMapViewModelOptions = {}) {
     cachedPinsMap.current = {}
     cachedPinsBySeq.current = {}
     pinFingerprints.current = {}
+    recentGeohashesRef.current.clear()
     cachedTicketGroupMarkers.current.forEach((m) => m.setMap(null))
     cachedTicketGroupMarkers.current = []
     clearClusters()
@@ -542,6 +548,36 @@ export function useMapViewModel(options: UseMapViewModelOptions = {}) {
     return { sw: { lat: sw.y, lng: sw.x }, ne: { lat: ne.y, lng: ne.x } }
   }, [])
 
+  // ─── Pin Cache LRU 정리 ───
+
+  /**
+   * TTL 만료 + 용량 초과 geohash 를 내보내고, 해당 영역의 마커·fingerprint·seq 인덱스도 함께 정리한다.
+   * 현재 뷰포트(activeGeohashes) 영역은 용량 정리에서 보호된다.
+   */
+  const prunePinCache = useCallback(() => {
+    const before = cachedPinsMap.current
+    const { pins: trimmed } = trimPinCache(before, {
+      recentGeohashes: recentGeohashesRef.current,
+      activeGeohashes: activeGeohashesRef.current
+    })
+    if (trimmed === before) return
+
+    for (const geohash in before) {
+      if (Object.prototype.hasOwnProperty.call(trimmed, geohash)) continue
+      before[geohash].pins.forEach((pin) => {
+        const key = `${geohash}/${pin.seq}`
+        cachedMarkers.current[key]?.setMap(null)
+        delete cachedMarkers.current[key]
+        delete pinFingerprints.current[key]
+        // 다른 geohash 소속으로 갱신된 seq 는 남긴다
+        if (cachedPinsBySeq.current[pin.seq]?.geohash === geohash) {
+          delete cachedPinsBySeq.current[pin.seq]
+        }
+      })
+    }
+    cachedPinsMap.current = trimmed
+  }, [])
+
   // ─── Data → Markers ───
 
   const drawPins = useCallback(
@@ -580,6 +616,9 @@ export function useMapViewModel(options: UseMapViewModelOptions = {}) {
         })
       })
 
+      // 새 응답으로 active 영역 timestamp 가 갱신된 뒤 오래된 영역을 LRU 로 정리
+      prunePinCache()
+
       // 모든 마커 생성 완료 후 selected 마커를 DOM 맨 끝으로 재삽입
       // (drawPins 내 생성 순서상 selected가 다른 핀보다 먼저 추가될 수 있어 DOM 순서가 밀릴 수 있음)
       const selectedSeq = selectedSeqRef.current
@@ -589,7 +628,7 @@ export function useMapViewModel(options: UseMapViewModelOptions = {}) {
         })
       }
     },
-    [generateMarker, handleMarkerOverlay, bringToFront, buildIconKey]
+    [generateMarker, handleMarkerOverlay, bringToFront, buildIconKey, prunePinCache]
   )
 
   // pinsGroups / ticketGroupPins 변경 시 마커 그리기
@@ -709,8 +748,9 @@ export function useMapViewModel(options: UseMapViewModelOptions = {}) {
       const bounds = getBoundsFromMap()
       if (bounds) {
         setMapBounds(bounds)
-        const hashes = ngeohash.bboxes(bounds.sw.lat, bounds.sw.lng, bounds.ne.lat, bounds.ne.lng, 6).join(',')
-        setGeohashes(hashes)
+        const hashArr = ngeohash.bboxes(bounds.sw.lat, bounds.sw.lng, bounds.ne.lat, bounds.ne.lng, 6)
+        activeGeohashesRef.current = new Set(hashArr)
+        setGeohashes(hashArr.join(','))
       }
     }
     updateBoundsRef.current = updateBounds
