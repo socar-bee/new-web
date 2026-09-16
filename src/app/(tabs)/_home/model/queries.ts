@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 
+import type { HomeConfig } from './api'
 import type { HeroBanner, PopularKeyword, PopularParking, QuickMenuItem, RecommendedRegion, TopParking } from './types'
 
 import {
   fetchHeroBanners,
+  fetchHomeConfig,
   fetchPopularKeywords,
   fetchPopularParkings,
   fetchQuickMenu,
@@ -18,7 +20,8 @@ export const homeQueryKeys = {
   recommendedRegions: () => [...homeQueryKeys.all, 'recommendedRegions'] as const,
   popularParkings: () => [...homeQueryKeys.all, 'popularParkings'] as const,
   popularKeywords: () => [...homeQueryKeys.all, 'popularKeywords'] as const,
-  topParkings: () => [...homeQueryKeys.all, 'topParkings'] as const
+  topParkings: () => [...homeQueryKeys.all, 'topParkings'] as const,
+  homeConfig: () => [...homeQueryKeys.all, 'homeConfig'] as const
 }
 
 export function useHeroBanners() {
@@ -66,5 +69,14 @@ export function usePopularKeywords() {
     queryKey: homeQueryKeys.popularKeywords(),
     queryFn: fetchPopularKeywords,
     staleTime: 60_000
+  })
+}
+
+export function useHomeConfig() {
+  return useQuery<HomeConfig>({
+    queryKey: homeQueryKeys.homeConfig(),
+    queryFn: fetchHomeConfig,
+    staleTime: 5 * 60_000,
+    retry: 0
   })
 }

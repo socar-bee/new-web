@@ -6,21 +6,38 @@ import {
   IconMarkerFill,
   IconSearchLine,
   IconStarFill,
-  IconUsageHistoryLine,
   IconXLine
 } from '@socar-inc/modu-ui/icons'
-import { AnimatePresence, animate, motion, useMotionValue } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 
+import EventBanner from '@/shared/components/ui/EventBanner'
+import type { EventBannerSlide } from '@/shared/components/ui/EventBanner'
 import Toast from '@/shared/components/ui/Toast'
 import { useRecentParkings, type RecentParking } from '@/shared/hooks/useRecentParkings'
-import { useRecentSearches } from '@/shared/hooks/useRecentSearches'
 
 import type { HeroBanner, PopularKeyword, QuickMenuItem, RecommendedRegion, TopParking } from '../model'
 
 import { useHomeViewModel } from '../viewmodel'
+
+/** 세차 프로모션 링크 — TODO(운영 배포): prod 는 https://carwash.modu.kr */
+const CAR_WASH_PROMOTION_LINK = 'https://carwash-dev.modudev.cloud'
+
+/** 메인 이벤트 팝업 슬라이드 — modu-web-app carWashPromotion.popup 과 동일 구성 */
+const HOME_EVENT_BANNER_SLIDES: EventBannerSlide[] = [
+  {
+    variant: 'promotion',
+    title: '세차 가격\n전국 최저가 도전',
+    subtitle: '지금 가장 저렴하게, 깨끗하게',
+    actionLabel: '세차장 보러가기',
+    href: CAR_WASH_PROMOTION_LINK,
+    image: '/images/img_car_wash.webp',
+    alt: '세차 중인 흰색 차량과 세차기'
+  }
+]
 
 export default function HomeView() {
   const vm = useHomeViewModel()
@@ -37,13 +54,19 @@ export default function HomeView() {
         <TopBar />
         <LocationChip label={vm.locationLabel} isLocating={vm.isLocating} onClick={vm.detectLocation} />
       </div>
-      <HeroCarousel
-        banners={vm.banners}
-        index={vm.heroIndex}
-        onIndexChange={vm.onHeroIndexChange}
-        onDragStart={vm.onHeroDragStart}
-        onDragEnd={vm.onHeroDragEnd}
-      />
+      {/* 상단 배너 — 앱 검색배너(adInventory) 328×80 스트립 */}
+      {vm.adBanner && (
+        <div className="bg-bg-white px-5 pt-1 pb-2">
+          <button onClick={vm.goAdBanner} className="block w-full cursor-pointer" aria-label="이벤트 배너">
+            <img
+              src={vm.adBanner.bannerUrl}
+              alt=""
+              className="w-full rounded-[10px] object-cover"
+              style={{ aspectRatio: '328 / 80' }}
+            />
+          </button>
+        </div>
+      )}
       <QuickMenuGrid
         items={vm.quickMenu}
         onAction={(action) => {
@@ -62,35 +85,89 @@ export default function HomeView() {
         onNearby={vm.goNearby}
       />
       <div className="bg-bg-weak h-2.5" /> */}
-      <PopularKeywordsSection
-        keywords={vm.popularKeywords}
-        isLoading={vm.isPopularKeywordsLoading}
-        onClickKeyword={vm.goToKeyword}
-      />
-      <div className="bg-bg-weak h-2.5" />
-      {/* 주차장 BEST — 임시 비활성화 (2026-09-16). 해당 슬롯을 '다시 방문'(최근 조회)으로 대체 */}
+      {/* 주차장 BEST — 임시 비활성화 (2026-09-16). 해당 슬롯을 '최근 본 주차장'(조회 기록)으로 대체 */}
       {/* <TopParkingsSection
         parkings={vm.topParkings}
         isLoading={vm.isTopParkingsLoading}
         onClickParking={vm.goToTopParking}
       /> */}
       <RecentParkingsSection />
+      <div className="bg-bg-weak h-2.5" />
+      <PopularKeywordsSection
+        keywords={vm.popularKeywords}
+        isLoading={vm.isPopularKeywordsLoading}
+        onClickKeyword={vm.goToKeyword}
+      />
+      {/* 세차 띠배너 — modu-web-app SlideBanner(carWash) 이관. 풀블리드로 푸터에 직결 */}
+      <CarWashStripBanner />
       <HomeFooter />
+      {/* 메인 이벤트 팝업 — modu-web-app EventBanner (정적 슬라이드. 서버 mainNotice API 는 유지하되 미사용) */}
+      <EventBanner slides={HOME_EVENT_BANNER_SLIDES} todayDismissKey="modu:home-event-banner" />
     </div>
+  )
+}
+
+/* ─── 세차 띠배너 — modu-web-app SlideBanner carWash variant (58px 스트립) 이관.
+   풀블리드(라운딩·좌우 마진 없음)로 푸터에 바로 붙는다. X 닫기는 세션 동안 유지 ─── */
+function CarWashStripBanner() {
+  const [isClosed, setIsClosed] = useState(false)
+
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (sessionStorage.getItem('modu_carwash_strip_closed') === '1') setIsClosed(true)
+    } catch {
+      /* 접근 불가 시 그냥 노출 */
+    }
+  }, [])
+
+  const handleClose = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsClosed(true)
+    try {
+      sessionStorage.setItem('modu_carwash_strip_closed', '1')
+    } catch {
+      /* 저장 실패 시 이번 렌더에서만 숨김 */
+    }
+  }
+
+  if (isClosed) return null
+
+  return (
+    <a
+      href={CAR_WASH_PROMOTION_LINK}
+      className="bg-primary relative flex h-[58px] w-full shrink-0 cursor-pointer items-center overflow-hidden px-4 pr-11"
+    >
+      <div className="relative z-10 flex w-[195px] flex-col items-start font-semibold text-white">
+        <p className="text-b3">세차 가격 전국 최저가 도전</p>
+        <p className="text-b5">지금 가장 저렴하게, 깨끗하게</p>
+      </div>
+      <div className="pointer-events-none absolute top-1 right-11 h-[58px] w-24 overflow-hidden">
+        <Image
+          src="/images/img_car_wash.webp"
+          alt="세차 중인 흰색 차량과 세차기"
+          width={1536}
+          height={1024}
+          className="absolute top-[-3.94px] left-[-0.14px] h-[65.88px] w-[99.4px] max-w-none"
+          loading="eager"
+          unoptimized
+        />
+      </div>
+      <button
+        type="button"
+        aria-label="세차 배너 닫기"
+        onClick={handleClose}
+        className="absolute top-1/2 right-2 z-20 flex size-6 -translate-y-1/2 cursor-pointer items-center justify-center text-white"
+      >
+        <IconXLine className="size-5" />
+      </button>
+    </a>
   )
 }
 
 /* ─── Top Bar (sticky) ─── */
 function TopBar() {
-  const router = useRouter()
-  const [showRecent, setShowRecent] = useState(false)
-  const { searches, refresh, remove, clear } = useRecentSearches()
-
-  const openRecent = useCallback(() => {
-    refresh()
-    setShowRecent(true)
-  }, [refresh])
-
   return (
     <>
       <header className="bg-bg-white">
@@ -103,15 +180,8 @@ function TopBar() {
             className="bg-bg-soft flex h-10 min-w-0 flex-1 items-center gap-2 overflow-hidden rounded-full px-4"
           >
             <IconSearchLine className="text-icon-soft size-[18px] shrink-0" />
-            <span className="text-text-soft truncate text-[13px]">목적지 또는 주차장을 검색하세요</span>
+            <span className="text-text-soft text-b4 truncate">목적지 또는 주차장을 검색하세요</span>
           </Link>
-          <button
-            onClick={openRecent}
-            aria-label="최근 검색"
-            className="text-text-sub flex size-9 shrink-0 items-center justify-center"
-          >
-            <IconUsageHistoryLine className="size-[22px]" />
-          </button>
           <Link
             href="https://page.modu.kr/userguide"
             target="_blank"
@@ -124,88 +194,6 @@ function TopBar() {
           </Link>
         </div>
       </header>
-      <AnimatePresence>
-        {showRecent && (
-          <RecentSearchSheet
-            searches={searches}
-            onClose={() => setShowRecent(false)}
-            onSelect={(keyword) => {
-              setShowRecent(false)
-              router.push(`/search/${encodeURIComponent(keyword)}`)
-            }}
-            onRemove={remove}
-            onClear={clear}
-          />
-        )}
-      </AnimatePresence>
-    </>
-  )
-}
-
-/* ─── 최근 검색 시트 ─── */
-function RecentSearchSheet({
-  searches,
-  onClose,
-  onSelect,
-  onRemove,
-  onClear
-}: {
-  searches: string[]
-  onClose: () => void
-  onSelect: (keyword: string) => void
-  onRemove: (keyword: string) => void
-  onClear: () => void
-}) {
-  return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="fixed inset-x-0 top-0 z-40 mx-auto w-full max-w-[480px] bg-black/50"
-        style={{ bottom: 'var(--dock-height, 0px)' }}
-        onClick={onClose}
-      />
-      <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-        className="fixed left-1/2 z-50 min-h-[320px] w-full max-w-[480px] -translate-x-1/2 rounded-t-3xl bg-white pb-8 shadow-[0_-8px_24px_rgba(0,0,0,0.12)]"
-        style={{ bottom: 'var(--dock-height, 0px)' }}
-      >
-        <div className="flex justify-center pt-3 pb-1">
-          <span className="bg-stroke-sub h-1 w-10 rounded-full" />
-        </div>
-        <div className="flex items-center justify-between px-5 py-3">
-          <span className="text-text-strong text-[16px] font-bold">최근 검색</span>
-          {searches.length > 0 && (
-            <button onClick={onClear} className="text-text-sub text-[13px] font-medium">
-              전체삭제
-            </button>
-          )}
-        </div>
-        {searches.length === 0 ? (
-          <div className="flex flex-col items-center py-14">
-            <span className="text-text-soft text-[14px]">최근 검색 내역이 없어요</span>
-          </div>
-        ) : (
-          <ul className="px-5 pb-10">
-            {searches.map((keyword) => (
-              <li key={keyword} className="border-stroke-soft flex items-center border-b py-3.5 last:border-0">
-                <button onClick={() => onSelect(keyword)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-                  <IconUsageHistoryLine className="text-text-disabled size-4 shrink-0" />
-                  <span className="text-text-strong truncate text-[14px]">{keyword}</span>
-                </button>
-                <button onClick={() => onRemove(keyword)} className="text-text-disabled ml-3 shrink-0 p-1">
-                  <IconXLine className="size-3.5" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </motion.div>
     </>
   )
 }
@@ -216,139 +204,12 @@ function LocationChip({ label, isLocating, onClick }: { label: string; isLocatin
     <button onClick={onClick} className="text-text-strong flex items-center gap-1 px-5 pt-1 pb-3 text-left">
       <IconMarkerFill className="size-[18px] text-red-500" />
       {isLocating ? (
-        <span className="text-text-soft text-[16px] font-bold tracking-[-0.2px]">위치 확인 중…</span>
+        <span className="text-text-soft text-t4 font-bold">위치 확인 중…</span>
       ) : (
-        <span className="text-[16px] font-bold tracking-[-0.2px]">{label}</span>
+        <span className="text-t4 font-bold">{label}</span>
       )}
       <IconChevronDownLine className="text-icon-strong size-3.5" />
     </button>
-  )
-}
-
-/* ─── Hero Carousel ─── */
-const SWIPE_VELOCITY_THRESHOLD = 500
-const SWIPE_OFFSET_RATIO = 0.2 // 컨테이너 너비의 20% 이상 끌어야 슬라이드 전환
-const SLIDE_SPRING = { type: 'spring' as const, stiffness: 300, damping: 35, mass: 0.8 }
-
-function HeroCarousel({
-  banners,
-  index,
-  onIndexChange,
-  onDragStart,
-  onDragEnd
-}: {
-  banners: HeroBanner[]
-  index: number
-  onIndexChange: (next: number) => void
-  onDragStart: () => void
-  onDragEnd: () => void
-}) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [containerWidth, setContainerWidth] = useState(0)
-  const x = useMotionValue(0)
-
-  // 컨테이너 너비 측정 (마운트 + 리사이즈)
-  useEffect(() => {
-    const el = containerRef.current
-    if (!el) return
-    setContainerWidth(el.clientWidth)
-    const ro = new ResizeObserver(() => setContainerWidth(el.clientWidth))
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
-
-  // 외부 index 변경(autoplay 포함) 시 슬라이드 위치로 animate
-  useEffect(() => {
-    if (!containerWidth) return
-    animate(x, -index * containerWidth, SLIDE_SPRING)
-  }, [index, x, containerWidth])
-
-  const handleDragEnd = useCallback(
-    (_e: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
-      onDragEnd()
-      const offset = info.offset.x
-      const velocity = info.velocity.x
-      const swipeThreshold = Math.max(containerWidth * SWIPE_OFFSET_RATIO, 60)
-
-      let next = index
-      if (offset < -swipeThreshold || velocity < -SWIPE_VELOCITY_THRESHOLD) {
-        next = Math.min(index + 1, banners.length - 1)
-      } else if (offset > swipeThreshold || velocity > SWIPE_VELOCITY_THRESHOLD) {
-        next = Math.max(index - 1, 0)
-      }
-
-      if (next !== index) {
-        onIndexChange(next)
-        // useEffect가 next 위치로 animate. 즉시 animate도 호출해 시각적 지연 제거.
-        animate(x, -next * containerWidth, SLIDE_SPRING)
-      } else {
-        // index 미변경 → 현재 슬라이드 위치로 명시적 스냅 (모멘텀 어중간한 위치 방지)
-        animate(x, -index * containerWidth, SLIDE_SPRING)
-      }
-    },
-    [banners.length, containerWidth, index, onDragEnd, onIndexChange, x]
-  )
-
-  if (!banners.length) {
-    return (
-      <div className="px-5">
-        <div className="bg-bg-soft h-[180px] animate-pulse rounded-2xl" />
-      </div>
-    )
-  }
-
-  return (
-    <div className="relative px-5">
-      <div ref={containerRef} className="touch-pan-y overflow-hidden rounded-2xl">
-        <motion.div
-          className="flex"
-          style={{ x }}
-          drag={banners.length > 1 ? 'x' : false}
-          dragConstraints={{ left: -(banners.length - 1) * containerWidth, right: 0 }}
-          dragElastic={0.12}
-          dragMomentum={false}
-          onDragStart={onDragStart}
-          onDragEnd={handleDragEnd}
-        >
-          {banners.map((b) => (
-            <div key={b.id} className="w-full shrink-0" style={{ width: containerWidth || '100%' }}>
-              {b.image ? (
-                <div className="relative h-[180px] overflow-hidden" style={{ background: 'var(--color-brand-50)' }}>
-                  <img
-                    src={b.image}
-                    alt={b.title}
-                    draggable={false}
-                    className="h-full w-full object-contain select-none"
-                  />
-                </div>
-              ) : (
-                <div
-                  className="relative flex h-[180px] flex-col justify-between overflow-hidden p-5"
-                  style={{ background: b.background }}
-                >
-                  <div className="flex flex-col gap-1.5">
-                    <h2 className="text-[20px] leading-[1.3] font-extrabold tracking-[-0.3px] whitespace-pre-line text-white">
-                      {b.title}
-                    </h2>
-                    {b.subtitle && <p className="text-[13px] leading-[1.4] font-medium text-white/85">{b.subtitle}</p>}
-                  </div>
-                  {b.decorEmoji && (
-                    <div className="flex items-end justify-between">
-                      <span className="text-[44px] leading-none">{b.decorEmoji}</span>
-                    </div>
-                  )}
-                  <span aria-hidden className="absolute -top-10 -right-10 size-32 rounded-full bg-white/15 blur-2xl" />
-                </div>
-              )}
-            </div>
-          ))}
-        </motion.div>
-      </div>
-      {/* 페이지 인디케이터 */}
-      <span className="absolute right-8 bottom-3 rounded-full bg-black/45 px-2.5 py-0.5 text-[11px] font-semibold text-white">
-        {index + 1} / {banners.length}
-      </span>
-    </div>
   )
 }
 
@@ -368,16 +229,16 @@ function QuickMenuGrid({ items, onAction }: { items: QuickMenuItem[]; onAction?:
           />
         ) : (
           <span className="flex size-12 items-center justify-center rounded-2xl" style={{ background: it.bgColor }}>
-            <span className="text-[24px] leading-none">{it.emoji}</span>
+            <span className="text-t1 leading-none">{it.emoji}</span>
           </span>
         )}
         {it.badge && (
-          <span className="absolute -top-1 -right-0.5 flex h-[18px] min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] leading-none font-extrabold text-white">
+          <span className="text-c4 absolute -top-1 -right-0.5 flex h-[18px] min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 leading-none font-extrabold text-white">
             {it.badge}
           </span>
         )}
       </span>
-      <span className="text-text-strong text-[11px] leading-tight font-medium tracking-[-0.2px]">{it.label}</span>
+      <span className="text-text-strong text-c3 font-medium">{it.label}</span>
     </>
   )
 
@@ -436,12 +297,12 @@ function RegionsSection({
   return (
     <section className="bg-bg-white py-6">
       <div className="flex items-center justify-between px-5">
-        <h2 className="text-text-strong text-[18px] font-bold tracking-[-0.3px]">
+        <h2 className="text-text-strong text-t3 font-bold">
           지역 <span className="text-primary">BEST</span>
         </h2>
         <button
           onClick={onNearby}
-          className="bg-primary text-static-white flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5 text-[12px] font-semibold"
+          className="bg-primary text-static-white text-t6 flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5 font-semibold"
         >
           <IconMarkerFill className="size-3.5" />내 주변
         </button>
@@ -487,9 +348,9 @@ const RegionCard = memo(function RegionCard({
         }
       >
         {region.image && <span aria-hidden className="absolute inset-0 bg-black/20" />}
-        {!region.image && <span className="text-[36px] leading-none">{region.emoji}</span>}
+        {!region.image && <span className="text-h1 leading-none">{region.emoji}</span>}
         {region.badge && (
-          <span className="text-primary relative z-10 rounded-full bg-white/95 px-1.5 py-0.5 text-[10px] leading-none font-bold">
+          <span className="text-primary text-c4 relative z-10 rounded-full bg-white/95 px-1.5 py-0.5 leading-none font-bold">
             {region.badge}
           </span>
         )}
@@ -497,13 +358,13 @@ const RegionCard = memo(function RegionCard({
           <span aria-hidden className="absolute -top-4 -right-4 size-12 rounded-full bg-white/20 blur-xl" />
         )}
       </div>
-      <span className="text-text-strong text-[12px] leading-tight font-semibold tracking-[-0.2px]">{region.name}</span>
+      <span className="text-text-strong text-t6 font-semibold">{region.name}</span>
     </motion.button>
   )
 })
 
 /* ─── 인기 주차장 BEST (사진 가로 스크롤) ─── */
-/* ─── 다시 방문 (최근 조회 주차장 — localStorage, 비로그인 가용) ─── */
+/* ─── 최근 본 주차장 (조회 기록 — localStorage, 비로그인 가용) ─── */
 function RecentParkingsSection() {
   const router = useRouter()
   const { parkings } = useRecentParkings()
@@ -512,8 +373,14 @@ function RecentParkingsSection() {
     <>
       <section className="bg-bg-white py-6">
         <div className="flex items-center gap-1.5 px-5">
-          <IconUsageHistoryLine className="text-icon-sub size-[18px]" />
-          <h2 className="text-text-strong text-[18px] font-bold tracking-[-0.3px]">다시 방문</h2>
+          <Image
+            src="/images/icn_recent.webp"
+            alt=""
+            width={20}
+            height={20}
+            className="size-5 shrink-0 object-contain"
+          />
+          <h2 className="text-text-strong text-t3 font-bold">최근 본 주차장</h2>
         </div>
         {parkings.length ? (
           <div className="scrollbar-hide mt-4 overflow-x-auto">
@@ -525,20 +392,19 @@ function RecentParkingsSection() {
           </div>
         ) : (
           <div className="bg-bg-weak mx-5 mt-4 flex flex-col items-center gap-3 rounded-2xl px-4 py-8">
-            <p className="text-text-sub text-center text-[13px] leading-relaxed">
+            <p className="text-text-sub text-b4 text-center">
               최근 둘러본 주차장이 여기에 모여요.
               <br />내 주변 주차장부터 찾아볼까요?
             </p>
             <button
               onClick={() => router.push('/map')}
-              className="bg-primary text-static-white cursor-pointer rounded-full px-4 py-2 text-[13px] font-semibold"
+              className="bg-primary text-static-white text-t5 cursor-pointer rounded-full px-4 py-2 font-semibold"
             >
               내 주변 주차장 보기
             </button>
           </div>
         )}
       </section>
-      <div className="bg-bg-weak h-2.5" />
     </>
   )
 }
@@ -569,12 +435,10 @@ const RecentParkingCard = memo(function RecentParkingCard({
             className="h-full w-full object-cover select-none"
           />
         ) : (
-          <div className="text-text-soft flex h-full w-full items-center justify-center text-[28px] font-bold">P</div>
+          <div className="text-text-soft text-h2 flex h-full w-full items-center justify-center font-bold">P</div>
         )}
       </div>
-      <span className="text-text-strong truncate text-[12px] leading-tight font-semibold tracking-[-0.2px]">
-        {parking.name}
-      </span>
+      <span className="text-text-strong text-t6 truncate font-semibold">{parking.name}</span>
     </motion.button>
   )
 })
@@ -593,7 +457,7 @@ function TopParkingsSection({
   return (
     <section className="bg-bg-white py-6">
       <div className="px-5">
-        <h2 className="text-text-strong text-[18px] font-bold tracking-[-0.3px]">
+        <h2 className="text-text-strong text-t3 font-bold">
           주차장 <span className="text-primary">BEST</span>
         </h2>
       </div>
@@ -622,14 +486,12 @@ function TopParkingsSection({
                       draggable={false}
                       className="h-full w-full object-cover select-none"
                     />
-                    <span className="absolute top-2 left-2 rounded-full bg-black/55 px-1.5 py-0.5 text-[10px] leading-none font-bold text-white">
+                    <span className="text-c4 absolute top-2 left-2 rounded-full bg-black/55 px-1.5 py-0.5 leading-none font-bold text-white">
                       {String(i + 1).padStart(2, '0')}
                     </span>
                   </div>
-                  <span className="text-text-strong truncate text-[12px] leading-tight font-semibold tracking-[-0.2px]">
-                    {p.name}
-                  </span>
-                  <span className="text-text-sub -mt-0.5 text-[11px] leading-none">{p.areaLabel}</span>
+                  <span className="text-text-strong text-t6 truncate font-semibold">{p.name}</span>
+                  <span className="text-text-sub text-b5 -mt-0.5 leading-none">{p.areaLabel}</span>
                 </motion.button>
               ))}
         </div>
@@ -672,14 +534,14 @@ function ReviewSheet({ onClose }: { onClose: () => void }) {
 
         {submitted ? (
           <div className="flex flex-col items-center justify-center gap-3 py-10">
-            <span className="text-[40px]">🎉</span>
+            <span className="text-h1">🎉</span>
             <div className="flex flex-col items-center gap-1">
-              <span className="text-text-strong text-[17px] font-bold">후기가 등록되었어요!</span>
-              <span className="text-text-soft text-[13px]">소중한 리뷰 감사합니다</span>
+              <span className="text-text-strong text-t3 font-bold">후기가 등록되었어요!</span>
+              <span className="text-text-soft text-b4">소중한 리뷰 감사합니다</span>
             </div>
             <button
               onClick={onClose}
-              className="bg-primary mt-2 rounded-full px-8 py-3 text-[14px] font-semibold text-white"
+              className="bg-primary text-t5 mt-2 rounded-full px-8 py-3 font-semibold text-white"
             >
               확인
             </button>
@@ -688,13 +550,13 @@ function ReviewSheet({ onClose }: { onClose: () => void }) {
           <>
             {/* 헤더 */}
             <div className="flex items-center justify-between px-5 py-3">
-              <span className="text-text-strong text-[16px] font-bold">후기 남기기</span>
+              <span className="text-text-strong text-t4 font-bold">후기 남기기</span>
             </div>
 
             <div className="flex flex-col gap-4 px-5 pb-2">
               {/* 별점 */}
               <div className="flex flex-col items-center gap-2.5 py-2">
-                <span className="text-text-sub text-[13px]">이용하신 주차장은 어떠셨나요?</span>
+                <span className="text-text-sub text-b4">이용하신 주차장은 어떠셨나요?</span>
                 <div className="flex gap-1.5">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -707,7 +569,7 @@ function ReviewSheet({ onClose }: { onClose: () => void }) {
                   ))}
                 </div>
                 <span
-                  className={`text-[13px] font-medium transition-opacity ${rating > 0 ? 'text-primary opacity-100' : 'opacity-0'}`}
+                  className={`text-c2 font-medium transition-opacity ${rating > 0 ? 'text-primary opacity-100' : 'opacity-0'}`}
                 >
                   {LABELS[rating]}
                 </span>
@@ -721,15 +583,15 @@ function ReviewSheet({ onClose }: { onClose: () => void }) {
                   placeholder="후기를 남겨주세요 (선택)"
                   maxLength={300}
                   rows={3}
-                  className="border-stroke-soft bg-bg-soft text-text-strong placeholder:text-text-disabled w-full resize-none rounded-2xl border px-4 py-3 text-[14px] leading-relaxed outline-none"
+                  className="border-stroke-soft bg-bg-soft text-text-strong placeholder:text-text-disabled text-b4 w-full resize-none rounded-2xl border px-4 py-3 outline-none"
                 />
-                <span className="text-text-disabled absolute right-3 bottom-3 text-[11px]">{text.length}/300</span>
+                <span className="text-text-disabled text-b5 absolute right-3 bottom-3">{text.length}/300</span>
               </div>
 
               {/* 등록 버튼 */}
               <button
                 onClick={() => rating > 0 && setSubmitted(true)}
-                className={`w-full rounded-2xl py-3.5 text-[15px] font-bold transition-colors ${
+                className={`text-t4 w-full rounded-2xl py-3.5 font-bold transition-colors ${
                   rating > 0 ? 'bg-primary text-white' : 'bg-bg-soft text-text-disabled'
                 }`}
               >
@@ -760,7 +622,7 @@ function PopularKeywordsSection({
   return (
     <section className="bg-bg-white py-6">
       <div className="flex items-end justify-between px-5">
-        <h2 className="text-text-strong flex items-center gap-1.5 text-[18px] font-bold tracking-[-0.3px]">
+        <h2 className="text-text-strong text-t3 flex items-center gap-1.5 font-bold">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/icn_fire.png"
@@ -775,7 +637,7 @@ function PopularKeywordsSection({
             인기검색어 <span className="text-primary">BEST</span>
           </span>
         </h2>
-        <span className="text-text-soft text-[11px]">이번 주</span>
+        <span className="text-text-soft text-b5">이번 주</span>
       </div>
       <div className="mt-3 px-5">
         {isLoading ? (
@@ -826,13 +688,13 @@ const KeywordRankItem = memo(function KeywordRankItem({
       className="flex cursor-pointer items-center gap-2.5 py-2.5 text-left"
     >
       <span
-        className={`w-5 shrink-0 text-center text-[13px] leading-none font-extrabold tabular-nums ${
+        className={`text-t5 w-5 shrink-0 text-center leading-none font-extrabold tabular-nums ${
           isTop3 ? 'text-primary' : 'text-text-disabled'
         }`}
       >
         {keyword.rank}
       </span>
-      <span className="text-text-strong min-w-0 flex-1 truncate text-[14px] leading-none font-medium tracking-[-0.2px]">
+      <span className="text-text-strong text-c2 min-w-0 flex-1 truncate leading-none font-medium">
         {keyword.keyword}
       </span>
       <KeywordTrendBadge trend={trend} delta={delta} />
@@ -842,11 +704,11 @@ const KeywordRankItem = memo(function KeywordRankItem({
 
 function KeywordTrendBadge({ trend, delta }: { trend: 'up' | 'down' | 'flat'; delta: number }) {
   if (trend === 'flat') {
-    return <span className="text-text-disabled text-[11px] leading-none tabular-nums">—</span>
+    return <span className="text-text-disabled text-b5 leading-none tabular-nums">—</span>
   }
   const isUp = trend === 'up'
   return (
-    <span className="text-text-sub flex shrink-0 items-center gap-0.5 text-[11px] leading-none font-semibold tabular-nums">
+    <span className="text-text-sub text-t6 flex shrink-0 items-center gap-0.5 leading-none font-semibold tabular-nums">
       <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" aria-hidden>
         {isUp ? <path d="M4 1L7 6H1L4 1Z" /> : <path d="M4 7L1 2H7L4 7Z" />}
       </svg>
@@ -860,9 +722,9 @@ function HomeFooter() {
   const LINK_BASE = 'https://app.modu.kr'
 
   return (
-    <footer className="bg-bg-weak mt-2.5 px-5 py-6">
+    <footer className="bg-bg-weak px-5 py-6">
       <div className="flex flex-col gap-2">
-        <p className="text-text-sub text-[12px] font-semibold">(주) 쏘카</p>
+        <p className="text-text-sub text-t6 font-semibold">(주) 쏘카</p>
 
         <div className="flex flex-col gap-1">
           {[
@@ -871,7 +733,7 @@ function HomeFooter() {
             '서비스 문의 번호: 1899-8242, Fax: 02-6969-9333',
             '주소: 제주특별자치도 제주시 공항서로 141 (도두이동)'
           ].map((text) => (
-            <p key={text} className="text-text-soft text-[11px] leading-relaxed">
+            <p key={text} className="text-text-soft text-b5">
               {text}
             </p>
           ))}
@@ -889,7 +751,7 @@ function HomeFooter() {
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-text-sub text-[11px] font-medium underline underline-offset-2"
+                className="text-text-sub text-c3 font-medium underline underline-offset-2"
               >
                 {item.label}
               </Link>
@@ -898,7 +760,7 @@ function HomeFooter() {
           ))}
         </div>
 
-        <p className="text-text-soft text-[11px]">© 2026 SOCAR Inc. All rights reserved.</p>
+        <p className="text-text-soft text-b5">© 2026 SOCAR Inc. All rights reserved.</p>
       </div>
     </footer>
   )

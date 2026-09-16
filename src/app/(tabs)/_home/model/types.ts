@@ -9,6 +9,29 @@ export interface HeroBanner {
   decorEmoji?: string
   /** 배경 이미지 URL — 있으면 background 대신 사용, 텍스트 오버레이 숨김 */
   image?: string
+  /** 클릭 랜딩 — `/` 시작이면 내부 라우트, 아니면 외부 URL. 없으면 클릭 없음 */
+  href?: string
+  /** 이미지 가로/세로 비율 — 서버 배너만. 캐러셀은 첫 배너 비율로 통일 (modu-android) */
+  ratio?: number
+}
+
+/**
+ * GET /user/config/banner 응답 배너 — modu-android BannerModels.kt 계약 (2026-09-16 확인).
+ * `type` 은 지면이 아니라 **클릭 랜딩 종류**: 1 공지 · 2 주차장 · 3 웹 · 4 외부앱 · 5 알림설정.
+ */
+export interface ServerBanner {
+  bannerSeq: number
+  type: number
+  filePath: string
+  width: number
+  height: number
+  noticeSeq?: number | null
+  parkinglotSeq?: number | null
+  lat?: number | null
+  lng?: number | null
+  url?: string | null
+  urlScheme?: string | null
+  urlAppstore?: string | null
 }
 
 /** 퀵메뉴 아이템 (캐치테이블 아이콘 그리드 톤). */
@@ -77,4 +100,30 @@ export interface PopularKeyword {
   searchCount: number
   /** WoW 변동률 (% 단위, +상승 / -하락 / 0 보합) */
   wowDelta: number
+}
+
+/**
+ * 메인 공지 팝업 — GET /user/config 응답의 mainNotice (modu-android MainNotice.kt 계약).
+ * 제목/이미지/기간 필드가 없다 — 콘텐츠는 전부 `url` 웹페이지, 기간은 서버가 isActive 로 관리.
+ */
+export interface MainNotice {
+  isActive: boolean
+  /** "하루 보지 않기" 판정 키 — seq 가 바뀌면 무조건 재노출 */
+  mainNoticeSeq: number
+  /** 팝업 안에 띄울 웹 콘텐츠 URL */
+  url: string
+}
+
+/**
+ * 검색배너/광고 인벤토리 — GET /user/config 응답의 adInventory (modu-android AdInventory.kt 계약).
+ * 앱에선 검색 화면 상단 328×80 스트립 + 메인 FAB. 웹 홈에선 섹션 구분 배너로 쓴다.
+ */
+export interface AdInventory {
+  seq: number
+  isActive: boolean
+  /** 스트립 배너 이미지 (328×80 규격) */
+  bannerUrl: string
+  fabUrl: string
+  /** 클릭 랜딩 — `parkingshare://open-url/internal?url=<웹URL>` 형태가 흔하다 */
+  deepLinkUrl: string
 }

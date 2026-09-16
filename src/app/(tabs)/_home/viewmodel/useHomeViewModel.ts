@@ -3,10 +3,11 @@
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import type { PopularKeyword, PopularParking, RecommendedRegion, TopParking } from '../model'
+import type { HeroBanner, MainNotice, PopularKeyword, PopularParking, RecommendedRegion, TopParking } from '../model'
 
 import {
   useHeroBanners,
+  useHomeConfig,
   usePopularKeywords,
   usePopularParkings,
   useQuickMenu,
@@ -14,8 +15,6 @@ import {
   useTopParkings
 } from '../model'
 
-const HERO_AUTOPLAY_MS = 4500
-const HERO_RESUME_DELAY_MS = 3000
 const DEFAULT_LOCATION_LABEL = '서울'
 
 async function reverseGeocode(lat: number, lng: number): Promise<string> {
@@ -39,10 +38,6 @@ export function useHomeViewModel() {
   const { data: parkings = [], isLoading: isParkingsLoading } = usePopularParkings()
   const { data: topParkings = [], isLoading: isTopParkingsLoading } = useTopParkings()
   const { data: popularKeywords = [], isLoading: isPopularKeywordsLoading } = usePopularKeywords()
-
-  const [heroIndex, setHeroIndex] = useState(0)
-  const isPausedRef = useRef(false)
-  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [locationLabel, setLocationLabel] = useState(DEFAULT_LOCATION_LABEL)
   const [isLocating, setIsLocating] = useState(false)
@@ -68,40 +63,6 @@ export function useHomeViewModel() {
       if (result.state === 'granted') detectLocation()
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // 자동 슬라이드 (4.5초 간격) — 일시정지 중이면 skip
-  useEffect(() => {
-    if (banners.length <= 1) return
-    const timer = window.setInterval(() => {
-      if (isPausedRef.current) return
-      setHeroIndex((i) => (i + 1) % banners.length)
-    }, HERO_AUTOPLAY_MS)
-    return () => window.clearInterval(timer)
-  }, [banners.length])
-
-  useEffect(() => {
-    return () => {
-      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
-    }
-  }, [])
-
-  // 드래그 시작 → 자동재생 일시정지
-  const onHeroDragStart = useCallback(() => {
-    isPausedRef.current = true
-    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
-  }, [])
-
-  // 드래그 종료 → 3초 후 자동재생 재개 (index 결정은 컴포넌트에서)
-  const onHeroDragEnd = useCallback(() => {
-    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
-    resumeTimerRef.current = setTimeout(() => {
-      isPausedRef.current = false
-    }, HERO_RESUME_DELAY_MS)
-  }, [])
-
-  const onHeroIndexChange = useCallback((next: number) => {
-    setHeroIndex(next)
   }, [])
 
   const goToRegion = useCallback(
@@ -136,12 +97,40 @@ export function useHomeViewModel() {
     router.push('/map')
   }, [router])
 
+  // ── 홈 설정 (메인 공지 + 검색배너) — GET /user/config 한 번
+  const { data: homeConfig } = useHomeConfig()
+  const mainNotice = homeConfig?.mainNotice ?? null
+
+  /** 검색배너(adInventory) — 인기검색어 위 섹션 구분 스트립 */
+  const adBanner = homeConfig?.adInventory ?? null
+
+  /**
+   * 검색배너 랜딩 — 앱 딥링크 `parkingshare://open-url/internal?url=<웹URL>` 은 안의 URL 로,
+   * 일반 http(s) 는 그대로, 그 외 앱 전용 스킴은 웹에서 무시한다.
+   */
+  const goAdBanner = useCallback(() => {
+    if (!adBanner?.deepLinkUrl) return
+    const target = resolveDeepLinkToWebUrl(adBanner.deepLinkUrl)
+    if (target) window.location.assign(target)
+  }, [adBanner])
+
+  /** 배너 랜딩 — 내부 라우트는 push, 외부 URL 은 같은 탭 이동 (앱 웹뷰 window.open 금지 함정) */
+  const goBanner = useCallback(
+    (banner: HeroBanner) => {
+      if (!banner.href) return
+      if (banner.href.startsWith('/')) router.push(banner.href)
+      else window.location.assign(banner.href)
+    },
+    [router]
+  )
+
   return {
     banners,
-    heroIndex,
-    onHeroDragStart,
-    onHeroDragEnd,
-    onHeroIndexChange,
+    goBanner,
+    // 서버 mainNotice 는 API 만 유지 — 렌더는 EventBanner 정적 슬라이드가 맡는다 (2026-09-16 결정)
+    mainNotice,
+    adBanner,
+    goAdBanner,
     quickMenu,
     regions,
     parkings,
@@ -160,4 +149,19 @@ export function useHomeViewModel() {
     goToKeyword,
     goNearby
   }
+}
+
+/** `parkingshare://open-url/internal?url=<웹URL>` → 웹 URL. http(s) 는 그대로, 그 외 null */
+function resolveDeepLinkToWebUrl(deepLink: string): string | null {
+  if (/^https?:\/\//i.test(deepLink)) return deepLink
+  const match = deepLink.match(/^parkingshare:\/\/open-url\/internal\?url=(.+)$/i)
+  if (match) {
+    try {
+      const decoded = decodeURIComponent(match[1])
+      if (/^https?:\/\//i.test(decoded)) return decoded
+    } catch {
+      /* 잘못된 인코딩 — 무시 */
+    }
+  }
+  return null
 }

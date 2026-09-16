@@ -1,4 +1,16 @@
-import type { HeroBanner, PopularKeyword, PopularParking, QuickMenuItem, RecommendedRegion, TopParking } from './types'
+import apiClient from '@/shared/lib/apiClient'
+
+import type {
+  AdInventory,
+  HeroBanner,
+  MainNotice,
+  PopularKeyword,
+  PopularParking,
+  QuickMenuItem,
+  RecommendedRegion,
+  ServerBanner,
+  TopParking
+} from './types'
 
 // NOTE: v1은 큐레이션 + 모킹 데이터. 향후 API endpoint 생성 시 이 파일만 교체.
 
@@ -36,7 +48,7 @@ const QUICK_MENU: QuickMenuItem[] = [
     href: 'https://biz.modu.kr/valueup/form/brief?code=modunext',
     icon: '/images/icn_partner.webp'
   },
-  { id: 'together', label: '모여요', href: 'https://here.modu.kr', icon: '/images/icn_together.webp', badge: 'N' }
+  { id: 'together', label: '모여요', href: 'https://here.modu.kr', icon: '/images/icn_here.webp', badge: 'N' }
 ]
 
 const RECOMMENDED_REGIONS: RecommendedRegion[] = [
@@ -178,7 +190,42 @@ const POPULAR_PARKINGS: PopularParking[] = [
   }
 ]
 
+/** 비율 cap — modu-android BannerData.kt: 0.25~8 범위, 무효 시 4:1 */
+function clampBannerRatio(width: number, height: number): number {
+  const ratio = width > 0 && height > 0 ? width / height : NaN
+  if (!Number.isFinite(ratio)) return 4
+  return Math.min(8, Math.max(0.25, ratio))
+}
+
+/** 서버 배너 → 캐러셀 슬라이드. 웹이 처리 못 하는 랜딩(외부앱·알림설정)은 이미지만 표출 */
+function toHeroBanner(banner: ServerBanner): HeroBanner {
+  let href: string | undefined
+  if (banner.type === 1) href = 'https://app.modu.kr/notice'
+  else if (banner.type === 2 && banner.parkinglotSeq) href = `/p/${banner.parkinglotSeq}`
+  else if (banner.type === 3 && banner.url) href = banner.url
+
+  return {
+    id: `server-${banner.bannerSeq}`,
+    title: '',
+    background: 'var(--color-brand-50)',
+    image: banner.filePath,
+    href,
+    ratio: clampBannerRatio(banner.width, banner.height)
+  }
+}
+
+/**
+ * 홈 배너 — 서버 배너(GET /user/config/banner, 인증·파라미터 불필요) 우선,
+ * 실패·빈 응답이면 정적 배너 fallback. 정렬·노출 기간 필터는 서버 책임 (modu-android 동일).
+ */
 export async function fetchHeroBanners(): Promise<HeroBanner[]> {
+  try {
+    const { data } = await apiClient.get<{ data: { banners: ServerBanner[] } }>('/user/config/banner')
+    const banners = (data.data?.banners ?? []).filter((b) => b.filePath)
+    if (banners.length) return banners.map(toHeroBanner)
+  } catch (error) {
+    console.warn('서버 배너 조회 실패 — 정적 배너로 대체:', error)
+  }
   return HERO_BANNERS
 }
 
@@ -226,4 +273,52 @@ const POPULAR_KEYWORDS: PopularKeyword[] = [
 
 export async function fetchPopularKeywords(): Promise<PopularKeyword[]> {
   return POPULAR_KEYWORDS
+}
+
+/** 웹 식별 키 — /user/config 의 key 파라미터용 (앱은 deviceId). localStorage 에 1회 생성 */
+function getWebDeviceKey(): string {
+  const KEY = 'modu_web_device_key'
+  try {
+    const existing = localStorage.getItem(KEY)
+    if (existing) return existing
+    const created = crypto.randomUUID()
+    localStorage.setItem(KEY, created)
+    return created
+  } catch {
+    return 'web'
+  }
+}
+
+export interface HomeConfig {
+  mainNotice: MainNotice | null
+  adInventory: AdInventory | null
+}
+
+/**
+ * 홈 설정 — GET /user/config 한 번으로 메인 공지 + 검색배너(adInventory)를 받는다
+ * (modu-android ConfigApi 계약). 앱 전용 파라미터(deviceToken=FCM)는 웹에서 빈 값으로
+ * 보낸다 — 서버가 거부하면 공지·배너 없이 조용히 넘어간다 (홈 진입을 막지 않는다).
+ */
+export async function fetchHomeConfig(): Promise<HomeConfig> {
+  try {
+    const { data } = await apiClient.get<{
+      data: { mainNotice?: MainNotice | null; adInventory?: AdInventory | null }
+    }>('/user/config', {
+      params: {
+        key: getWebDeviceKey(),
+        deviceType: 'web',
+        deviceToken: '',
+        version: process.env.NEXT_PUBLIC_APP_VERSION ?? '1.0.0'
+      }
+    })
+    const notice = data.data?.mainNotice
+    const ad = data.data?.adInventory
+    return {
+      mainNotice: notice?.isActive && notice.url ? notice : null,
+      adInventory: ad?.isActive && ad.bannerUrl ? ad : null
+    }
+  } catch (error) {
+    console.warn('홈 설정 조회 실패 — 공지·검색배너 미노출:', error)
+    return { mainNotice: null, adInventory: null }
+  }
 }
