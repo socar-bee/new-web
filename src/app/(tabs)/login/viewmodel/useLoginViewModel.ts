@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
+import { consumeLoginReturnTo } from '@/shared/lib/loginReturnTo'
 import { loadKakaoSDK, loginWithKakao } from '@/shared/lib/oauth'
 import { loginWithNaver } from '@/shared/lib/oauth'
 
@@ -49,7 +50,7 @@ export function useLoginViewModel() {
         /* profile fetch 실패해도 로그인은 성공 */
       }
 
-      router.push('/')
+      router.push(consumeLoginReturnTo())
     } catch {
       setError('이메일 또는 비밀번호가 올바르지 않습니다')
     } finally {

@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useRef } from 'react'
 
 import apiClient from '@/shared/lib/apiClient'
+import { consumeLoginReturnTo } from '@/shared/lib/loginReturnTo'
 
 import { useAuthStore } from '@/shared/stores/authStore'
 
@@ -55,7 +56,7 @@ function NaverCallbackInner() {
           /* profile fetch 실패해도 로그인은 성공 */
         }
 
-        router.replace('/')
+        router.replace(consumeLoginReturnTo())
       } catch {
         router.replace('/login')
       }
@@ -66,7 +67,7 @@ function NaverCallbackInner() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <p className="text-text-sub text-sm">로그인 처리 중...</p>
+      <p className="text-text-sub text-b4">로그인 처리 중...</p>
     </div>
   )
 }
