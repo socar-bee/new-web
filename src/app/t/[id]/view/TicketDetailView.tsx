@@ -82,8 +82,8 @@ export default function TicketDetailView({ couponSeq, initialTicket, parkingTick
                 {pin && <MIcon icon={IconChevronRightLine} size={16} color="icon_sub_600" decorative />}
               </button>
             )}
-            <div className="flex items-baseline justify-between gap-3">
-              <MText typography="heading_h4" color="text_strong_950" className="min-w-0 flex-1 truncate">
+            <div className="flex items-baseline gap-2">
+              <MText typography="heading_h4" color="text_strong_950" className="min-w-0 truncate">
                 {t.couponName}
               </MText>
               <MText typography="heading_h4" color="text_strong_950" className="shrink-0 tabular-nums">
