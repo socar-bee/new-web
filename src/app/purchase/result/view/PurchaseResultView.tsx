@@ -53,7 +53,12 @@ export default function PurchaseResultView() {
       </main>
 
       <footer className="flex flex-col gap-2 px-6 pt-3 pb-[max(env(safe-area-inset-bottom),12px)]">
-        {vm.couponSeq && (
+        {vm.purchasedSeq && (
+          <MButton size="xLarge" fullWidth tone="neutral" appearance="stroke" onClick={vm.goMyTicket}>
+            내 주차권 확인
+          </MButton>
+        )}
+        {!vm.purchasedSeq && vm.couponSeq && (
           <MButton size="xLarge" fullWidth tone="neutral" appearance="stroke" onClick={vm.goTicketDetail}>
             주차권 상세 보기
           </MButton>

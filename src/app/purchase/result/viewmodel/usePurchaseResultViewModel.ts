@@ -1,7 +1,9 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
+
+import { saveGuestSeq } from '@/shared/lib/guestSession'
 
 import { usePlatform } from '@/shared/platform'
 
@@ -35,6 +37,11 @@ export function usePurchaseResultViewModel() {
   const guestCode = searchParams?.get('guestCode')
   const guestSeq = searchParams?.get('guestSeq')
 
+  // 비회원 구매 세션 보관 — 이후 내주차권 비회원 조회(POST /user/login/guest)의 키
+  useEffect(() => {
+    if (!isFail && guestSeq) saveGuestSeq(guestSeq)
+  }, [isFail, guestSeq])
+
   const goHome = useCallback(() => {
     platform.back('/')
   }, [platform])
@@ -57,6 +64,12 @@ export function usePurchaseResultViewModel() {
     router.push(`/t/${couponSeq}${query}`)
   }, [router, couponSeq, parkingDate])
 
+  /** 구매한 내주차권 상세로 — parkingSeq(구매건 seq)가 my-ticket 경로 변수다 */
+  const goMyTicket = useCallback(() => {
+    if (!purchasedSeq) return
+    router.push(`/my-ticket/${purchasedSeq}?type=p`)
+  }, [router, purchasedSeq])
+
   return {
     isFail,
     purchasedSeq,
@@ -65,6 +78,7 @@ export function usePurchaseResultViewModel() {
     guestSeq,
     goHome,
     goRetry,
-    goTicketDetail
+    goTicketDetail,
+    goMyTicket
   }
 }
