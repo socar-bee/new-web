@@ -34,10 +34,10 @@ test.describe('공유주차장 상세 (/s/[id]) — modu-web-app /s 기준', () 
     expect(weekdayBox && sundayBox && sundayBox.y > weekdayBox.y).toBeTruthy()
   })
 
-  test('주차 시작하기 — 결제 미연동 상태에선 준비중 토스트', async ({ page }) => {
+  test('주차 시작하기 → pay 결제웹뷰(guest, flowType=share)로 진입한다', async ({ page }) => {
     await gotoHydrated(page, '/s/8001')
 
     await page.getByText('주차 시작하기').click()
-    await expect(page.getByText('준비중인 서비스입니다')).toBeVisible()
+    await page.waitForURL(/\/guest\?.*shareSeq=8001/)
   })
 })

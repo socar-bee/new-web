@@ -13,6 +13,23 @@ export function payHost(): string | null {
 }
 
 /**
+ * flowType 별 조회 키 — pay `entryParams.type.ts` 계약과 1:1.
+ * 금액·상품명은 넘기지 않는다. 화면 값의 원본은 pay 가 하는 상세 조회다.
+ */
+function checkoutEntryKeys(ticket: CheckoutTicket): Record<string, string> {
+  switch (ticket.flowType) {
+    case 'period':
+      return { couponSeq: String(ticket.couponSeq), startDate: ticket.startDate, endDate: ticket.endDate }
+    case 'share':
+      return { shareSeq: String(ticket.shareSeq) }
+    case 'shareExtend':
+      return { parkingSeq: String(ticket.parkingSeq) }
+    default:
+      return { couponSeq: String(ticket.couponSeq), parkingDate: ticket.parkingDate }
+  }
+}
+
+/**
  * 웹 결제 — 로그인 여부로 pay 진입 경로가 갈린다. 둘 다 **같은 탭 이동**이고,
  * 결제 결과는 pay 가 이 웹의 `/purchase/result` 로 돌려보낸다.
  *
@@ -22,19 +39,20 @@ export function payHost(): string | null {
  * - 미로그인: 비회원 `{PAY_HOST}/guest?couponSeq&parkingDate&guestSeq` (pay guestEntry.ts).
  *   토큰은 넘기지 않는다 — 전화인증·게스트 토큰 발급은 pay 가 안에서 끝낸다.
  */
-export function webCheckout({ couponSeq, parkingDate }: CheckoutTicket) {
+export function webCheckout(ticket: CheckoutTicket) {
   const host = payHost()
   if (!host) {
     console.error('NEXT_PUBLIC_PAY_HOST 미설정 — 결제 진입을 진행할 수 없습니다')
     return
   }
 
+  const entryKeys = checkoutEntryKeys(ticket)
+
   const { accessToken } = useAuthStore.getState()
   if (accessToken) {
     const query = new URLSearchParams({
-      flowType: 'partner',
-      couponSeq: String(couponSeq),
-      parkingDate,
+      flowType: ticket.flowType ?? 'partner',
+      ...entryKeys,
       returnUrl: `${window.location.origin}/purchase/result`
     })
     window.location.assign(`${host}/?${query.toString()}#at=${encodeURIComponent(accessToken)}`)
@@ -42,8 +60,8 @@ export function webCheckout({ couponSeq, parkingDate }: CheckoutTicket) {
   }
 
   const query = new URLSearchParams({
-    couponSeq: String(couponSeq),
-    parkingDate,
+    flowType: ticket.flowType ?? 'partner',
+    ...entryKeys,
     guestSeq: String(GUEST_CHANNEL_SEQ)
   })
   window.location.assign(`${host}/guest?${query.toString()}`)

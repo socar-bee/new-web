@@ -66,11 +66,8 @@ export default function SharedDetailSheet({
     [showToast]
   )
 
-  // TODO(공유 결제): modu-web-app 은 여기서 공유주차장 결제 플로우(PurchaseClientView)를 연다.
-  //   웹 결제 미연동 상태라 준비중 안내로 대체.
-  const handleStartParking = useCallback(() => {
-    showToast('준비중인 서비스입니다')
-  }, [showToast])
+  // 공유주차장 결제 — pay 결제웹뷰로 위임 (제휴·공항과 동일 정책)
+  const handleStartParking = vm.startPurchase
 
   // Hero slider counter
   const photosLen = vm.detail?.basic.photos?.length ?? 0

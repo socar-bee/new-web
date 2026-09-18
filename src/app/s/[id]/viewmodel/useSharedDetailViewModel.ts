@@ -60,10 +60,17 @@ export function useSharedDetailViewModel(seq: number | null, initialDetail?: Sha
   /** 요금 상세 rows — modu-web-app SharedParkinglotPriceInfoView 와 동일 슬라이스 */
   const priceRows = useMemo(() => detail?.prices[0]?.contents.slice(1, 2) ?? [], [detail])
 
+  /** 주차 시작 — pay 결제웹뷰(flowType=share)로 진입. 자체 결제 화면은 두지 않는다 */
+  const startPurchase = useCallback(() => {
+    if (seq == null) return
+    void platform.startCheckout({ flowType: 'share', shareSeq: seq })
+  }, [platform, seq])
+
   return {
     detail,
     isLoading,
     goBack,
+    startPurchase,
     hourlyFeeLabel,
     operationTimeRows,
     priceRows

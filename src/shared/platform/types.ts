@@ -1,9 +1,34 @@
 /** 결제 진입에 필요한 최소 조회 키 — 금액·상품명은 계약에 없다, 화면 값의 원본은 상세 조회다 */
-export interface CheckoutTicket {
+export interface PartnerCheckout {
+  flowType?: 'partner'
   couponSeq: number
   /** `yyyy-MM-dd`. 조회와 결제 진입값에 **같은 값**을 넘긴다 (자정 어긋남 방지) */
   parkingDate: string
 }
+
+/** 단기권/공항 — pay `flowType: 'period'` 계약 (couponSeq + ISO 입·출차 시각) */
+export interface PeriodCheckout {
+  flowType: 'period'
+  couponSeq: number
+  /** ISO 날짜시각 `yyyy-MM-dd'T'HH:mm:ss.SSSZ` */
+  startDate: string
+  endDate: string
+}
+
+/** 공유 — pay `flowType: 'share'` 계약 (GET /poi/pins/S/{shareSeq}) */
+export interface ShareCheckout {
+  flowType: 'share'
+  shareSeq: number
+}
+
+/** 공유 연장 — pay `flowType: 'shareExtend'` 계약 (GET /ticket/my-ticket/s/{parkingSeq}) */
+export interface ShareExtendCheckout {
+  flowType: 'shareExtend'
+  /** 내주차권 seq */
+  parkingSeq: number
+}
+
+export type CheckoutTicket = PartnerCheckout | PeriodCheckout | ShareCheckout | ShareExtendCheckout
 
 /**
  * 환경(웹/앱 웹뷰) 차이를 흡수하는 어댑터. 라우트 viewmodel 은 이 인터페이스만 본다.

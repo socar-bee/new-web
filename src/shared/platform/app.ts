@@ -25,6 +25,7 @@ export async function appCheckout(bridge: ModuWebBridgeClient | null, ticket: Ch
     return
   }
 
+  // flowType 미지정(제휴)만 partner 로 채운다 — period·share·shareExtend 는 ticket 이 이미 갖고 있다
   await putPaymentEntry(bridge, { flowType: 'partner', ...ticket })
   openAppScheme(internalUrlDeeplink(host))
 }

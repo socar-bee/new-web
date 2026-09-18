@@ -15,6 +15,29 @@ export interface PartnerEntryParams {
   parkingDate: string
 }
 
+/** 단기권/공항 — GET /ticket/period/{couponSeq}?predictBeginTime&predictExitBeginTime */
+export interface PeriodEntryParams {
+  flowType: 'period'
+  couponSeq: number
+  /** ISO 날짜시각 `yyyy-MM-dd'T'HH:mm:ss.SSSZ` (2026-07-24 확정) */
+  startDate: string
+  endDate: string
+}
+
+/** 공유 — GET /poi/pins/S/{shareSeq} */
+export interface ShareEntryParams {
+  flowType: 'share'
+  shareSeq: number
+}
+
+/** 공유 연장 — GET /ticket/my-ticket/s/{parkingSeq} */
+export interface ShareExtendEntryParams {
+  flowType: 'shareExtend'
+  parkingSeq: number
+}
+
+export type PaymentEntryParams = PartnerEntryParams | PeriodEntryParams | ShareEntryParams | ShareExtendEntryParams
+
 const PREF_DOMAIN = 'payment'
 const PREF_ITEM = 'PaymentEntry'
 
@@ -24,7 +47,7 @@ const PREF_ITEM = 'PaymentEntry'
  *
  * `payment/PaymentResult` 는 읽지 않는다 — 네이티브가 읽고 지우기로 합의된 값이다.
  */
-export async function putPaymentEntry(bridge: ModuWebBridgeClient, entry: PartnerEntryParams) {
+export async function putPaymentEntry(bridge: ModuWebBridgeClient, entry: PaymentEntryParams) {
   await bridge.putPrefValue({
     domainName: PREF_DOMAIN,
     itemName: PREF_ITEM,
