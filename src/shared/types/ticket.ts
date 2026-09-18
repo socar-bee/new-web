@@ -1,7 +1,8 @@
 /* ─── Enums ─── */
 
 export enum MyTicketType {
-  PARTNER = 'p'
+  PARTNER = 'p',
+  SHARE = 's'
 }
 
 export enum MyTicketStatus {
@@ -170,6 +171,16 @@ export interface MyTicketDetail {
     refundRequestTemplate: string
     refundRequestTemplateKeys: string[]
     partner: MyTicketPartner | null
+    /** 공유주차권 전용 (modu-web-app MyTicketDetailModel.share) */
+    share?: {
+      endTime: string
+      usageTypeGuide: string
+      isExtendable: boolean
+      extendableMinute: number
+      detailType: string
+      isExtend: boolean
+      usingTime: number
+    } | null
   }
   canceledDate: string | null
 }

@@ -17,14 +17,16 @@ test.describe('내주차권 상세 (/my-ticket/[seq])', () => {
     await page.waitForURL(/\/my-ticket\/70001\?type=p/)
 
     await expect(page.getByRole('heading', { name: '내 주차권' })).toBeVisible()
-    await expect(page.getByText('사용 예정')).toBeVisible()
     await expect(page.getByRole('heading', { name: '평일 당일권' })).toBeVisible()
+    await expect(page.getByRole('button', { name: '영수증' })).toBeVisible()
     await expect(page.getByText('12가 3456')).toBeVisible()
-    await expect(page.getByText('2026-09-18')).toBeVisible()
+    await expect(page.getByText('주차권 유효시간')).toBeVisible()
     await expect(page.getByText('25,000원')).toBeVisible()
     await expect(page.getByText('서울 성동구 왕십리로 82')).toBeVisible()
     await expect(page.getByText('꼭 확인해주세요')).toBeVisible()
+    // 하단 고정 버튼 그룹 — [결제 취소] + [길찾기]
     await expect(page.getByRole('button', { name: '결제 취소' })).toBeVisible()
+    await expect(page.getByRole('button', { name: '길찾기' })).toBeVisible()
   })
 
   test('비회원 — 휴대폰 뒷 4자리 인증 후 상세가 그려진다', async ({ page }) => {
