@@ -1,0 +1,1 @@
+export { useAirportTicketDetailViewModel } from './useAirportTicketDetailViewModel'

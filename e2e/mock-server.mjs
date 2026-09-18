@@ -103,6 +103,83 @@ const server = createServer((req, res) => {
     return
   }
 
+  // ─── 공항 주차대행 (airport) ───
+  if (pathname === '/ticket/group') {
+    json(res, {
+      data: {
+        ticketGroups: [
+          { cgSeq: 501, title: '인천공항 T1' },
+          { cgSeq: 502, title: '인천공항 T2' },
+          { cgSeq: 503, title: '김포공항' }
+        ]
+      }
+    })
+    return
+  }
+  if (pathname === '/ticket/group/config') {
+    json(res, {
+      data: {
+        entryAvailableAfterHours: 2,
+        entryAvailableUntilDays: 90,
+        exitAvailableUntilDays: 30,
+        labels: [
+          { masterCode: 1, detailCode: 11, detailName: '실내', detailDesc: '실내 주차' },
+          { masterCode: 1, detailCode: 12, detailName: '발렛', detailDesc: '발렛 지원' }
+        ]
+      }
+    })
+    return
+  }
+  const airportGroupMatch = pathname.match(/^\/ticket\/group\/(\d+)$/)
+  if (airportGroupMatch) {
+    json(res, {
+      data: {
+        cgSeq: Number(airportGroupMatch[1]),
+        infoMsg: '결제 전 유의사항을 꼭 확인해 주세요.',
+        tickets: [
+          {
+            couponSeq: 9501,
+            couponName: '인천공항 발렛 5일권',
+            labels: ['실내', '발렛'],
+            totalPrice: 55000,
+            parkinglotName: '인천 하늘주차장',
+            isSoldOut: false,
+            thumbnail: null
+          },
+          {
+            couponSeq: 9502,
+            couponName: '인천공항 셀프 5일권',
+            labels: ['실내'],
+            totalPrice: 39000,
+            parkinglotName: '인천 하늘주차장',
+            isSoldOut: true,
+            thumbnail: null
+          }
+        ]
+      }
+    })
+    return
+  }
+  const airportDetailMatch = pathname.match(/^\/ticket\/period\/(\d+)$/)
+  if (airportDetailMatch) {
+    json(res, {
+      data: {
+        couponSeq: Number(airportDetailMatch[1]),
+        couponName: '인천공항 발렛 5일권',
+        parkinglotSeq: 777,
+        parkinglotName: '인천 하늘주차장',
+        labels: ['실내', '발렛'],
+        basePrice: 50000,
+        addonPrice: [{ addonPolicyType: 'VALET', price: 5000 }],
+        photos: [],
+        notice: '고객센터 운영시간은 09~18시입니다.',
+        prePurchaseNotice: '출국 2시간 전까지 입차해 주세요.',
+        postPurchaseNotice: '출차 30분 전 전화 부탁드립니다.',
+        isSoldOut: false
+      }
+    })
+    return
+  }
   if (pathname === '/ticket/list') {
     json(res, { data: { tickets: ticketListFixture } })
     return
