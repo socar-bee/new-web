@@ -52,6 +52,7 @@ src/app/<route>/
 - **잘못된 axios client**: 사전예약(advance purchase) preview는 반드시 `advanceApiClient` 사용. ([02-api-layer.md](./docs/02-api-layer.md))
 - **dev 서버는 `localhost` 로만 접근**: `127.0.0.1` 은 Next dev 가 `/_next` 를 cross-origin 차단 → 에러 없이 hydration 만 죽어 모든 클릭 무반응. ([07-app-webview.md](./docs/07-app-webview.md#함정))
 - **앱 웹뷰 판정은 UA 한 가지로**: `ParkingShare/\d` → `<html data-platform="app">`. 웹 전용 크롬은 `data-web-only`. ([07-app-webview.md](./docs/07-app-webview.md))
+- **새 페이지 스크롤 안 됨**: 루트 레이아웃이 `h-dvh overflow-hidden` — 페이지가 `h-full` + 내부 `main.min-h-0 flex-1 overflow-y-auto` 로 스크롤을 자체 소유해야 함 (`/t` 상세 패턴). `min-h-full` 만 쓰면 잘림. ([05-ui-patterns.md](./docs/05-ui-patterns.md))
 
 ## 패키지 매니저 / Node
 

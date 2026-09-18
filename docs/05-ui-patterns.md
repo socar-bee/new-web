@@ -82,3 +82,18 @@ useEffect(() => {
 ## 디자인 토큰
 
 `src/app/globals.css`에 정의된 CSS variable 사용 (`text-text-strong`, `bg-bg-white`, `--font-size-b4` 등). 직접 hex/px 박지 말고 토큰 우선.
+
+## 페이지 스크롤 소유 패턴
+
+루트 레이아웃(`src/app/layout.tsx`)이 `h-dvh overflow-hidden` 컨테이너로 감싼다 — **문서(body) 스크롤이 없다.** 새 페이지는 스크롤을 자체 소유해야 한다:
+
+```tsx
+<div className="flex h-full flex-col">
+  <header className="shrink-0">…</header> {/* sticky 불필요 — 스크롤 영역 밖 */}
+  <main className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto">…</main>
+</div>
+```
+
+- `min-h-full` 만 쓰면 콘텐츠가 잘리고 스크롤이 안 된다 (내주차권 상세에서 발생했던 버그).
+- 기준 구현: `/t` 상세(`TicketDetailView`), `/my-ticket/[seq]` 상세.
+- 하단 고정 버튼은 `fixed bottom-0` + 콘텐츠 `pb-[버튼높이]` 로 처리.
