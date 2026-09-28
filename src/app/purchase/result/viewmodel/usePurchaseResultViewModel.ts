@@ -68,6 +68,22 @@ export function usePurchaseResultViewModel() {
   }, [isFail, guestSeq])
 
   /**
+   * 주소에서 비회원 조회 키를 지운다 — `guestCode` 는 휴대폰 뒷 4자리이고 `guestSeq` 는 채널 코드다.
+   * 값은 이미 이 화면이 들고 있어(아래 조회에 쓴다) 주소에 남을 이유가 없는데,
+   * 남겨두면 히스토리·공유 링크와 외부 리소스 Referer 로 새어 나간다.
+   *
+   * `replaceState` 는 Next 라우터에 알리지 않으므로 이미 읽어 둔 `searchParams` 값은 그대로 유지된다.
+   */
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    if (!url.searchParams.has('guestCode') && !url.searchParams.has('guestSeq')) return
+
+    url.searchParams.delete('guestCode')
+    url.searchParams.delete('guestSeq')
+    window.history.replaceState(null, '', `${url.pathname}${url.search}`)
+  }, [])
+
+  /**
    * 구매한 주차권 상세 — 완료 화면의 주차장·상품·차량번호 행이 전부 여기서 온다
    * (modu-android 는 결제 응답을 그대로 그리지만, 웹은 pay 가 조회 키만 돌려주므로 한 번 더 조회한다).
    *
