@@ -99,15 +99,12 @@ const MyTicketCard = memo(function MyTicketCard({ ticket, onSelect }: { ticket: 
           <p className={`text-b5 truncate ${isActive ? 'text-slate-400' : 'text-slate-300'}`}>{ticket.usageDate}</p>
         </div>
 
-        {/* 가운데 연결부 — 노치 + 점선 */}
-        <div className={`relative w-5 shrink-0 ${cardBg}`}>
-          <div
-            className={`absolute -top-[1px] left-0 h-[9px] w-full rounded-b-full border-x border-b ${cardBorder} ${cardBg}`}
-          />
+        {/* 가운데 연결부 — 점선만. 카드 외곽선은 여기서도 끊기지 않게 border-y 로 잇는다.
+            반원 노치를 카드 bg(흰색)로 채우면 절개가 아니라 배경 위로 **튀어나온 혹**으로 보이고
+            그 양옆으로 배경이 새어 들어온다 (절개로 보이게 하려면 노치를 배경색으로 채워야 하는데,
+            이 카드는 배경이 다른 화면에서도 쓰여 색을 박을 수 없다) */}
+        <div className={`relative w-5 shrink-0 border-y ${cardBg} ${cardBorder}`}>
           <div className={`absolute inset-y-2.5 left-1/2 w-px -translate-x-1/2 border-l border-dashed ${dashBorder}`} />
-          <div
-            className={`absolute -bottom-[1px] left-0 h-[9px] w-full rounded-t-full border-x border-t ${cardBorder} ${cardBg}`}
-          />
         </div>
 
         {/* 오른쪽: 차량번호 · 결제금액 */}

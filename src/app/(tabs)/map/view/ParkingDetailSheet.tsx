@@ -636,8 +636,7 @@ const TicketStubCard = memo(function TicketStubCard({
       onClick={() => !isDisabled && onSelect(ticket.couponSeq)}
     >
       {/* 3분할: [정보] · [연결부 (카드 bg와 동일)] · [가격]
-       *  - 연결부 bg를 카드 bg와 일치 → 색 단절 없이 매끈하게 이어짐
-       *  - 노치는 border + 카드 bg fill로 카드 영역과 자연스럽게 연결 */}
+       *  - 연결부 bg·외곽선을 카드와 일치 → 색·선 단절 없이 매끈하게 이어짐 */}
       <div className="flex h-[86px] w-full">
         {/* 왼쪽: 정보 영역 */}
         <div
@@ -657,18 +656,11 @@ const TicketStubCard = memo(function TicketStubCard({
           )}
         </div>
 
-        {/* 가운데 연결부 — bg는 카드와 일치(상태별), 점선만 별도 색상 */}
-        <div className={`relative w-5 shrink-0 ${cardBg}`}>
-          {/* 상단 반원 노치 — bg를 카드 bg로 채워서 카드 영역과 매끈하게 이어짐 */}
-          <div
-            className={`absolute -top-[1px] left-0 h-[9px] w-full rounded-b-full border-x border-b ${cardBorder} ${cardBg}`}
-          />
+        {/* 가운데 연결부 — 점선만. 카드 외곽선을 border-y 로 이어 배경이 새지 않게 한다
+            (반원 노치를 카드 bg로 채우면 절개가 아니라 배경 위로 튀어나온 혹으로 보인다) */}
+        <div className={`relative w-5 shrink-0 border-y ${cardBg} ${cardBorder}`}>
           {/* 점선 */}
           <div className={`absolute inset-y-2.5 left-1/2 w-px -translate-x-1/2 border-l border-dashed ${dashBorder}`} />
-          {/* 하단 반원 노치 */}
-          <div
-            className={`absolute -bottom-[1px] left-0 h-[9px] w-full rounded-t-full border-x border-t ${cardBorder} ${cardBg}`}
-          />
         </div>
 
         {/* 오른쪽: 가격 영역 — 고정폭(컴팩트), 큰 금액(1M+)은 폰트 다운그레이드 */}
