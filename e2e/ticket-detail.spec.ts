@@ -41,7 +41,7 @@ test.describe('주차권 상세 — 당일권 (판매중)', () => {
     await expect(cells.nth(1)).toHaveAttribute('aria-pressed', 'true')
   })
 
-  test('CTA 「25,000원 결제하기」 → pay 비회원(guest-pay) 경로로 이동한다', async ({ page }) => {
+  test('CTA 「25,000원 결제하기」 → pay 결제웹뷰로 이동한다 (미로그인 = 비회원)', async ({ page }) => {
     await gotoHydrated(page, `/t/9101?parkingDate=${seoulDate()}`)
 
     const cta = page.getByRole('button', { name: '25,000원 결제하기' })
@@ -57,36 +57,7 @@ test.describe('주차권 상세 — 당일권 (판매중)', () => {
     expect(url.searchParams.get('guestSeq')).toBe('0')
   })
 
-  test('로그인 상태 CTA → pay 회원 플로우(query 진입 + hash 토큰)로 이동한다', async ({ page }) => {
-    // authStore(zustand persist) 로그인 상태 시드
-    await page.addInitScript(() =>
-      localStorage.setItem(
-        'auth-storage',
-        JSON.stringify({
-          state: {
-            accessToken: 'E2E_AT',
-            refreshToken: 'RT',
-            userVerificationId: null,
-            isLoggedIn: true,
-            profile: null
-          },
-          version: 0
-        })
-      )
-    )
-    await gotoHydrated(page, `/t/9101?parkingDate=${seoulDate()}`)
-
-    await page.getByRole('button', { name: '25,000원 결제하기' }).click()
-
-    // {PAY_HOST}/?flowType=partner&couponSeq&parkingDate&returnUrl#at= — 회원 진입 계약 (pay webEntry)
-    await page.waitForURL(/\/\?flowType=partner/)
-    const url = new URL(page.url())
-    expect(url.pathname).toBe('/')
-    expect(url.searchParams.get('couponSeq')).toBe('9101')
-    expect(url.searchParams.get('parkingDate')).toBe(seoulDate())
-    expect(url.searchParams.get('returnUrl')).toContain('/purchase/result')
-    expect(url.hash).toBe('#at=E2E_AT')
-  })
+  // 회원/비회원 진입 계약(경로·조회 키·토큰 핸드오프)은 pay-entry.spec.ts 가 검증한다
 
   test('이런 이용권은 어떠세요? — 현재권 제외 목록, 탭하면 해당 상세로 이동', async ({ page }) => {
     await gotoHydrated(page, '/t/9101')

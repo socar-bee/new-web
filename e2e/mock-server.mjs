@@ -38,10 +38,10 @@ const server = createServer((req, res) => {
     return
   }
 
-  // pay 비회원(guest-pay) 진입 목적지 (PAY_HOST mock) — 결제 진입 URL 검증용
-  if (pathname === '/guest') {
+  // pay 진입 목적지 (PAY_HOST mock) — 회원(/member)·비회원(/guest) 진입 URL 검증용
+  if (pathname === '/guest' || pathname === '/member') {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
-    res.end('<!doctype html><html><body><h1>pay guest</h1></body></html>')
+    res.end(`<!doctype html><html><body><h1>pay ${pathname.slice(1)}</h1></body></html>`)
     return
   }
 

@@ -184,10 +184,30 @@ location.href = `parkingshare://open-url/internal?url=${encodeURIComponent(PAY_O
 - **`payment/PaymentResult` 는 읽지 않는다.** 네이티브가 읽고 지우기로 합의된 값이라, 여기서도 읽으면 결과 화면이 안 뜨거나 두 번 뜬다. 돌아오면 판매 상태만 다시 조회한다.
 - **계약의 원본은 pay 다** — `modu-webview-monorepo/apps/pay/src/shared/bridge/entryParams.type.ts`. 문자열로 옮겨 적으면 pay 가 계약을 바꿀 때 조용히 어긋난다 (예: pay@v1.1.0 `requiresEntryTime`). 옮길 때는 원본 경로와 확인 날짜를 주석으로 남긴다.
 
-### 웹 — pay 비회원 경로로 이동
+### 웹 — 회원 · 비회원 두 갈래
 
-- `{PAY_HOST}/guest?couponSeq={seq}&parkingDate={yyyy-MM-dd}&guestSeq={채널 코드}` 로 **같은 탭 이동**한다. 토큰은 넘기지 않는다 — 휴대폰 인증은 pay 가 한다.
+pay 는 **서비스를 path 로 판별한다** (`apps/pay/src/app/router.ts`) — 런타임 브릿지 감지는 초기화 타이밍에 의존해 결제에서 오분기 비용이 크기 때문이다. 웹 회원을 앱 웹뷰(`/`)와 같은 path 에 두지 않는 것도 같은 이유로, 인증 어댑터가 브릿지 vs 토큰 핸드오프로 서로 다르다.
+
+진입 URL 계약은 **`src/shared/platform/pay.ts` 한 곳이 소유**한다 (modu-web-app `shared/utils/guestPay.ts` 가 하던 역할). `web.ts` 는 "누구로 보낼지"만 정한다.
+
+| 환경    | 사용자 | 진입                                                             | 인증                              | pay 지원                    |
+| ------- | ------ | ---------------------------------------------------------------- | --------------------------------- | --------------------------- |
+| 앱 웹뷰 | 회원   | Pref `payment/PaymentEntry` + 새 웹뷰                            | `bridge.peekTokens`               | ✅ 4-flow                   |
+| 웹      | 비회원 | `{PAY_HOST}/guest?flowType&<조회키>&guestSeq&returnUrl`          | pay 안에서 전화인증 → 게스트 토큰 | ⚠️ `partner` 만 (확장 대기) |
+| 웹      | 회원   | `{PAY_HOST}/member?flowType&<조회키>&returnUrl#at={accessToken}` | 토큰 hash 핸드오프                | ❌ 미구현 (신설 대기)       |
+
+- **조회 키만 싣는다.** 금액·상품명은 계약에 없다 — 화면 값의 원본은 pay 가 하는 상세 조회다. flowType 별 키는 `checkoutEntryKeys()` 가 pay `entryParams.type.ts` 와 1:1 로 맞춘다.
+- **회원 토큰은 hash 에 싣는다.** hash 는 서버로 전송되지 않아 pay 웹서버·중간 프록시 접근 로그에 남지 않는다. pay 는 읽은 뒤 `history.replaceState` 로 주소에서 지운다 (pay `devEntry.ts` 와 같은 방식).
+- **비회원 URL 에는 인증 산출물이 없다.** 전화인증·토큰 발급이 pay 안에서 끝나 오리진 경계를 넘길 것이 애초에 없다. `guestSeq` 는 채널 코드라 민감값이 아니고, 이전 복귀가 남긴 값을 이어붙인다(`readGuestSeq()`).
 - `PAY_HOST` 는 환경변수로 받는다. API 호스트 문자열로 운영 여부를 추정하지 않는다 — modu-web-app `payOrigin()` 이 `api.modu.kr` 로 판정하는데 운영 API 는 `api.modu.cloud` 라, 운영 사용자가 pay-dev 로 가는 버그가 있다.
+
+#### pay 선행 작업 (2026-09-28 기준 미구현)
+
+웹 두 갈래는 pay 쪽이 받아줘야 동작한다. 계약은 위 표와 `platform/pay.ts` 가 원천이다.
+
+1. **`/guest` flowType 확장** — 현재 `parseGuestEntry` 가 `flowType` 을 읽지 않고 `partner` 로 하드코딩한다 (`apps/pay/src/shared/guest/guestEntry.ts`). 공항(`period`)·공유(`share`·`shareExtend`)가 오면 couponSeq 만 partner 로 오해해 **엉뚱한 상세를 조회**한다. 권종별 입력 화면(입차시간·차량번호)도 같이 필요하다.
+2. **`/member` 신설** — 브라우저 회원 진입. 쿼리로 진입값을, hash 로 accessToken 을 받는 인증 어댑터가 필요하다 (`GuestLayout` 과 같은 층). 401 갱신은 브릿지가 없어 불가하므로 `returnUrl` 로 실패 복귀시킨다.
+3. `/guest` 는 아직 **`origin/milestone/guest-pay` 미머지 브랜치**다 (2026-09-07). develop 에 올라가야 dev 에서 검증된다.
 
 ### `parkingDate` 는 한 값으로
 
