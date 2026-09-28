@@ -31,6 +31,16 @@ test.describe('결제 결과 (/purchase/result)', () => {
     await expect(page.getByRole('button', { name: '주차권 상세 보기' })).toHaveCount(0)
   })
 
+  test('단기권(period) 실패 복귀 — 재시도는 공항 상세로 간다', async ({ page }) => {
+    await gotoHydrated(
+      page,
+      '/purchase/result?result=fail&type=p&couponSeq=9501&flowType=period&sDate=2026-10-01T00%3A00%3A00.000Z&eDate=2026-10-05T09%3A00%3A00.000Z'
+    )
+
+    await page.getByRole('button', { name: '다시 시도하기' }).click()
+    await page.waitForURL(/\/airport\/ticket\/9501\?sDate=/)
+  })
+
   test('couponSeq 쿼리가 있으면 주차권 상세로 돌아갈 수 있다', async ({ page }) => {
     await gotoHydrated(page, '/purchase/result?couponSeq=9101')
 

@@ -33,6 +33,10 @@ export function usePurchaseResultViewModel() {
   /** 실패 시 재시도 키 */
   const couponSeq = searchParams?.get('couponSeq')
   const parkingDate = searchParams?.get('parkingDate')
+  /** 권종 — 상세 라우트가 권종마다 다르다. 없으면 제휴로 본다 (pay 가 flowType 을 싣기 전 링크) */
+  const flowType = searchParams?.get('flowType')
+  const sDate = searchParams?.get('sDate')
+  const eDate = searchParams?.get('eDate')
   /** 게스트 구매내역 조회 키 — 내 주차권(guestCode 조회) 연동 시 사용 (1차 미사용) */
   const guestCode = searchParams?.get('guestCode')
   const guestSeq = searchParams?.get('guestSeq')
@@ -48,21 +52,34 @@ export function usePurchaseResultViewModel() {
 
   platform.useTopBar({ title: PURCHASE_RESULT_TITLE, onBack: goHome })
 
+  /** 권종별 상세 경로 — 단기권·공항은 `/airport/ticket`, 그 외는 제휴 `/t` */
+  const ticketDetailPath = useCallback(() => {
+    if (!couponSeq) return null
+    if (flowType === 'period') {
+      // 공항 상세는 입·출차 일시가 없으면 가격을 조회하지 못한다 — pay 가 되돌려 준 값을 그대로 잇는다
+      if (!sDate || !eDate) return `/airport/ticket/${couponSeq}`
+      const query = new URLSearchParams({ sDate, eDate })
+      return `/airport/ticket/${couponSeq}?${query.toString()}`
+    }
+
+    return `/t/${couponSeq}${parkingDate ? `?parkingDate=${parkingDate}` : ''}`
+  }, [couponSeq, flowType, sDate, eDate, parkingDate])
+
   /** 실패 재시도 — 주차권 상세로 (pay 게스트 세션이 유지돼 바로 다시 결제 진입 가능) */
   const goRetry = useCallback(() => {
-    if (!couponSeq) {
+    const path = ticketDetailPath()
+    if (!path) {
       platform.back('/')
       return
     }
-    const query = parkingDate ? `?parkingDate=${parkingDate}` : ''
-    router.replace(`/t/${couponSeq}${query}`)
-  }, [router, platform, couponSeq, parkingDate])
+    router.replace(path)
+  }, [router, platform, ticketDetailPath])
 
   const goTicketDetail = useCallback(() => {
-    if (!couponSeq) return
-    const query = parkingDate ? `?parkingDate=${parkingDate}` : ''
-    router.push(`/t/${couponSeq}${query}`)
-  }, [router, couponSeq, parkingDate])
+    const path = ticketDetailPath()
+    if (!path) return
+    router.push(path)
+  }, [router, ticketDetailPath])
 
   /** 구매한 내주차권 상세로 — parkingSeq(구매건 seq)가 my-ticket 경로 변수다 */
   const goMyTicket = useCallback(() => {
