@@ -1,4 +1,6 @@
+import { refreshAccessToken } from '@/shared/lib/authToken'
 import { readGuestSeq } from '@/shared/lib/guestSession'
+import { saveLoginReturnTo } from '@/shared/lib/loginReturnTo'
 
 import type { CheckoutTicket } from '@/shared/platform/types'
 import { useAuthStore } from '@/shared/stores/authStore'
@@ -13,14 +15,28 @@ export { payHost } from '@/shared/platform/pay'
  *
  * URL 계약은 `platform/pay.ts` 한 곳이 소유한다 — 여기서는 "누구로 보낼지"만 정한다.
  */
-export function webCheckout(ticket: CheckoutTicket) {
+export async function webCheckout(ticket: CheckoutTicket) {
   const host = payHost()
   if (!host) {
     console.error('NEXT_PUBLIC_PAY_HOST 미설정 — 결제 진입을 진행할 수 없습니다')
     return
   }
 
-  const { accessToken } = useAuthStore.getState()
+  /**
+   * 회원이면 **진입 직전에 토큰을 갱신한다** — pay 의 웹 회원 경로에는 갱신 수단이 없어
+   * (`attachHandoffAuth`) 만료 토큰을 넘기면 화면은 떠도 회원 데이터가 전부 비어 버린다.
+   */
+  let accessToken: string | null = null
+  if (useAuthStore.getState().isLoggedIn) {
+    accessToken = await refreshAccessToken()
+
+    // refresh 토큰까지 만료 — 결제는 로그인 뒤에 이어간다 (돌아올 곳은 지금 화면)
+    if (!accessToken) {
+      saveLoginReturnTo(`${window.location.pathname}${window.location.search}`)
+      window.location.assign('/login')
+      return
+    }
+  }
 
   window.location.assign(
     buildPayUrl(host, ticket, {
