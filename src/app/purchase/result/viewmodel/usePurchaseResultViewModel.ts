@@ -1,11 +1,25 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { useFavorites } from '@/shared/hooks/useFavorites'
+
+import { requestGuestAuth } from '@/shared/lib/guestAuth'
 import { saveGuestSeq } from '@/shared/lib/guestSession'
 
+import { useAuthStore } from '@/shared/stores/authStore'
+
+import type { MyTicketDetail } from '@/shared/types/ticket'
+
+import { fetchMyTicketDetail } from '@/app/my-ticket/[seq]/model'
 import { usePlatform } from '@/shared/platform'
+
+/** 완료 화면 상세 행 — 권종마다 구성만 달라진다 (modu-android TicketPaymentCompleteScreen) */
+export interface PurchaseResultRow {
+  label: string
+  value: string
+}
 
 export const PURCHASE_RESULT_TITLE = '결제 결과'
 
@@ -25,8 +39,15 @@ export function usePurchaseResultViewModel() {
   const searchParams = useSearchParams()
   const platform = usePlatform()
 
+  const { toggle: toggleFavorite, favorites } = useFavorites()
+
   const result = searchParams?.get('result')
   const isFail = result === 'fail'
+  /** 내주차권 조회 경로 구분 — 제휴·단기권 `p`, 공유 `s` (pay 가 실어 보낸다) */
+  const ticketType = searchParams?.get('type') ?? 'p'
+
+  const [detail, setDetail] = useState<MyTicketDetail | null>(null)
+  const [isDetailLoading, setIsDetailLoading] = useState(true)
 
   /** 성공 시 구매건 seq (couSeq) — type='p' 제휴 기준 */
   const purchasedSeq = searchParams?.get('parkingSeq')
@@ -45,6 +66,75 @@ export function usePurchaseResultViewModel() {
   useEffect(() => {
     if (!isFail && guestSeq) saveGuestSeq(guestSeq)
   }, [isFail, guestSeq])
+
+  /**
+   * 구매한 주차권 상세 — 완료 화면의 주차장·상품·차량번호 행이 전부 여기서 온다
+   * (modu-android 는 결제 응답을 그대로 그리지만, 웹은 pay 가 조회 키만 돌려주므로 한 번 더 조회한다).
+   *
+   * 회원은 보유 토큰으로, 비회원은 복귀 URL 이 실어 준 `guestSeq`·`guestCode` 로 게스트 토큰을 받아 조회한다.
+   * 실패하면 행 없이 완료 문구만 그린다 — 결제는 이미 끝났고 여기서 되돌릴 것이 없다.
+   */
+  useEffect(() => {
+    if (isFail || !purchasedSeq) {
+      setIsDetailLoading(false)
+      return
+    }
+
+    let alive = true
+
+    const load = async (): Promise<MyTicketDetail | null> => {
+      const { accessToken } = useAuthStore.getState()
+      if (accessToken) return await fetchMyTicketDetail(ticketType, purchasedSeq, accessToken)
+
+      if (!guestSeq || !guestCode) return null
+      const guest = await requestGuestAuth(Number(guestSeq))
+      return await fetchMyTicketDetail(ticketType, purchasedSeq, guest.accessToken, guestCode)
+    }
+
+    load()
+      .catch((error: unknown) => {
+        console.error('구매 주차권 조회 실패:', error)
+        return null
+      })
+      .then((loaded) => {
+        if (!alive) return
+        setDetail(loaded)
+        setIsDetailLoading(false)
+      })
+
+    return () => {
+      alive = false
+    }
+  }, [isFail, purchasedSeq, ticketType, guestSeq, guestCode])
+
+  /**
+   * 상세 행 — 권종별로 **구성만** 달라진다 (android 와 같은 순서: 상품명 → 이용시간 → 차량번호).
+   * 값이 없는 행은 그리지 않는다 — 권종마다 서버가 채우는 필드가 다르다.
+   */
+  const rows = useMemo<PurchaseResultRow[]>(() => {
+    if (!detail) return []
+
+    const { ticket } = detail
+    const list: PurchaseResultRow[] = []
+
+    if (ticket.ticketName) list.push({ label: '상품명', value: ticket.ticketName })
+    if (ticket.usageDate) list.push({ label: '이용일', value: ticket.usageDate })
+    if (ticket.usageTime) list.push({ label: '이용시간', value: ticket.usageTime })
+    // 공유주차권은 종료 시각이 별도 필드다 (modu-web-app MyTicketDetailModel.share)
+    if (ticket.share?.endTime) list.push({ label: '종료시간', value: ticket.share.endTime })
+    if (ticket.carNum) list.push({ label: '차량번호', value: ticket.carNum })
+
+    return list
+  }, [detail])
+
+  const parkinglot = detail?.parkinglot ?? null
+  const isFavorite = parkinglot ? favorites.some((favorite) => favorite.seq === parkinglot.seq) : false
+
+  /** 즐겨찾기 토글 — android 완료 화면의 주차장명 옆 북마크와 같은 자리 */
+  const onToggleFavorite = useCallback(() => {
+    if (!parkinglot) return
+    toggleFavorite({ seq: parkinglot.seq, name: parkinglot.name, areaLabel: parkinglot.address })
+  }, [parkinglot, toggleFavorite])
 
   const goHome = useCallback(() => {
     platform.back('/')
@@ -89,6 +179,11 @@ export function usePurchaseResultViewModel() {
 
   return {
     isFail,
+    isDetailLoading,
+    parkinglotName: parkinglot?.name ?? '',
+    isFavorite,
+    onToggleFavorite,
+    rows,
     purchasedSeq,
     couponSeq,
     guestCode,
