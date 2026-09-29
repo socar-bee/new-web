@@ -50,6 +50,7 @@ export default function MyTicketDetailView({ seq }: MyTicketDetailViewProps) {
       <header className="bg-bg-white z-10 flex h-14 shrink-0 items-center justify-between pr-4 pl-2">
         <div className="flex items-center gap-1">
           <button
+            type="button"
             onClick={vm.goBack}
             aria-label="뒤로가기"
             className="flex size-10 cursor-pointer items-center justify-center"
@@ -274,6 +275,7 @@ function TicketDetail({
         <h3 className="text-t4 text-text-strong font-bold">주차장 정보</h3>
         <p className="text-text-strong text-b4">{parkinglot.name}</p>
         <button
+          type="button"
           className="flex w-full min-w-0 cursor-pointer items-center gap-1 text-left"
           onClick={() => onCopyAddress(parkinglot.address)}
         >

@@ -16,12 +16,17 @@ export default function LocationConsentSheet({ onAllow, onDeny }: LocationConsen
         <p className="text-text-sub text-b4 mb-4">내 주변 주차장을 찾기 위해 현재 위치 정보가 필요합니다.</p>
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={onDeny}
             className="border-stroke-soft text-text-sub text-c2 h-11 flex-1 rounded-xl border font-medium"
           >
             사용 안 함
           </button>
-          <button onClick={onAllow} className="bg-primary text-static-white text-t5 h-11 flex-[2] rounded-xl font-bold">
+          <button
+            type="button"
+            onClick={onAllow}
+            className="bg-primary text-static-white text-t5 h-11 flex-[2] rounded-xl font-bold"
+          >
             현재 위치 사용
           </button>
         </div>

@@ -43,12 +43,12 @@ export default function Calendar({ selectedDate, onChange, filterDate, minMonth,
             <div className="flex items-center justify-between px-6 py-2">
               <span className="text-text-strong text-t4 font-semibold">{`${y}년 ${m + 1}월`}</span>
               <div className="flex items-center gap-7 opacity-80">
-                <button onClick={decreaseMonth} disabled={isPrevDisabled} className="p-0">
+                <button type="button" onClick={decreaseMonth} disabled={isPrevDisabled} className="p-0">
                   <IconChevronLeftLine
                     className={`size-6 ${isPrevDisabled ? 'text-icon-disabled' : 'text-icon-strong'}`}
                   />
                 </button>
-                <button onClick={increaseMonth} disabled={isNextDisabled} className="p-0">
+                <button type="button" onClick={increaseMonth} disabled={isNextDisabled} className="p-0">
                   <IconChevronRightLine
                     className={`size-6 ${isNextDisabled ? 'text-icon-disabled' : 'text-icon-strong'}`}
                   />

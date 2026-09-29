@@ -119,6 +119,7 @@ export default function MyView() {
       <div className="bg-bg-weak h-2" />
       <section className="bg-bg-white flex items-center justify-between px-5 pt-4 pb-4">
         <button
+          type="button"
           onClick={vm.handleLogout}
           className="text-text-soft hover:text-text-sub text-b4 flex cursor-pointer items-center gap-1.5 transition-colors"
         >
@@ -145,6 +146,7 @@ function AppBarBtn({
 }) {
   return (
     <button
+      type="button"
       aria-label={ariaLabel}
       onClick={onClick}
       className="active:bg-bg-weak relative flex size-9 cursor-pointer items-center justify-center rounded-full text-neutral-700 transition-colors"
@@ -249,7 +251,10 @@ function Avatar({ src, name, verified }: { src?: string; name: string; verified?
 /* ─── Verify Banner ─── */
 function VerifyBanner() {
   return (
-    <button className="border-primary/20 bg-primary/5 flex w-full cursor-pointer items-center gap-3 rounded-xl border px-4 py-3.5 text-left">
+    <button
+      type="button"
+      className="border-primary/20 bg-primary/5 flex w-full cursor-pointer items-center gap-3 rounded-xl border px-4 py-3.5 text-left"
+    >
       <span className="bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-full">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path
@@ -298,6 +303,7 @@ function MenuRow({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className="active:bg-bg-soft/40 flex w-full cursor-pointer items-center gap-3 text-left transition-colors"
     >
@@ -342,6 +348,7 @@ function ProfileError({ onRetry }: { onRetry: () => void }) {
     <div className="flex items-center justify-between">
       <p className="text-text-sub text-b4">프로필을 불러오지 못했어요</p>
       <button
+        type="button"
         onClick={onRetry}
         className="bg-primary text-static-white text-t5 cursor-pointer rounded-full px-4 py-1.5 font-semibold"
       >

@@ -134,6 +134,7 @@ export default function TimeFilterSheet({
                   const isSelected = dur.id === draftDurationId
                   return (
                     <button
+                      type="button"
                       key={dur.id}
                       onClick={() => setDraftDurationId(dur.id)}
                       className={`text-c2 flex h-[30px] cursor-pointer items-center justify-center rounded-full border font-medium whitespace-nowrap transition-colors ${
@@ -152,12 +153,14 @@ export default function TimeFilterSheet({
             {/* Bottom buttons */}
             <div className="flex gap-2 px-4 py-4">
               <button
+                type="button"
                 onClick={onClose}
                 className="rounded-8 bg-bg-soft text-text-strong text-t4 flex h-[52px] flex-1 cursor-pointer items-center justify-center font-semibold"
               >
                 닫기
               </button>
               <button
+                type="button"
                 onClick={handleConfirm}
                 className="rounded-8 bg-primary text-static-white text-t4 flex h-[52px] flex-1 cursor-pointer items-center justify-center font-semibold"
               >

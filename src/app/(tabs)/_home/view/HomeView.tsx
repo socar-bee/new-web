@@ -57,7 +57,12 @@ export default function HomeView() {
       {/* 상단 배너 — 앱 검색배너(adInventory) 328×80 스트립 */}
       {vm.adBanner && (
         <div className="bg-bg-white px-5 pt-1 pb-2">
-          <button onClick={vm.goAdBanner} className="block w-full cursor-pointer" aria-label="이벤트 배너">
+          <button
+            type="button"
+            onClick={vm.goAdBanner}
+            className="block w-full cursor-pointer"
+            aria-label="이벤트 배너"
+          >
             <img
               src={vm.adBanner.bannerUrl}
               alt=""
@@ -201,7 +206,11 @@ function TopBar() {
 /* ─── 위치 칩 ─── */
 function LocationChip({ label, isLocating, onClick }: { label: string; isLocating: boolean; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="text-text-strong flex items-center gap-1 px-5 pt-1 pb-3 text-left">
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-text-strong flex items-center gap-1 px-5 pt-1 pb-3 text-left"
+    >
       <IconMarkerFill className="size-[18px] text-red-500" />
       {isLocating ? (
         <span className="text-text-soft text-t4 font-bold">위치 확인 중…</span>
@@ -260,6 +269,7 @@ function QuickMenuGrid({ items, onAction }: { items: QuickMenuItem[]; onAction?:
       {items.map((it) =>
         it.action ? (
           <button
+            type="button"
             key={it.id}
             onClick={() => onAction?.(it.action!)}
             className="flex cursor-pointer flex-col items-center gap-1.5"
@@ -301,6 +311,7 @@ function RegionsSection({
           지역 <span className="text-primary">BEST</span>
         </h2>
         <button
+          type="button"
           onClick={onNearby}
           className="bg-primary text-static-white text-t6 flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5 font-semibold"
         >
@@ -397,6 +408,7 @@ function RecentParkingsSection() {
               <br />내 주변 주차장부터 찾아볼까요?
             </p>
             <button
+              type="button"
               onClick={() => router.push('/map')}
               className="bg-primary text-static-white text-t5 cursor-pointer rounded-full px-4 py-2 font-semibold"
             >
@@ -540,6 +552,7 @@ function ReviewSheet({ onClose }: { onClose: () => void }) {
               <span className="text-text-soft text-b4">소중한 리뷰 감사합니다</span>
             </div>
             <button
+              type="button"
               onClick={onClose}
               className="bg-primary text-t5 mt-2 rounded-full px-8 py-3 font-semibold text-white"
             >
@@ -560,6 +573,7 @@ function ReviewSheet({ onClose }: { onClose: () => void }) {
                 <div className="flex gap-1.5">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
+                      type="button"
                       key={star}
                       onClick={() => setRating(star)}
                       className="transition-transform active:scale-110"
@@ -590,6 +604,7 @@ function ReviewSheet({ onClose }: { onClose: () => void }) {
 
               {/* 등록 버튼 */}
               <button
+                type="button"
                 onClick={() => rating > 0 && setSubmitted(true)}
                 className={`text-t4 w-full rounded-2xl py-3.5 font-bold transition-colors ${
                   rating > 0 ? 'bg-primary text-white' : 'bg-bg-soft text-text-disabled'

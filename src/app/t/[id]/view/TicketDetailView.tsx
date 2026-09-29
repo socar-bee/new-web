@@ -55,6 +55,7 @@ export default function TicketDetailView({ couponSeq, initialTicket, parkingTick
           className="bg-bg-white sticky top-0 z-20 flex h-12 shrink-0 items-center justify-between px-1"
         >
           <button
+            type="button"
             onClick={vm.goBack}
             aria-label="뒤로"
             className="flex size-11 cursor-pointer items-center justify-center"
@@ -72,6 +73,7 @@ export default function TicketDetailView({ couponSeq, initialTicket, parkingTick
           <div className="flex flex-col gap-2 px-4">
             {parkinglotName && (
               <button
+                type="button"
                 onClick={() => pin && vm.goToParkinglotDetail(pin.seq)}
                 disabled={!pin}
                 className={`flex items-center gap-0.5 self-start ${pin ? 'cursor-pointer' : ''}`}
@@ -119,6 +121,7 @@ export default function TicketDetailView({ couponSeq, initialTicket, parkingTick
               <div className="flex w-max gap-2 px-4">
                 {t.photos.map((photo, index) => (
                   <button
+                    type="button"
                     key={photo.fileName}
                     onClick={() => setViewer({ open: true, startIndex: index })}
                     aria-label="주차장 사진 크게 보기"
@@ -180,6 +183,7 @@ export default function TicketDetailView({ couponSeq, initialTicket, parkingTick
               <div className="flex w-max gap-2 px-4">
                 {vm.anotherTickets.map((another) => (
                   <button
+                    type="button"
                     key={another.couponSeq}
                     onClick={() => vm.goToTicketDetail(another.couponSeq)}
                     className={`rounded-8 flex w-[227px] shrink-0 cursor-pointer flex-col gap-1 border p-4 text-left ${
@@ -248,6 +252,7 @@ function DateCell({ cell, onSelect }: { cell: DateCellModel; onSelect: (date: st
 
   return (
     <button
+      type="button"
       onClick={() => onSelect(cell.date)}
       aria-pressed={cell.isSelected}
       className={`rounded-8 flex size-[58px] shrink-0 cursor-pointer flex-col items-center justify-center gap-0.5 ${
@@ -342,6 +347,7 @@ function PhotoViewer({
           {photos.length > 1 ? `${index + 1} / ${photos.length}` : ''}
         </span>
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation()
             onClose()

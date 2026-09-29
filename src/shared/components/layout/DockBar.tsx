@@ -78,6 +78,7 @@ export default function DockBar() {
           const showLottie = item.href === '/reviews' && showReviewIntro
           return (
             <button
+              type="button"
               key={item.href}
               onClick={() => handleClick(item)}
               className="flex flex-col items-center gap-0.5 px-3 py-1"

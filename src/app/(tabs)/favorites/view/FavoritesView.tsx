@@ -62,7 +62,7 @@ function Header({
           {count > 0 && <span className="text-primary text-b4 tabular-nums">{count}</span>}
         </h1>
         {count > 0 && (
-          <button onClick={onRequestClear} className="text-text-sub text-c3 cursor-pointer font-medium">
+          <button type="button" onClick={onRequestClear} className="text-text-sub text-c3 cursor-pointer font-medium">
             전체삭제
           </button>
         )}
@@ -84,6 +84,7 @@ function Header({
 function SortPill({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`text-t6 cursor-pointer rounded-full px-3 py-1.5 font-semibold transition-colors ${
         active ? 'bg-primary text-static-white' : 'bg-bg-soft text-text-sub'
@@ -118,6 +119,7 @@ function EmptyState({ onCtaClick }: { onCtaClick: () => void }) {
         </p>
       </div>
       <button
+        type="button"
         onClick={onCtaClick}
         className="bg-primary text-static-white text-t5 mt-1 cursor-pointer rounded-full px-6 py-3 font-semibold transition-transform active:scale-95"
       >
@@ -164,6 +166,7 @@ const FavoriteCard = memo(function FavoriteCard({
       className="bg-bg-white border-stroke-soft flex items-center gap-3 rounded-2xl border p-3 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
     >
       <button
+        type="button"
         onClick={() => onSelect(favorite)}
         className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-left"
       >
@@ -175,6 +178,7 @@ const FavoriteCard = memo(function FavoriteCard({
         </div>
       </button>
       <button
+        type="button"
         onClick={() => onRemove(favorite.seq)}
         aria-label={`${favorite.name} 즐겨찾기 해제`}
         className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full transition-transform active:scale-90"
@@ -267,12 +271,14 @@ function ConfirmClearDialog({ onConfirm, onCancel }: { onConfirm: () => void; on
         </p>
         <div className="mt-5 flex gap-2">
           <button
+            type="button"
             onClick={onCancel}
             className="bg-bg-soft text-text-strong text-t5 flex-1 cursor-pointer rounded-xl py-2.5 font-semibold"
           >
             취소
           </button>
           <button
+            type="button"
             onClick={onConfirm}
             className="bg-primary text-static-white text-t5 flex-1 cursor-pointer rounded-xl py-2.5 font-semibold"
           >

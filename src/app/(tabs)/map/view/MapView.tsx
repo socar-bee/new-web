@@ -193,6 +193,9 @@ export default function MapView() {
 
   return (
     <div className="relative h-full w-full">
+      {/* 화면 제목 — 지도는 캔버스가 화면 전부라 눈에 보이는 제목 자리가 없다. 보조기기용으로만 둔다 */}
+      <h1 className="sr-only">지도에서 주차장 찾기</h1>
+
       {/* Search Bar + Filter Chips */}
       <div className="absolute top-0 left-0 z-[var(--z-map-ui)] flex w-full flex-col gap-2.5 px-4 pt-2">
         <Link href="/search" className="rounded-10 bg-bg-white shadow-02 flex h-12 w-full items-center gap-2.5 px-4">
@@ -206,6 +209,7 @@ export default function MapView() {
         <div className="flex items-center gap-2 px-1">
           {entryTimeLabel && (
             <button
+              type="button"
               onClick={vm.openTimeFilter}
               className="border-primary bg-primary text-static-white text-c2 inline-flex min-h-[34px] shrink-0 items-center justify-center rounded-full border px-3 py-1 font-medium whitespace-nowrap"
             >
@@ -213,6 +217,7 @@ export default function MapView() {
             </button>
           )}
           <button
+            type="button"
             onClick={vm.toggleBuyableOnly}
             className={`text-c2 inline-flex min-h-[34px] shrink-0 items-center justify-center rounded-full border px-3 py-1 font-medium whitespace-nowrap ${
               vm.buyableOnly
@@ -239,6 +244,7 @@ export default function MapView() {
 
       {/* Current Location */}
       <button
+        type="button"
         onClick={() => vm.moveToCurrentLocation()}
         className="bg-bg-white shadow-02 absolute right-4 bottom-4 z-[var(--z-map-ui)] flex size-10 items-center justify-center rounded-full"
       >

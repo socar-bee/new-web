@@ -127,7 +127,7 @@ export default function SharedDetailSheet({
       skipMountAnimation={skipMountAnimation}
       navigationBar={
         <div className="flex h-12 items-center justify-between px-2">
-          <button onClick={onClose} className="flex size-10 cursor-pointer items-center justify-center">
+          <button type="button" onClick={onClose} className="flex size-10 cursor-pointer items-center justify-center">
             <IconChevronLeftLine className="text-icon-strong size-[22px]" />
           </button>
           <div className="size-10" />
@@ -151,6 +151,7 @@ export default function SharedDetailSheet({
               </div>
             </div>
             <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation()
                 openNavigation()
@@ -232,6 +233,7 @@ export default function SharedDetailSheet({
                 )}
                 <span className="text-stroke-sub mx-0.5">|</span>
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation()
                     handleToggleFavorite()
@@ -297,6 +299,7 @@ export default function SharedDetailSheet({
               {address && (
                 <SharedInfoCard icon={<IconMarkerLine className="size-5" />} title="주소">
                   <button
+                    type="button"
                     className="flex w-full min-w-0 cursor-pointer items-center gap-1 text-left"
                     onClick={() => handleCopyAddress(address)}
                   >

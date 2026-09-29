@@ -25,6 +25,7 @@ export default function LoginView() {
           {/* Social Login Buttons */}
           <div className="mt-6 flex w-full max-w-[300px] flex-col gap-2.5">
             <button
+              type="button"
               onClick={vm.handleKakaoLogin}
               className="rounded-12 text-t5 flex w-full items-center justify-center gap-2 bg-[#FEE500] py-3 font-bold text-[#191919] transition-opacity hover:opacity-90 active:opacity-80"
             >
@@ -33,6 +34,7 @@ export default function LoginView() {
             </button>
 
             <button
+              type="button"
               onClick={vm.handleNaverLogin}
               className="rounded-12 text-static-white text-t5 flex w-full items-center justify-center gap-2 bg-[#03C75A] py-3 font-bold transition-opacity hover:opacity-90 active:opacity-80"
             >
@@ -41,6 +43,7 @@ export default function LoginView() {
             </button>
 
             <button
+              type="button"
               onClick={vm.openEmailForm}
               className="rounded-12 text-static-white text-t5 flex w-full items-center justify-center gap-2 bg-neutral-800 py-3 font-bold transition-opacity hover:opacity-90 active:opacity-80"
             >
@@ -108,6 +111,7 @@ export default function LoginView() {
             {vm.error && <p className="text-error-base text-b5">{vm.error}</p>}
 
             <button
+              type="button"
               onClick={vm.handleEmailLogin}
               disabled={vm.isLoading}
               className="rounded-12 bg-primary text-static-white text-t5 mt-1 w-full py-3 font-bold transition-opacity hover:opacity-90 active:opacity-80 disabled:opacity-50"
@@ -115,7 +119,11 @@ export default function LoginView() {
               {vm.isLoading ? '로그인 중...' : '로그인'}
             </button>
 
-            <button onClick={vm.closeEmailForm} className="text-text-sub hover:text-text-strong text-c2 font-medium">
+            <button
+              type="button"
+              onClick={vm.closeEmailForm}
+              className="text-text-sub hover:text-text-strong text-c2 font-medium"
+            >
               다른 방법으로 로그인
             </button>
           </div>

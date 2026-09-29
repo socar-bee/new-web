@@ -19,9 +19,12 @@ export default function PurchaseResultView() {
         <main className="flex flex-1 flex-col items-center justify-center gap-4 px-4">
           <MIcon icon={IconCautionFill} size={56} decorative className="text-error-base" />
           <div className="flex flex-col items-center gap-1.5">
-            <MText typography="title_t2" color="text_strong_950">
-              결제를 완료하지 못했어요
-            </MText>
+            {/* 완료 문구가 곧 화면 제목이다 — MText 는 span 이라 제목 계층을 h1 로 따로 세운다 */}
+            <h1>
+              <MText typography="title_t2" color="text_strong_950">
+                결제를 완료하지 못했어요
+              </MText>
+            </h1>
             <MText typography="body_b4" color="text_sub_600" className="text-center">
               잠시 후 다시 시도해주세요
             </MText>
@@ -52,9 +55,11 @@ export default function PurchaseResultView() {
           */}
           <IconConfirmFill width={56} height={56} aria-hidden className="text-primary" />
           <div className="flex flex-col items-center gap-1.5">
-            <MText typography="title_t2" color="text_strong_950">
-              결제가 완료되었어요
-            </MText>
+            <h1>
+              <MText typography="title_t2" color="text_strong_950">
+                결제가 완료되었어요
+              </MText>
+            </h1>
             <MText typography="body_b4" color="text_sub_600" className="text-center">
               {vm.purchasedSeq
                 ? '구매하신 주차권은 내 주차권에서 확인할 수 있어요'

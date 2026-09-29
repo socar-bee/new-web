@@ -23,7 +23,7 @@ export default function SearchView({ initialKeyword }: { initialKeyword?: string
     <div className="bg-bg-white flex min-h-dvh flex-col">
       {/* Header */}
       <div className="flex h-14 items-center gap-2 px-4">
-        <button onClick={goBack} className="flex size-8 items-center justify-center">
+        <button type="button" onClick={goBack} className="flex size-8 items-center justify-center">
           <IconChevronLeftLine className="size-5" />
         </button>
         <input
@@ -37,6 +37,7 @@ export default function SearchView({ initialKeyword }: { initialKeyword?: string
         />
         {searchText && (
           <button
+            type="button"
             onClick={() => onChangeSearchText({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>)}
             className="bg-bg-soft flex size-6 items-center justify-center rounded-full"
           >
@@ -68,6 +69,7 @@ export default function SearchView({ initialKeyword }: { initialKeyword?: string
             {results.map((place, i) => (
               <li key={`${place.latitude}-${place.longitude}-${i}`}>
                 <button
+                  type="button"
                   onClick={() => selectPlace(place)}
                   className="active:bg-bg-weak flex w-full flex-col gap-0.5 px-4 py-3 text-left transition-colors"
                 >
@@ -91,6 +93,7 @@ export default function SearchView({ initialKeyword }: { initialKeyword?: string
                 최근 검색어
               </span>
               <button
+                type="button"
                 onClick={clearRecentSearches}
                 className="text-text-soft cursor-pointer"
                 style={{ fontSize: 'var(--text-c3)' }}
@@ -102,6 +105,7 @@ export default function SearchView({ initialKeyword }: { initialKeyword?: string
               {recentSearches.map((keyword) => (
                 <li key={keyword} className="active:bg-bg-weak flex items-center px-4 transition-colors">
                   <button
+                    type="button"
                     onClick={() => selectRecentKeyword(keyword)}
                     className="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 py-3 text-left"
                   >
@@ -111,6 +115,7 @@ export default function SearchView({ initialKeyword }: { initialKeyword?: string
                     </span>
                   </button>
                   <button
+                    type="button"
                     onClick={() => removeRecentSearch(keyword)}
                     aria-label={`${keyword} 삭제`}
                     className="text-icon-soft flex size-8 shrink-0 cursor-pointer items-center justify-center"

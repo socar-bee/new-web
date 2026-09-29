@@ -24,7 +24,7 @@ export default function BenefitView() {
 
       <div className="flex flex-col gap-5 px-5 pt-1">
         {/* ─── 띠배너 — 삼성화재 다이렉트 (Figma 4537-20722 image 169, 정적) ─── */}
-        <button onClick={() => vm.onClickMission('insurance')} className="block w-full cursor-pointer">
+        <button type="button" onClick={() => vm.onClickMission('insurance')} className="block w-full cursor-pointer">
           <Image
             src="/images/img_benefit_insurance_banner.webp"
             alt="삼성화재 다이렉트 — 내차 보험료 확인하면 모두의주차장 7,000원 쿠폰 지급"
@@ -66,6 +66,7 @@ export default function BenefitView() {
           <h2 className="text-t3 text-text-strong font-bold">놓치지 마세요</h2>
           {vm.missions.map((mission) => (
             <button
+              type="button"
               key={mission.id}
               onClick={() => vm.onClickMission(mission.id)}
               className="bg-bg-white flex h-[90px] cursor-pointer items-center gap-4 rounded-2xl px-5 text-left"

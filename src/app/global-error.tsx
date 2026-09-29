@@ -13,6 +13,7 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
           </p>
           <div className="flex flex-col items-center gap-3">
             <button
+              type="button"
               onClick={reset}
               className="rounded-10 bg-primary text-t5 inline-flex items-center gap-2 px-8 py-3.5 font-bold text-white transition-opacity hover:opacity-90 active:opacity-80"
             >
