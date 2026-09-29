@@ -99,16 +99,13 @@ export default function AirportTicketsView() {
             </div>
           </div>
         ) : (
-          <div className="flex w-full flex-col gap-3 px-4 pb-[100px]">
+          <ul className="flex w-full flex-col gap-3 px-4 pb-[100px]">
             {vm.tickets.map((ticket) => (
-              <ListItem
-                key={ticket.couponSeq}
-                data={ticket}
-                variant={vm.viewType}
-                onSelect={() => vm.goToDetail(ticket.couponSeq)}
-              />
+              <li key={ticket.couponSeq}>
+                <ListItem data={ticket} variant={vm.viewType} onSelect={() => vm.goToDetail(ticket.couponSeq)} />
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </main>
     </div>
