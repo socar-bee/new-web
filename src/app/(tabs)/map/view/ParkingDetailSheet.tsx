@@ -294,6 +294,7 @@ export default function ParkingDetailSheet({
       }
       overlay={
         <button
+          type="button"
           onClick={onClose}
           className="bg-primary text-static-white shadow-02 text-t5 pointer-events-auto flex h-11 items-center gap-1.5 rounded-full px-5 font-semibold"
         >
@@ -374,6 +375,7 @@ export default function ParkingDetailSheet({
                   )}
                   {(getCategoryLabel() || capacity !== null) && <span className="text-stroke-sub mx-0.5">|</span>}
                   <button
+                    type="button"
                     onClick={(e) => {
                       e.stopPropagation()
                       handleToggleFavorite()
@@ -431,6 +433,7 @@ export default function ParkingDetailSheet({
               const isActive = tab.key === activeSection
               return (
                 <button
+                  type="button"
                   key={tab.key}
                   onClick={() => scrollToSection(tab.key)}
                   className={`flex flex-1 items-end justify-center pt-[14px] pb-0 transition-colors ${
@@ -480,7 +483,7 @@ export default function ParkingDetailSheet({
 function NavigationBar({ title, showTitle, onBack }: { title: string; showTitle: boolean; onBack: () => void }) {
   return (
     <div className="flex h-12 items-center justify-between px-2">
-      <button onClick={onBack} className="flex size-10 cursor-pointer items-center justify-center">
+      <button type="button" onClick={onBack} className="flex size-10 cursor-pointer items-center justify-center">
         <IconChevronLeftLine className="text-icon-strong size-[22px]" />
       </button>
       <h2
@@ -526,6 +529,7 @@ function PeekBar({
           {capacity !== null && <span>{capacity.toLocaleString()}면</span>}
           {(typeLabel || capacity !== null) && <span className="text-stroke-sub">|</span>}
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation()
               onToggleFavorite()
@@ -546,6 +550,7 @@ function PeekBar({
         </div>
       </div>
       <button
+        type="button"
         onClick={(e) => {
           e.stopPropagation()
           onNavigate()
@@ -582,13 +587,16 @@ function TicketList({
           <p className="text-text-strong text-b4">{moduComment}</p>
         </div>
       )}
-      <div className="flex flex-col gap-2.5 pt-4">
+      <ul className="flex flex-col gap-2.5 pt-4">
         {visible.map((ticket) => (
-          <TicketStubCard key={ticket.couponSeq} ticket={ticket} onSelect={onTicketClick} />
+          <li key={ticket.couponSeq}>
+            <TicketStubCard ticket={ticket} onSelect={onTicketClick} />
+          </li>
         ))}
-      </div>
+      </ul>
       {hasMore && !expanded && (
         <button
+          type="button"
           onClick={() => setExpanded(true)}
           className="border-primary/20 text-primary text-t5 mt-2.5 flex h-[48px] w-full cursor-pointer items-center justify-center gap-1.5 rounded-2xl border bg-white font-semibold shadow-[0_2px_10px_rgba(59,130,246,0.09)] transition-all hover:shadow-[0_2px_14px_rgba(59,130,246,0.14)] active:scale-[0.99]"
         >
@@ -631,9 +639,12 @@ const TicketStubCard = memo(function TicketStubCard({
   const dashBorder = 'border-primary/45'
 
   return (
-    <div
-      className={`relative w-full ${isDisabled ? 'cursor-default' : 'cursor-pointer'}`}
-      onClick={() => !isDisabled && onSelect(ticket.couponSeq)}
+    // 카드 하나가 곧 구매 진입 버튼이다 — 매진·판매예정은 disabled 로 눌리지 않게 둔다
+    <button
+      type="button"
+      disabled={isDisabled}
+      onClick={() => onSelect(ticket.couponSeq)}
+      className={`relative w-full text-left ${isDisabled ? 'cursor-default' : 'cursor-pointer'}`}
     >
       {/* 3분할: [정보] · [연결부 (카드 bg와 동일)] · [가격]
        *  - 연결부 bg·외곽선을 카드와 일치 → 색·선 단절 없이 매끈하게 이어짐 */}
@@ -680,7 +691,7 @@ const TicketStubCard = memo(function TicketStubCard({
           {!isDisabled && <span className="text-primary/60 text-c3 font-medium">구매하기 ›</span>}
         </div>
       </div>
-    </div>
+    </button>
   )
 })
 
@@ -755,6 +766,7 @@ function InfoTab({
       {address && (
         <InfoCard icon={<IconMarkerLine className="size-5" />} title="주소">
           <button
+            type="button"
             className="flex w-full min-w-0 cursor-pointer items-center gap-1 text-left"
             onClick={() => onCopyAddress(address)}
           >
@@ -1055,6 +1067,7 @@ export function DetailFooter() {
   return (
     <div className="bg-bg-soft px-4 py-6 pb-24">
       <button
+        type="button"
         className="border-stroke-soft text-text-strong text-c2 h-[38px] w-full rounded-lg border bg-white font-medium"
         onClick={() => window.open('https://l.modu.kr/main', '_blank')}
       >

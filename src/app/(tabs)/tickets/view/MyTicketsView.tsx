@@ -42,6 +42,7 @@ export default function MyTicketsView() {
           <div className="flex flex-col items-center gap-3 py-20">
             <p className="text-text-sub text-b4">주차권을 불러오지 못했어요.</p>
             <button
+              type="button"
               onClick={() => vm.refetch()}
               className="border-stroke-soft text-text-strong text-c2 h-[38px] cursor-pointer rounded-lg border bg-white px-4 font-medium"
             >
@@ -54,13 +55,17 @@ export default function MyTicketsView() {
             <p className="text-text-sub text-b4">주차장을 찾고 주차권을 구매해 보세요.</p>
           </div>
         ) : (
-          vm.tickets.map((ticket) => (
-            <MyTicketCard
-              key={ticket.key}
-              ticket={ticket}
-              onSelect={() => router.push(`/my-ticket/${ticket.seq}?type=${ticket.type}`)}
-            />
-          ))
+          // 목록임을 알리는 건 ul 뿐이다 — 스크린리더가 "총 N개 중 k번째" 를 읽는 근거가 된다
+          <ul className="flex flex-col gap-2.5">
+            {vm.tickets.map((ticket) => (
+              <li key={ticket.key}>
+                <MyTicketCard
+                  ticket={ticket}
+                  onSelect={() => router.push(`/my-ticket/${ticket.seq}?type=${ticket.type}`)}
+                />
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </div>
@@ -77,7 +82,8 @@ const MyTicketCard = memo(function MyTicketCard({ ticket, onSelect }: { ticket: 
   const dashBorder = isActive ? 'border-primary/45' : 'border-slate-300'
 
   return (
-    <div className="relative w-full cursor-pointer" onClick={onSelect}>
+    // 카드 전체가 상세로 가는 단일 동작이다 — button 이라야 포커스·Enter/Space 가 따라온다
+    <button type="button" onClick={onSelect} className="relative w-full cursor-pointer text-left">
       {/* 3분할: [정보] · [연결부] · [차량번호] — 상세 티켓 스텁과 동일 구조 */}
       <div className="flex min-h-[104px] w-full">
         {/* 왼쪽: 상태 · 주차권명 · 주차장 · 이용일 */}
@@ -121,6 +127,6 @@ const MyTicketCard = memo(function MyTicketCard({ ticket, onSelect }: { ticket: 
           </p>
         </div>
       </div>
-    </div>
+    </button>
   )
 })

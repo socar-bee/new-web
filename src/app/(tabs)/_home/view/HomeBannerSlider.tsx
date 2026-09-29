@@ -71,10 +71,12 @@ export default function HomeBannerSlider({
       >
         {banners.map((b) => (
           <SwiperSlide key={b.id}>
-            <div
-              className={`w-full ${b.href ? 'cursor-pointer' : ''}`}
+            {/* 링크가 있는 배너만 누를 수 있다 — role="link" 흉내 대신 button 으로 포커스·Enter 를 얻는다 */}
+            <button
+              type="button"
+              disabled={!b.href}
               onClick={() => onClickBanner(b)}
-              role={b.href ? 'link' : undefined}
+              className={`w-full text-left ${b.href ? 'cursor-pointer' : ''}`}
             >
               {b.image ? (
                 <div
@@ -105,7 +107,7 @@ export default function HomeBannerSlider({
                   <span aria-hidden className="absolute -top-10 -right-10 size-32 rounded-full bg-white/15 blur-2xl" />
                 </div>
               )}
-            </div>
+            </button>
           </SwiperSlide>
         ))}
       </Swiper>
