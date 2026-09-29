@@ -403,7 +403,7 @@ function TicketDetail({
           ok={vm.cancelResult.ok}
           title={vm.cancelResult.ok ? '결제 취소가 완료되었습니다.' : '결제를 취소하지 못했습니다.'}
           subText={vm.cancelResult.ok ? '주차권은 비활성화되며, 이후 사용이 불가합니다.' : vm.cancelResult.message}
-          onClose={() => vm.setCancelResult(null)}
+          onClose={vm.closeCancelResult}
         />
       )}
       {vm.refundResult && (

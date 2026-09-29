@@ -203,6 +203,38 @@ export function useMyTicketDetailViewModel(seq: string) {
     }
   }, [detail, cancelReportType, refetchDetail])
 
+  /**
+   * 취소 완료 화면을 닫는다 — 성공이면 **메인으로** 보낸다.
+   *
+   * 취소된 주차권 상세로 되돌아갈 이유가 없다(사용 불가 상태만 다시 보여 준다).
+   * `replace` 라 히스토리에도 남기지 않아 다시 뒤로가기해도 그 상세로 되돌아오지 않는다.
+   * 실패는 상세에 남긴다 — 사유를 보고 그 자리에서 다시 시도하는 흐름이다.
+   */
+  const closeCancelResult = useCallback(() => {
+    if (cancelResult?.ok) {
+      router.replace('/')
+      return
+    }
+    setCancelResult(null)
+  }, [cancelResult?.ok, router])
+
+  /**
+   * 취소 완료 화면에서의 **하드웨어·브라우저 뒤로가기**도 메인으로 보낸다.
+   *
+   * 결과 화면은 상세 위에 덮이는 오버레이라 뒤로가기가 그대로 상세(혹은 목록)로 빠진다.
+   * 더미 엔트리를 하나 쌓아 두고 그 pop 을 받아 대신 메인으로 돌린다 —
+   * 쌓지 않으면 첫 뒤로가기가 이 화면을 거치지 않고 지나간다.
+   */
+  useEffect(() => {
+    if (!cancelResult?.ok) return
+
+    window.history.pushState(null, '', window.location.href)
+    const handlePopState = () => router.replace('/')
+    window.addEventListener('popstate', handlePopState)
+
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [cancelResult?.ok, router])
+
   const closeCancelFlow = useCallback(() => {
     setCancelStep(null)
     setCancelReportType(null)
@@ -323,6 +355,7 @@ export function useMyTicketDetailViewModel(seq: string) {
     isCancelSubmitting,
     cancelResult,
     setCancelResult,
+    closeCancelResult,
     isRefundImpossibleOpen,
     setIsRefundImpossibleOpen,
     isAdminConfirmOpen,
