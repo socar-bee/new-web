@@ -45,7 +45,12 @@ export default function PurchaseResultView() {
       <main className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pt-10">
         {/* 헤더 — 체크 · 완료 문구 (modu-android TicketPaymentCompleteScreen 과 같은 순서) */}
         <div className="flex flex-col items-center gap-4">
-          <MIcon icon={IconConfirmFill} size={56} decorative className="text-primary" />
+          {/*
+            체크 배지 — 아이콘을 직접 렌더한다. MIcon 은 color 토큰(기본 icon_strong_950) class 를 함께 얹어
+            className 으로 준 text-primary 와 부딪히고, 승패가 class 순서가 아니라 CSS 선언 순서로 갈려 검정으로 굳는다.
+            path 는 fill="currentColor" 하나에 체크가 뚫린 모양이라, 배지가 primary 가 되면 체크는 뒤 배경(흰색)이 비친다.
+          */}
+          <IconConfirmFill width={56} height={56} aria-hidden className="text-primary" />
           <div className="flex flex-col items-center gap-1.5">
             <MText typography="title_t2" color="text_strong_950">
               결제가 완료되었어요
@@ -108,18 +113,19 @@ export default function PurchaseResultView() {
         ) : null}
       </main>
 
-      <footer className="flex flex-col gap-2 px-6 pt-3 pb-[max(env(safe-area-inset-bottom),12px)]">
+      {/* 보조 버튼과 확인을 한 줄에 5:5 로 — 보조가 없으면 확인이 한 줄을 다 쓴다 */}
+      <footer className="flex gap-2 px-6 pt-3 pb-[max(env(safe-area-inset-bottom),12px)]">
         {vm.purchasedSeq && (
-          <MButton size="xLarge" fullWidth tone="neutral" appearance="stroke" onClick={vm.goMyTicket}>
+          <MButton size="xLarge" className="flex-1" tone="neutral" appearance="stroke" onClick={vm.goMyTicket}>
             내 주차권 확인
           </MButton>
         )}
         {!vm.purchasedSeq && vm.couponSeq && (
-          <MButton size="xLarge" fullWidth tone="neutral" appearance="stroke" onClick={vm.goTicketDetail}>
+          <MButton size="xLarge" className="flex-1" tone="neutral" appearance="stroke" onClick={vm.goTicketDetail}>
             주차권 상세 보기
           </MButton>
         )}
-        <MButton size="xLarge" fullWidth onClick={vm.goHome}>
+        <MButton size="xLarge" className="flex-1" onClick={vm.goHome}>
           확인
         </MButton>
       </footer>
