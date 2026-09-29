@@ -190,8 +190,9 @@ export function usePurchaseResultViewModel() {
   /** 구매한 내주차권 상세로 — parkingSeq(구매건 seq)가 my-ticket 경로 변수다 */
   const goMyTicket = useCallback(() => {
     if (!purchasedSeq) return
-    router.push(`/my-ticket/${purchasedSeq}?type=p`)
-  }, [router, purchasedSeq])
+    // 권종은 pay 가 실어 보낸 값을 그대로 잇는다 — 공유는 `s`, 제휴·단기권은 `p` 로 조회 경로가 갈린다
+    router.push(`/my-ticket/${purchasedSeq}?type=${ticketType}`)
+  }, [router, purchasedSeq, ticketType])
 
   return {
     isFail,
