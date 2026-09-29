@@ -116,12 +116,24 @@ export default function PurchaseResultView() {
       {/* 보조 버튼과 확인을 한 줄에 5:5 로 — 보조가 없으면 확인이 한 줄을 다 쓴다 */}
       <footer className="flex gap-2 px-6 pt-3 pb-[max(env(safe-area-inset-bottom),12px)]">
         {vm.purchasedSeq && (
-          <MButton size="xLarge" className="flex-1" tone="neutral" appearance="stroke" onClick={vm.goMyTicket}>
+          <MButton
+            size="xLarge"
+            className="bg-bg-soft text-text-strong flex-1"
+            tone="neutral"
+            appearance="lighter"
+            onClick={vm.goMyTicket}
+          >
             내 주차권 확인
           </MButton>
         )}
         {!vm.purchasedSeq && vm.couponSeq && (
-          <MButton size="xLarge" className="flex-1" tone="neutral" appearance="stroke" onClick={vm.goTicketDetail}>
+          <MButton
+            size="xLarge"
+            className="bg-bg-soft text-text-strong flex-1"
+            tone="neutral"
+            appearance="lighter"
+            onClick={vm.goTicketDetail}
+          >
             주차권 상세 보기
           </MButton>
         )}
