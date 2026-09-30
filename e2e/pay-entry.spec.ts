@@ -59,6 +59,21 @@ test.describe('pay 결제 진입 — 회원/비회원 분기', () => {
     expect(url.hash).toBe('#at=E2E_AT')
   })
 
+  test('회원 — 월정기는 couponSeq 만 싣고 간다 (신청 정보는 pay 가 받는다)', async ({ page }) => {
+    await page.addInitScript((auth) => localStorage.setItem('auth-storage', auth), seedAuth)
+    await gotoHydrated(page, '/t/9102')
+
+    await page.getByRole('button', { name: '구매하기', exact: true }).click()
+    await page.waitForURL(/\/member\?/)
+
+    const url = new URL(page.url())
+    expect(url.searchParams.get('flowType')).toBe('monthly')
+    expect(url.searchParams.get('couponSeq')).toBe('9102')
+    // 시작 희망일·차량·차량모델·이름은 pay 화면이 받는다 — 진입값에 없다
+    expect(url.searchParams.get('startDate')).toBeNull()
+    expect(url.searchParams.get('carNumber')).toBeNull()
+  })
+
   test('회원 — 공항(period)은 ISO 입·출차 시각을 조회 키로 싣는다', async ({ page }) => {
     await page.addInitScript((auth) => localStorage.setItem('auth-storage', auth), seedAuth)
     const sDate = encodeURIComponent('2026-10-01 09:00')

@@ -103,6 +103,12 @@ const server = createServer((req, res) => {
     return
   }
 
+  // 결제 진입 직전의 토큰 갱신 — 화면은 갱신된 토큰으로 pay 에 들어간다 (shared/lib/authToken)
+  if (pathname === '/user/token/refresh') {
+    json(res, { data: { accessToken: 'E2E_AT', refreshToken: 'E2E_RT' } })
+    return
+  }
+
   // ─── 공항 주차대행 (airport) ───
   if (pathname === '/ticket/group') {
     json(res, {

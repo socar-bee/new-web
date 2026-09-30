@@ -73,7 +73,7 @@ test.describe('주차권 상세 — 당일권 (판매중)', () => {
 })
 
 test.describe('주차권 상세 — 타입·상태별 분기', () => {
-  test('월정기권 — 날짜 셀 숨김, CTA 는 앱 유도', async ({ page }) => {
+  test('월정기권 — 날짜 셀 숨김, CTA 는 금액 없는 「구매하기」', async ({ page }) => {
     await gotoHydrated(page, '/t/9102')
 
     await expect(page.getByText('월정기권').first()).toBeVisible()
@@ -82,8 +82,17 @@ test.describe('주차권 상세 — 타입·상태별 분기', () => {
     // Monthly 는 날짜 피커를 그리지 않는다 (modu-android showDatePicker)
     await expect(page.locator('button[aria-pressed]')).toHaveCount(0)
 
-    const cta = page.getByRole('button', { name: '모두의주차장 앱에서 구매하기' })
+    // 금액은 시작 희망일 슬롯마다 달라 버튼에 싣지 않는다 (pay 가 고른 슬롯의 금액으로 결제)
+    const cta = page.getByRole('button', { name: '구매하기', exact: true })
     await expect(cta).toBeEnabled()
+  })
+
+  test('월정기권 — 미로그인은 로그인으로 보낸다 (회원 전용)', async ({ page }) => {
+    await gotoHydrated(page, '/t/9102')
+
+    await page.getByRole('button', { name: '구매하기', exact: true }).click()
+
+    await expect(page).toHaveURL(/\/login/)
   })
 
   test('매진 — CTA 「매진」 disabled', async ({ page }) => {
