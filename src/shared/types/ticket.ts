@@ -102,6 +102,17 @@ export interface MyTicketPhoto {
   pictureDesc: string | null
 }
 
+/**
+ * 월정기 연장 가능 구간 — 다음 기간이 열려 있을 때만 내려온다.
+ * android 는 `isSold === false` 를 연장 가능으로 본다 (`MyTicketDetailRepository` ExtensionInfo.Monthly).
+ */
+export interface MonthlyExtensionInfo {
+  isSold: boolean
+  startDate: string | null
+  endDate: string | null
+  totalPrice: number
+}
+
 export interface MonthlyInfo {
   cmouSeq: number
   copSeq: number
@@ -112,7 +123,7 @@ export interface MonthlyInfo {
   startedAt: string
   finishedAt: string
   isExtension: boolean
-  extensionInfo: null
+  extensionInfo: MonthlyExtensionInfo | null
 }
 
 export interface MyTicketPartner {

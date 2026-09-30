@@ -235,6 +235,17 @@ function TicketDetail({
             )}
           </button>
         )}
+
+        {/* 월정기 연장 — 다음 구간이 열려 있을 때만 (pay flowType=monthlyExtend) */}
+        {vm.canExtendMonthly && (
+          <button
+            type="button"
+            onClick={vm.startMonthlyExtend}
+            className="border-primary text-primary text-c2 mt-1 flex h-11 w-full cursor-pointer items-center justify-center rounded-lg border font-medium"
+          >
+            월정기권 연장하기
+          </button>
+        )}
       </section>
 
       <div className="bg-bg-weak h-2.5" />

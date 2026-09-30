@@ -324,11 +324,24 @@ export function useMyTicketDetailViewModel(seq: string) {
     }
   }, [detail, isRefundSubmitting, refundPhotos, refundReason, refetchDetail, closeRefundProcess])
 
+  /**
+   * 월정기 연장 가능 여부 — 다음 구간이 열려 있고 매진이 아닐 때만.
+   * android 도 같은 값을 본다 (`extensionInfo.isSold === false`).
+   */
+  const monthlyExtension = detail?.ticket.partner?.monthlyInfo?.extensionInfo ?? null
+  const canExtendMonthly = monthlyExtension != null && !monthlyExtension.isSold
+
   /** 공유 연장 — pay 결제웹뷰(flowType=shareExtend)로 진입. 자체 결제 화면은 두지 않는다 */
   const startExtend = useCallback(() => {
     if (!detail?.ticket.share?.isExtendable) return
     void platform.startCheckout({ flowType: 'shareExtend', parkingSeq: detail.ticket.seq })
   }, [platform, detail])
+
+  /** 월정기 연장 — pay 결제웹뷰(flowType=monthlyExtend). 진입값은 연장할 내주차권 seq 하나다 */
+  const startMonthlyExtend = useCallback(() => {
+    if (!detail || !canExtendMonthly) return
+    void platform.startCheckout({ flowType: 'monthlyExtend', couSeq: detail.ticket.seq })
+  }, [platform, detail, canExtendMonthly])
 
   /** 하단 버튼 라벨 (모웹 myTicketBtnGroup) — null 이면 버튼 숨김. 불가 케이스도 클릭 시 안내 모달로 응답 */
   const paymentActionLabel =
@@ -363,6 +376,8 @@ export function useMyTicketDetailViewModel(seq: string) {
     isAdminUseSubmitting,
     onConfirmAdminUse,
     startExtend,
+    canExtendMonthly,
+    startMonthlyExtend,
     onClickPaymentCancel,
     onConfirmCancel,
     onSubmitShareCancel,

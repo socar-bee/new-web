@@ -7,6 +7,8 @@ import { useCallback, useEffect, useMemo } from 'react'
 
 import { getTodayInSeoul, resolveParkingDate } from '@/shared/lib/date'
 
+import { useAuthStore } from '@/shared/stores/authStore'
+
 import { useTicketDetail } from '../model'
 import {
   CouponTypeGroup,
@@ -141,10 +143,10 @@ export function useTicketDetailViewModel({
     const status = ticket.purchaseAvailability?.status
 
     if (status === PurchaseAvailabilityStatus.AVAILABLE) {
-      if (isMonthly) {
-        // 월정기 결제는 이름·차량 입력 화면이 웹에 없어 앱으로 유도한다 (docs/07-app-webview.md)
-        return { text: '모두의주차장 앱에서 구매하기', disabled: false, isAbleApp: true }
-      }
+      // 월정기도 결제 웹뷰가 신청 정보(시작 희망일·차량·차량모델·이름)를 받는다 — 앱 유도를 끝냈다.
+      // 금액은 시작 희망일 슬롯마다 달라 버튼에 싣지 않는다 (pay 가 고른 슬롯의 금액으로 결제한다)
+      if (isMonthly) return { text: '구매하기', disabled: false, isAbleApp: false }
+
       return { text: `${ticket.price.toLocaleString()}원 결제하기`, disabled: false, isAbleApp: false }
     }
 
@@ -200,13 +202,27 @@ export function useTicketDetailViewModel({
     if (!ticket || purchaseButton.disabled) return
 
     if (purchaseButton.isAbleApp) {
-      // 월정기 앱 유도 — 앱 웹뷰에서는 window.open 이 동작하지 않으므로 같은 탭 이동
+      // 앱 전용으로 남은 권종 — 앱 웹뷰에서는 window.open 이 동작하지 않으므로 같은 탭 이동
       window.location.assign(`https://app.modu.kr/t/${ticket.couponSeq}`)
       return
     }
 
+    if (isMonthly) {
+      /**
+       * 월정기는 회원만 살 수 있다 — 신청서에 실명이 들어가고 연장·해지가 계정에 묶인다.
+       * pay 의 비회원 경로(`/guest`)에도 월정기 권종이 없다.
+       */
+      if (!useAuthStore.getState().isLoggedIn) {
+        platform.requestLogin()
+        return
+      }
+
+      void platform.startCheckout({ flowType: 'monthly', couponSeq: ticket.couponSeq })
+      return
+    }
+
     void platform.startCheckout({ couponSeq: ticket.couponSeq, parkingDate })
-  }, [ticket, purchaseButton, platform, parkingDate])
+  }, [ticket, purchaseButton, platform, parkingDate, isMonthly])
 
   return {
     ticket,

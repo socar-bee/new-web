@@ -15,6 +15,22 @@ export interface PeriodCheckout {
   endDate: string
 }
 
+/**
+ * 월정기 신규 — pay `flowType: 'monthly'` 계약.
+ * 시작 희망일·차량·차량모델·이름은 pay 화면에서 받으므로 조회 키만 넘긴다.
+ */
+export interface MonthlyCheckout {
+  flowType: 'monthly'
+  couponSeq: number
+}
+
+/** 월정기 연장 — pay `flowType: 'monthlyExtend'` 계약 (GET /ticket/my-ticket/p/{couSeq}) */
+export interface MonthlyExtendCheckout {
+  flowType: 'monthlyExtend'
+  /** 연장할 내주차권 seq */
+  couSeq: number
+}
+
 /** 공유 — pay `flowType: 'share'` 계약 (GET /poi/pins/S/{shareSeq}) */
 export interface ShareCheckout {
   flowType: 'share'
@@ -28,7 +44,13 @@ export interface ShareExtendCheckout {
   parkingSeq: number
 }
 
-export type CheckoutTicket = PartnerCheckout | PeriodCheckout | ShareCheckout | ShareExtendCheckout
+export type CheckoutTicket =
+  | PartnerCheckout
+  | PeriodCheckout
+  | MonthlyCheckout
+  | MonthlyExtendCheckout
+  | ShareCheckout
+  | ShareExtendCheckout
 
 /**
  * 환경(웹/앱 웹뷰) 차이를 흡수하는 어댑터. 라우트 viewmodel 은 이 인터페이스만 본다.

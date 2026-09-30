@@ -24,6 +24,18 @@ export interface PeriodEntryParams {
   endDate: string
 }
 
+/** 월정기 신규 — GET /ticket/{couponSeq}. 신청 정보는 pay 화면에서 받는다 */
+export interface MonthlyEntryParams {
+  flowType: 'monthly'
+  couponSeq: number
+}
+
+/** 월정기 연장 — GET /ticket/my-ticket/p/{couSeq} */
+export interface MonthlyExtendEntryParams {
+  flowType: 'monthlyExtend'
+  couSeq: number
+}
+
 /** 공유 — GET /poi/pins/S/{shareSeq} */
 export interface ShareEntryParams {
   flowType: 'share'
@@ -36,7 +48,13 @@ export interface ShareExtendEntryParams {
   parkingSeq: number
 }
 
-export type PaymentEntryParams = PartnerEntryParams | PeriodEntryParams | ShareEntryParams | ShareExtendEntryParams
+export type PaymentEntryParams =
+  | PartnerEntryParams
+  | PeriodEntryParams
+  | MonthlyEntryParams
+  | MonthlyExtendEntryParams
+  | ShareEntryParams
+  | ShareExtendEntryParams
 
 const PREF_DOMAIN = 'payment'
 const PREF_ITEM = 'PaymentEntry'

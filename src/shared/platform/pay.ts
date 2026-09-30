@@ -41,6 +41,11 @@ export function checkoutEntryKeys(ticket: CheckoutTicket): Record<string, string
   switch (ticket.flowType) {
     case 'period':
       return { couponSeq: String(ticket.couponSeq), startDate: ticket.startDate, endDate: ticket.endDate }
+    case 'monthly':
+      // 신청 정보(시작 희망일·차량·차량모델·이름)는 pay 화면에서 받는다 — 조회 키만 넘긴다
+      return { couponSeq: String(ticket.couponSeq) }
+    case 'monthlyExtend':
+      return { couSeq: String(ticket.couSeq) }
     case 'share':
       return { shareSeq: String(ticket.shareSeq) }
     case 'shareExtend':
